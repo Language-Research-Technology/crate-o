@@ -52,7 +52,7 @@ function updatePages(page) {
 
 function filterValues() {
   data.filteredValues = props.value.filter((v) => {
-      return v.name?.[0].match(new RegExp(data.filter, "i"));
+    return v.name?.[0].match(new RegExp(data.filter, "i"));
   });
   updatePages(1);
 }
@@ -61,29 +61,33 @@ function filterValues() {
 <template>
   <el-form-item :label="property" class="w-full">
     <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24" class="py-1">
-      <el-pagination v-if="data.filteredValues.length > pageSize"
-                     v-model:currentPage="data.currentPage"
-                     layout="prev, pager, next"
-                     :total="data.filteredValues.length"
-                     @current-change="updatePages"
-      />
-      <el-input
-          v-model="data.filter"
-          placeholder="Look up entity"
-          clearable
-          @input="filterValues"
-      />
-      <entity-input v-if="Array.isArray(value)"
-                    v-for="(v, i) of data.page"
-                    :index="i"
-                    :name="property + '_' + i"
-                    :value="v"
-                    :id="id"
-                    @change="updateValue(i, $event)"
-                    @new-entity="loadEntity"
-                    @remove-value="removeValue({index: i})"
-                    :property="property" :deletable="value.length > 1"
-                    :definition="definition"/>
+      <div v-if="Array.isArray(value)">
+        <div v-if="data.filteredValues.length > pageSize">
+          <el-pagination
+              v-model:currentPage="data.currentPage"
+              layout="prev, pager, next"
+              :total="data.filteredValues.length"
+              @current-change="updatePages"
+          />
+          <el-input
+              v-model="data.filter"
+              :placeholder="'Search in ' +  property"
+              clearable
+              @input="filterValues"
+          />
+        </div>
+        <entity-input
+            v-for="(v, i) of data.page"
+            :index="i"
+            :name="property + '_' + i"
+            :value="v"
+            :id="id"
+            @change="updateValue(i, $event)"
+            @new-entity="loadEntity"
+            @remove-value="removeValue({index: i})"
+            :property="property" :deletable="value.length > 1"
+            :definition="definition"/>
+      </div>
       <entity-input v-else
                     :index="index"
                     :name="property + '_' + index"
