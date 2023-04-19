@@ -1,0 +1,379 @@
+{
+  "metadata": {
+    "name": "Schema profile ",
+    "description": "Describo profile for creating Schema.org style vocabularies",
+    "version": 0.1
+  },
+  "rootDatasets": {
+    "Schema": {
+      "type": "Dataset"
+    }
+  },
+  "classes": {
+    "Dataset": {
+      "definition": "override",
+      "subClassOf": [],
+      "inputs": [
+        {
+          "id": "http://schema.org/mentions",
+          "name": "mentions",
+          "help": "The Classes, Properties etc",
+          "type": [
+            "rdfs:Class",
+            "rdf:Property",
+            "definedTerm",
+            "definedTermSet"
+          ],
+          "multiple": true
+        },
+        {
+          "id": "https://schema.org/name",
+          "name": "name",
+          "label": "Name",
+          "help": "The name of this ontology",
+          "required": true,
+          "multiple": false,
+          "type": [
+            "Text"
+          ]
+        },
+        {
+          "id": "http://schema.org/author",
+          "name": "author",
+          "help": "The person or organization responsible for creating this collection of data",
+          "type": [
+            "Person",
+            "Organization"
+          ],
+          "multiple": true
+        },
+        {
+          "id": "http://schema.org/publisher",
+          "name": "publisher",
+          "help": "The organization responsible for releasing this collection of data",
+          "type": [
+            "Organization"
+          ],
+          "multiple": true
+        },
+        {
+          "id": "http://schema.org/description",
+          "name": "description",
+          "help": "An abstract of the collection. Include as much detail as possible about the motivation and use of the collection, including things that we do not yet have properties for",
+          "type": [
+            "TextArea"
+          ],
+          "multiple": false
+        }
+      ]
+    },
+    "rdfs:Class": {
+      "definition": "override",
+      "subClassOf": [],
+      "inputs": [
+        {
+          "id": "https://schema.org/name",
+          "name": "name",
+          "label": "Name",
+          "help": "The name of this Class",
+          "required": true,
+          "multiple": false,
+          "type": [
+            "Text"
+          ]
+        },
+        {
+          "id": "http://www.w3.org/2000/01/rdf-schema#label",
+          "name": "label",
+          "label": "Label",
+          "help": "The label for this class",
+          "required": true,
+          "multiple": false,
+          "type": [
+            "Text"
+          ]
+        },
+        {
+          "id": "http://www.w3.org/2000/01/rdf-schema#comment",
+          "name": "Comment",
+          "help": "A description of the Class",
+          "type": [
+            "TextArea"
+          ],
+          "multiple": false
+        },
+        {
+          "id": "http://www.w3.org/2000/01/rdf-schema#subClassOf",
+          "name": "rdfs:subClassOf",
+          "help": "Parent Class (if any)",
+          "type": [
+            "Class"
+          ],
+          "multiple": false
+        },
+        {
+          "id": "https://schema.org/sameAs",
+          "name": "sameAs",
+          "help": "URL of an equivalent term",
+          "type": [
+            "URL"
+          ],
+          "multiple": false
+        }
+      ]
+    },
+    "DefinedTerm": {
+      "definition": "override",
+      "subClassOf": [],
+      "inputs": [
+        {
+          "id": "https://schema.org/name",
+          "name": "name",
+          "label": "Name",
+          "help": "The name of this DefinedTerm",
+          "required": true,
+          "multiple": false,
+          "type": [
+            "Text"
+          ]
+        },
+        {
+          "id": "https://schema.org/description",
+          "name": "description",
+          "help": "A description of the defined Term",
+          "type": [
+            "TextArea"
+          ],
+          "multiple": false
+        },
+        {
+          "id": "https://schema.org/inDefinedTermSet",
+          "name": "inDefinedTermSet",
+          "help": "A set of defined terms that can be used for the range of values of a property",
+          "type": [
+            "DefinedTermSet"
+          ],
+          "multiple": false
+        },
+        {
+          "id": "https://schema.org/sameAs",
+          "name": "sameAs",
+          "help": "URL of an equivalent term",
+          "type": [
+            "URL"
+          ],
+          "multiple": false
+        }
+      ]
+    },
+    "DefinedTermSet": {
+      "definition": "override",
+      "subClassOf": [],
+      "inputs": [
+        {
+          "id": "https://schema.org/name",
+          "name": "name",
+          "label": "Name",
+          "help": "The name of this DefinedTermSet",
+          "required": true,
+          "multiple": false,
+          "type": [
+            "Text"
+          ]
+        },
+        {
+          "id": "https://schema.org/description",
+          "name": "description",
+          "help": "A description of the defined set of defined terms",
+          "type": [
+            "TextArea"
+          ],
+          "multiple": false
+        },
+        {
+          "id": "https://schema.org/hasDefinedTerm",
+          "name": "hasDefinedTerm",
+          "help": "A set of defined terms that can be used for the range of values of a property",
+          "type": [
+            "DefinedTerm"
+          ],
+          "multiple": true
+        },
+        {
+          "id": "https://schema.org/sameAs",
+          "name": "sameAs",
+          "help": "URL of an equivalent term",
+          "type": [
+            "URL"
+          ],
+          "multiple": false
+        }
+      ]
+    },
+    "rdf:Property": {
+      "definition": "override",
+      "subClassOf": [],
+      "inputs": [
+        {
+          "id": "https://schema.org/name",
+          "name": "name",
+          "label": "Name",
+          "help": "The name of this Class",
+          "required": true,
+          "multiple": false,
+          "type": [
+            "Text"
+          ]
+        },
+        {
+          "id": "http://www.w3.org/2000/01/rdf-schema#label",
+          "name": "label",
+          "label": "Label",
+          "help": "The label for this property",
+          "required": true,
+          "multiple": false,
+          "type": [
+            "Text"
+          ]
+        },
+        {
+          "id": "http://www.w3.org/2000/01/rdf-schema#comment",
+          "name": "Comment",
+          "help": "A description of the Class",
+          "type": [
+            "TextArea"
+          ],
+          "multiple": false
+        },
+        {
+          "id": "http://www.w3.org/2000/01/rdf-schema#subPropertyOf",
+          "name": "subPropertyOf",
+          "help": "Is this a sub-type of a more general property",
+          "type": [
+            "Class"
+          ],
+          "multiple": false
+        },
+        {
+          "id": "http://schema.org/domainIncludes",
+          "name": "domainIncludes",
+          "help": "What clasess use this property (ie what domain does this property occur in)",
+          "type": [
+            "Class"
+          ],
+          "multiple": true
+        },
+        {
+          "id": "https://schema.org/definedTermSet",
+          "name": "definedTermSet",
+          "help": "A set of defined terms that can be used for the range of values of this property",
+          "type": [
+            "DefinedTermSet"
+          ],
+          "multiple": false
+        },
+        {
+          "id": "range",
+          "name": "http://schema.org/rangeIncludes",
+          "help": "What clasess are expected values for this range",
+          "type": [
+            "Class",
+            "DefinedTerm"
+          ],
+          "multiple": false
+        },
+        {
+          "id": "https://schema.org/sameAs",
+          "name": "sameAs",
+          "help": "URL of an equivalent term",
+          "type": [
+            "URL"
+          ],
+          "multiple": false
+        }
+      ]
+    },
+    "Person": {
+      "definition": "override",
+      "subClassOf": [],
+      "inputs": [
+        {
+          "id": "https://schema.org/name",
+          "name": "name",
+          "label": "name",
+          "help": "The name the person",
+          "required": true,
+          "multiple": false,
+          "type": [
+            "Text"
+          ]
+        },
+        {
+          "id": "http://schema.org/description",
+          "name": "description",
+          "help": "Add any additional info not covered by other properties here.",
+          "type": [
+            "TextArea"
+          ],
+          "multiple": false
+        },
+        {
+          "id": "https://schema.org/affiliation",
+          "name": "affiliation",
+          "label": "affiliation",
+          "help": "The name the person",
+          "required": false,
+          "multiple": true,
+          "type": [
+            "Organization"
+          ]
+        }
+      ]
+    },
+    "Organization": {
+      "definition": "override",
+      "subClassOf": [],
+      "inputs": [
+        {
+          "id": "https://schema.org/name",
+          "name": "name",
+          "label": "name",
+          "help": "The name of the organization",
+          "required": true,
+          "multiple": false,
+          "type": [
+            "Text"
+          ]
+        },
+        {
+          "id": "http://schema.org/description",
+          "name": "description",
+          "help": "An abstract of the collection. Include as much detail as possible about the motivation and use of the collection, including things that we do not yet have properties for",
+          "type": [
+            "TextArea"
+          ],
+          "multiple": false
+        },
+        {
+          "id": "http://schema.org/location",
+          "name": "location",
+          "help": "A location for the organization (eg a city for a publisher)",
+          "type": [
+            "Text"
+          ],
+          "multiple": false
+        }
+      ]
+    }
+  },
+  "enabledClasses": [
+    "Dataset",
+    "Person",
+    "Organization",
+    "Book",
+    "ScholarlyArticle",
+    "RepositoryCollection",
+    "CreativeWork",
+    "CollectionProtocol"
+  ]
+}   

@@ -1,0 +1,35 @@
+# Publish web app to github pages
+name: Publish
+
+on: 
+  push:
+    branches: [master, main]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          registry-url: 'https://registry.npmjs.org'
+      - uses: ButlerLogic/action-autotag@1.1.1
+        with:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          tag_prefix: "v"
+        id: create_tag
+      # - run: echo ${{ steps.create_tag.outputs.tagname }}
+      # - run: echo ${{ steps.create_tag.outputs.version }}
+      - name: Check if a new tag is created
+        run: "[[ '${{ steps.create_tag.outputs.tagname }}' ]]"
+      - run: npm ci
+      - run: npm run build:webpack
+      - name: Deploy app to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: dist
+          single-commit: true
+          clean: true

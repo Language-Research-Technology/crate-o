@@ -1,0 +1,35 @@
+{
+  "@context": "https://w3id.org/ro/crate/1.1/context",
+  "@graph": [
+    {
+      "@type": "CreativeWork",
+      "@id": "ro-crate-metadata.json",
+      "identifier": "ro-crate-metadata.json",
+      "about": {
+        "@id": "abc"
+      },
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.1"
+      }
+    },
+    {
+      "@id": "abc",
+      "@type": "Dataset",
+      "@reverse": {},
+      "name": "Test",
+      "hasMember": [
+        {
+          "@id": "arcp://name,cooee-corpus/item/1-001"
+        }
+      ]
+    },
+    {
+      "@id": "arcp://name,cooee-corpus/item/1-001",
+      "@type": "RepositoryObject",
+      "conformsTo": {
+        "@id": "https://purl.archive.org/language-data-commons/profile#Object"
+      },
+      "name": "Text 1-001 1788 Phillip, Arthur"
+    }
+  ]
+}
