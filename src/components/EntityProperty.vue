@@ -62,7 +62,7 @@ function filterValues() {
   <el-form-item :label="property" class="w-full">
     <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24" class="py-1">
       <div v-if="Array.isArray(value)">
-        <div v-if="data.filteredValues.length > pageSize">
+        <div v-if="data.newValue.length > pageSize">
           <el-pagination
               v-model:currentPage="data.currentPage"
               layout="prev, pager, next"

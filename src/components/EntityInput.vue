@@ -6,7 +6,7 @@ const props = defineProps(['id', 'name', 'value', 'index', 'property', 'deletabl
 const data = reactive({
   newValue: props.value
 });
-//NOTE: this bellow seems wrong!
+//NOTE: this below seems wrong!
 onMounted(() => {
   data.newValue = props.value;
 })
