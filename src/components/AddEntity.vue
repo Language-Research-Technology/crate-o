@@ -4,7 +4,7 @@ import EntityInput from "@/components/EntityInput.vue";
 
 const search = inject('dataService');
 
-const props = defineProps(['definitions', 'property', 'id']);
+const props = defineProps(['definition', 'property', 'id']);
 const data = reactive({
   showNewItem: false
 });
@@ -47,7 +47,6 @@ function handleIconClick() {
 
 </script>
 <template>
-  <div v-for="definition in definitions">
     <div v-if="definition?.type">
       <div v-for="t of definition?.type">
         <el-button type="default" v-if="definition?.multiple" v-show="data.showNewItem !== t"
@@ -87,5 +86,4 @@ function handleIconClick() {
       </div>
     </div>
     <el-alert v-if="definition?.help" :title="definition?.help" type="info" :closable="false"/>
-  </div>
 </template>

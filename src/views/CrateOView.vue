@@ -138,12 +138,12 @@ function getEntityTypesDefinitions() {
 
 function findPropertyDefinition(property) {
   //TODO: Use data.entityTypesDefinitions!
-  const inputs = [];
-  for (const defs of data.definitions) {
-    const def = find(defs.inputs, p => p.name === property);
-    inputs.push(def);
+  //TODO: Merge the types!
+  //There might be more types in the inputs so merge them!
+  const def = find(data.definitions[0].inputs, p => p.name === property);
+  if (def) {
+    return def;
   }
-  return uniqBy(inputs, 'id');
 }
 
 watch($route, (c, o) => {
@@ -218,6 +218,7 @@ const commands = {
     const dirHandle = data.dirHandle;
     await processFiles({crate, dirHandle, root: ''});
     //crate = newCrate.toJSON();
+    updateRoute(data.rootId);
   },
 
   async save() {
@@ -291,6 +292,10 @@ function addItem({reference, type, property}) {
   loadEntity(newItem['@id']);
 }
 
+function browseEntities() {
+
+}
+
 function addItemSelectType({reference}) {
   data.addItemSpan = 6;
   data.entitySpan = 18;
@@ -342,9 +347,8 @@ function hideAddItemSelectType() {
     </el-form-item>
     <div v-if="data.dirHandle" class="text-large font-600">Selected Directory: {{ data.dirHandle.name }}</div>
   </el-form>
-  <div class="crate-o" v-if="data.dirHandle">
-    <el-row class="pt-5">
-      <el-col :span="16" class="pl-5">
+  <el-row class="pt-5 bg-slate-300 p-2" v-if="data.dirHandle">
+    <el-col :span="20" class="pl-5">
       <span>
         <el-button :link="true"
                    @click="updateRoute(data.rootId)">
@@ -352,7 +356,7 @@ function hideAddItemSelectType() {
         </el-button>
         /
       </span>
-        <span v-for="(b,i) in data.breadcrumb">
+      <span v-for="(b,i) in data.breadcrumb">
         <el-button :link="true"
                    @click="updateBreadcrumb(i)"
                    :disabled="b['@id'] === data.entity['@id']"
@@ -360,59 +364,56 @@ function hideAddItemSelectType() {
         </el-button>
         /
       </span>
-      </el-col>
-      <el-col :span="8">
-        <el-button v-show="data.addItemSpan===0" @click="addItemSelectType({reference: data.rootId })"><i
-            class="fa-solid fa-plus"></i>Add Property
-        </el-button>
-        <el-button v-show="data.addItemSpan===0" title="This will delete the entity and all its references"
-                   @click="addItemSelectType({reference: data.rootId })"><i
-            class="fa-solid fa-trash"></i>Delete Entity
-        </el-button>
-      </el-col>
-    </el-row>
-    <el-row>
-      <el-col :span="data.entitySpan" class="p-2">
-        <el-form label-width="150px">
-          <template v-for="def in data.entityTypesDefinitions">
-            <entity-property v-if="data.entity[def.name]"
-                             :key="def.name"
-                             :property="def.name"
-                             :value="data.entity[def.name]"
-                             :index="0"
-                             :id="data.entity['@id']"
-                             :definitions="findPropertyDefinition(def.name)"
-                             @load-entity="loadEntity"
-                             @update-entity="updateEntity"
-                             @delete-entity=""
-                             @add-item="addItem"/>
-            <div v-else>
-              <entity-property
-                  :key="def.name"
-                  :property="def.name"
-                  :index="0"
-                  :value="data.entity[def.name] || ''"
-                  :id="data.entity['@id'] || ''"
-                  :definitions="findPropertyDefinition(def.name)"
-                  @load-entity="loadEntity"
-                  @update-entity="updateEntity"
-                  @delete-entity=""
-                  @add-item="addItem"/>
-            </div>
-          </template>
-        </el-form>
-      </el-col>
-      <el-col :span="data.addItemSpan" v-show="data.addItemSpan !== 0"
-              class="bg-blue-100 h-screen">
-        <el-row>
-          <el-button @click="hideAddItemSelectType()">Close</el-button>
-        </el-row>
-        <el-row>
-            Not implemented...
-        </el-row>
-      </el-col>
-    </el-row>
-  </div>
+    </el-col>
+    <el-col :span="4">
+      <el-button link="true" v-show="data.addItemSpan===0"
+                 title="This will delete the entity and all its references"
+                 @click="addItemSelectType({reference: data.rootId })"><i
+          class="fa-solid fa-trash"></i>Delete Entity
+      </el-button>
+    </el-col>
+  </el-row>
+  <el-row class="crate-o" v-if="data.dirHandle">
+    <el-col :span="data.entitySpan" class="p-2">
+      <el-form label-width="150px">
+        <template v-for="def in data.entityTypesDefinitions">
+          <entity-property v-if="data.entity[def.name]"
+                           :key="def.name"
+                           :property="def.name"
+                           :value="data.entity[def.name]"
+                           :index="0"
+                           :id="data.entity['@id']"
+                           :definition="findPropertyDefinition(def.name)"
+                           @load-entity="loadEntity"
+                           @update-entity="updateEntity"
+                           @delete-entity=""
+                           @add-item="addItem"/>
+          <div v-else>
+            <entity-property
+                :key="def.name"
+                :property="def.name"
+                :index="0"
+                :value="data.entity[def.name] || ''"
+                :id="data.entity['@id'] || ''"
+                :definition="findPropertyDefinition(def.name)"
+                @load-entity="loadEntity"
+                @update-entity="updateEntity"
+                @delete-entity=""
+                @add-item="addItem"/>
+          </div>
+        </template>
+      </el-form>
+    </el-col>
+    <el-col :span="data.addItemSpan" v-show="data.addItemSpan !== 0"
+            class="bg-blue-100 h-screen">
+      <el-row>
+        <el-button @click="hideAddItemSelectType()">Close</el-button>
+      </el-row>
+      <el-row>
+        Not implemented...
+      </el-row>
+    </el-col>
+  </el-row>
   <div v-else class="flex items-center justify-center h-[calc(100vh-110px)] overflow-auto">
     <div class="font-bold rounded-lg border shadow-lg p-10">
       <h2 class="text-2xl text-center">Welcome to Crate-O Select File to start</h2>

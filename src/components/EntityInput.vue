@@ -1,7 +1,7 @@
 <script setup>
 import {onMounted, onUpdated, reactive} from "vue";
 
-const props = defineProps(['id', 'name', 'value', 'index', 'property', 'deletable']);
+const props = defineProps(['id', 'name', 'value', 'index', 'property', 'deletable', 'definition']);
 
 const data = reactive({
   newValue: props.value
@@ -34,7 +34,7 @@ const emit = defineEmits(['newEntity', 'removeValue'])
           <i class="fa-solid fa-trash"></i>
         </el-button>
       </el-button-group>
-      <el-input v-else
+      <el-input v-else-if="value || definition && (definition?.type.includes('Text') || definition?.type.includes('TextArea'))"
                 :name="name"
                 :id="name"
                 type="text"
