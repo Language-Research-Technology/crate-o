@@ -8,6 +8,7 @@ import EntityProperty from "@/components/EntityProperty.vue";
 import {first, find, uniqBy} from 'lodash';
 
 import {v4 as uuidv4} from 'uuid';
+import Welcome from "@/components/Welcome.vue";
 
 //import {crateDataService} from "@/crate.service";
 const entitiesByType = {};
@@ -416,24 +417,8 @@ function hideAddItemSelectType() {
       </el-row>
     </el-col>
   </el-row>
-  <div v-else class="flex items-center justify-center h-[calc(100vh-110px)] overflow-auto">
-    <div class="font-bold rounded-lg border shadow-lg p-10">
-      <h2 class="text-2xl text-center">Welcome to Crate-O Select File to start</h2>
-      <el-row class="px-5 py-6 bg-amber-100 text-amber-400">
-        <el-row>
-          <p class="items-center">
-            <i clas="fa-solid fa-5x fa-warning"/>&nbsp;Attention: Using Crate-O on the Ferry/Train/Airplane may cause
-            dizziness... use at your own risk&nbsp;
-          </p>
-        </el-row>
-        <el-row>
-          <el-link underline="underline" href="https://www.webmd.com/brain/dizziness-vertigo" target="_blank"
-                   class="mx-1">
-            more info
-          </el-link>
-        </el-row>
-      </el-row>
-    </div>
+  <div v-else>
+    <welcome/>
   </div>
 
 </template>
