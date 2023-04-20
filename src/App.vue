@@ -3,14 +3,14 @@ import {RouterLink, RouterView} from 'vue-router';
 
 import {reactive} from "vue";
 
-const {detect} = require('detect-browser');
+import {detect} from 'detect-browser';
 const browser = detect();
 
 const data = reactive({
   noBrowserSupport: false
 });
 
-if (browser.name !== 'chrome' && parseFloat(browser.version) < 86) {
+if (browser && (browser.name !== 'chrome' && parseFloat(browser.version) < 86)) {
   data.noBrowserSupport = true;
 }
 
