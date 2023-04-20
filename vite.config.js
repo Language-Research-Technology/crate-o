@@ -17,5 +17,15 @@ export default defineConfig((config) => ({
   esbuild: {
     drop: config.mode === 'production' ? ['console', 'debugger'] : [],
   },
-  base: './'
+  base: './',
+  build: {
+    rollupOptions: {
+      input: {
+        app: './vite.html',
+      },
+    },
+  },
+  server: {
+    open: '/vite.html'
+  }
 }));
