@@ -140,9 +140,11 @@ function findPropertyDefinition(property) {
   //TODO: Use data.entityTypesDefinitions!
   //TODO: Merge the types!
   //There might be more types in the inputs so merge them!
-  const def = find(data.definitions[0].inputs, p => p.name === property);
-  if (def) {
-    return def;
+  if (data.definitions.length > 0) {
+    const def = find(data.definitions[0].inputs, p => p.name === property);
+    if (def) {
+      return def;
+    }
   }
 }
 
@@ -376,7 +378,7 @@ function hideAddItemSelectType() {
   <el-row class="crate-o" v-if="data.dirHandle">
     <el-col :span="data.entitySpan" class="p-2">
       <el-form label-width="150px">
-        <template v-for="def in data.entityTypesDefinitions">
+        <template v-for="def in data.entityTypesDefinitions" :key="data.entity['@id'] + '_' +def.name ">
           <entity-property v-if="data.entity[def.name]"
                            :key="def.name"
                            :property="def.name"

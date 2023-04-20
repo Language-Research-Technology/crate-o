@@ -6,13 +6,7 @@ const props = defineProps(['id', 'name', 'value', 'index', 'property', 'deletabl
 const data = reactive({
   newValue: props.value
 });
-//NOTE: this below seems wrong!
-onMounted(() => {
-  data.newValue = props.value;
-})
-onUpdated(() => {
-  data.newValue = props.value;
-});
+
 
 const emit = defineEmits(['newEntity', 'removeValue'])
 
