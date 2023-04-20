@@ -21,7 +21,7 @@ const emit = defineEmits(['newEntity', 'removeValue'])
             :id="name"
             @click="$emit('newEntity', value?.['@id'])"
             color="#626aef">
-          <i class="fa-solid fa-pencil"></i>&nbsp;{{ value['name']?.['0'] || value['@id'] }}
+          <i class="fa-solid fa-pencil"></i>&nbsp;{{value['@type'].join(", ")}}: {{ value['name']?.['0'] || value['@id'] }}
         </el-button>
         <el-button color="#626aef" type="primary" plain
                    @click="$emit('removeValue')">
