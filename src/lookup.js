@@ -1,12 +1,18 @@
+/*
+This lookup class came from describo https://github.com/describo Author: Marco La Rosa
+ */
+
 export class Lookup {
-    constructor() {}
+    constructor() {
+    }
+
     /**
      *
      * @param {Array | String} type: the type array or type string of the entity being looked up
      * @param {String} queryString: the query string typed in by the user
      * @param {Number} limit=5: the number of matches to return - default = 5
      */
-    async entityTemplates({ type = undefined, queryString = undefined, limit = 5 }) {
+    async entityTemplates({type = undefined, queryString = undefined, limit = 5}) {
         // code to lookup entity templates in *YOUR* system
         //
         // type: the @type of template to lookup
@@ -40,7 +46,7 @@ export class Lookup {
             // The crate builder component will pass a fully formed elastic search query to this method
             // It's up to you to get it to the elastic search server. In this example
             //   it's hardcoded in the _execute method
-            let results = await this._execute({ query: elasticQuery });
+            let results = await this._execute({query: elasticQuery});
             return results;
         } else {
             // do the lookup yourself in whatever way you want
@@ -57,7 +63,7 @@ export class Lookup {
     }
 
     /** private method */
-    async _execute({ query }) {
+    async _execute({query}) {
         let response = await fetch("https://lookups.ldaca.edu.au/data/_search", {
             method: "POST",
             headers: {
@@ -72,7 +78,7 @@ export class Lookup {
             return response;
         }
         const total = response.hits.total.value;
-        const documents = response.hits.hits.map((doc) => ({ ...doc._source }));
-        return { total, documents };
+        const documents = response.hits.hits.map((doc) => ({...doc._source}));
+        return {total, documents};
     }
 }

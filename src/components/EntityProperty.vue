@@ -24,10 +24,6 @@ onMounted(() => {
   }
 });
 onUpdated(() => {
-  if (props.property === 'author') {
-    console.log('updated')
-    console.log(data.filteredValues)
-  }
   data.filteredValues = data.values;
   // if (Array.isArray(props.value)) {
   //   data.values = props.value.map((v, i) => [i, v[1]]);
@@ -41,40 +37,28 @@ function loadEntity(id) {
 }
 
 function updateValue(i, event) {
-  console.log('updateValue');
-  console.log(i)
-  console.log(event.target.value)
   data.values[i][1] = event.target.value;
   emit('updateEntity', {property: props.property, value: data.values.map((v) => v[1])})
 }
 
 function removeValue({index}) {
-  console.log('removeValue');
-  console.log(data.values[index])
   data.values.splice(index, 1);
   data.values = data.values.map((v, i) => [i, v[1]]);
   emit('updateEntity', {property: props.property, value: data.values.map((v) => v[1])});
 }
 
 function addProperty() {
-  console.log('addProperty')
-  console.log(data.values.length)
   data.values.push([data.values.length, '']);
-  console.log(data.values)
   emit('updateEntity', {property: props.property, value: data.values.map((v) => v[1])});
 }
 
 function addItem({type}) {
   emit('addItem', {reference: props.id, type, property: props.property});
-
   data.values = props.value.map((v, i) => [i, v[1]]);
-  console.log(data.values)
 }
 
 function linkItem({item}) {
-  console.log('linkItem')
   data.values.push([data.values.length, item]);
-  console.log(data.values)
   emit('updateEntity', {property: props.property, value: data.values.map((v) => v[1])});
 }
 
