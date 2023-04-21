@@ -15,14 +15,17 @@ const emit = defineEmits(['newEntity', 'removeValue'])
   <el-row>
     <el-col :span="24">
       <el-button-group v-if="value?.['@id']">
+        
         <el-button
             type="primary" plain
             :name="name"
             :id="name"
             @click="$emit('newEntity', value?.['@id'])"
             color="#626aef">
-          <i class="fa-solid fa-pencil"></i>&nbsp;{{value['@type'].join(", ")}}: {{ value['name']?.['0'] || value['@id'] }}
+          <i class="fa-solid fa-pencil"></i>&nbsp; <b v-if="value['@type']">{{value['@type'].join(", ")}}:&nbsp;&nbsp;</b>{{ value['name']?.['0'] || value['@id'] }}
         </el-button>
+
+
         <el-button color="#626aef" type="primary" plain
                    @click="$emit('removeValue')">
           <i class="fa-solid fa-trash"></i>

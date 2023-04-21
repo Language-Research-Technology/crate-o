@@ -3,7 +3,6 @@ import {onMounted, onUpdated, reactive, toRaw} from "vue";
 import EntityInput from "@/components/EntityInput.vue";
 import {find} from 'lodash';
 import AddEntity from "@/components/AddEntity.vue";
-
 const props = defineProps(['id', 'value', 'property', 'index', 'definition']);
 const pageSize = 10; //Later do in conf the page size
 const data = reactive({
@@ -117,4 +116,5 @@ function filterValues() {
                   @link-item="linkItem" @add-item="addItem" @add-property="addProperty()"/>
     </el-col>
   </el-form-item>
+ 
 </template>
