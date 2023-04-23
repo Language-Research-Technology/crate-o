@@ -2,8 +2,8 @@ yargs = require('yargs');
 const fs = require('fs-extra');
 const { ROCrate } = require('ro-crate')
 const argv = yargs(process.argv.slice(2))
-    .scriptName('ohrm-jsonld-converter')
-    .usage('Usage: $0 -c RO-Crate containing a Schema.org Style Schema (SoSS)')
+    .scriptName('soss2profile')
+    .usage('Usage: $0 -c RO-Crate containing a Schema.org Style Schema (SoSS) > profiles/your-profile.json')
     .option('c', {
         alias: 'crate-path',
         describe: 'A path to the SoSS crate',
