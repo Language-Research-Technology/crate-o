@@ -85,6 +85,7 @@ const data = reactive({
   breadcrumb: [],
   definitions: [],
   entitySpan: 24,
+  showPropsFirst: ["name", "description"],
   addItemSpan: 0
 });
 
@@ -105,35 +106,39 @@ function getProfileClasses(type) {
 }
 
 function getEntityTypesDefinitions() {
-  //Note: I'm sure you can do this in one line with lodash :P
+  // Note: I'm sure you can do this in one line with lodash :P
   const classes = data.profile?.classes;
+  //console.log("CLASSES", classes)
   let types = data.entity?.['@type'];
-  let inputs = [];
-  for (let c of Object.keys(classes)) {
+  var inputs = [];
+  for (let t of types) {
     let moreInputs = [];
-    if (types.includes(c)) {
-      if (classes[c].inputs) {
-        moreInputs = inputs.concat(classes[c].inputs);
+    if (classes[t]) {
+      if (classes[t].inputs) {
+        inputs = inputs.concat(classes[t].inputs);
       }
     }
-    inputs = moreInputs.concat(inputs);
   }
-  let evenMoreInputs = [];
-  for (const entity in data.entity) {
-    const exists = inputs.find((i) => {
-      if (i) {
-        return [i?.name, i.id].includes(entity)
+
+  for (const prop in data.entity) {
+    var exists = false;
+    for (let i of inputs) {
+      console.log("checking", prop, i?.id, crate.resolveTerm(prop))
+      if (i?.id === prop || i?.id === crate.resolveTerm(prop)) {
+        exists = true;   
+        console.log("Found repeat", prop,) 
       }
-    });
+    }
+
     if (!exists) {
       const newProp = {
-        "id": entity,
-        "name": entity
+        "id": crate.resolveTerm(prop),
+        "name": prop,
+        "type": ["Text"]
       }
-      evenMoreInputs.push(newProp)
+     inputs.push(newProp)
     }
   }
-  inputs = evenMoreInputs.concat(inputs);
   return uniqBy(inputs, 'id');
 }
 
