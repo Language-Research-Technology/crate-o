@@ -190,6 +190,22 @@ const commands = {
     crate = JSON.parse(content);
   },
 
+  async loadProfile() {
+     try {
+      const [profileHandle] = await window.showOpenFilePicker();
+      let file = await profileHandle   .getFile();
+      const prof = await file.text();
+      data.profile = JSON.parse(prof);
+      profiles.push(data.profile);
+      
+
+    } catch (error) {
+      console.error(error);
+      window.alert(error);
+    }
+
+  },
+
   async open() {
     try {
       data.dirHandle = await window.showDirectoryPicker();
@@ -339,6 +355,12 @@ function hideAddItemSelectType() {
               <el-tooltip effect="dark" placement="right"
                           content="Save crate metadata to the currently opened directory">
                 Save Progress
+              </el-tooltip>
+            </el-dropdown-item>
+            <el-dropdown-item command="loadProfile">
+              <el-tooltip effect="dark" placement="right"
+                          content="Load a new profile from your computer">
+                Load profile
               </el-tooltip>
             </el-dropdown-item>
           </el-dropdown-menu>
