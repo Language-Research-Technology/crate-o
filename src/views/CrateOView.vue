@@ -1,5 +1,5 @@
 <script setup>
-import {reactive, onMounted, watch, onUpdated, ref, inject, provide} from 'vue';
+import {reactive, onMounted, watch, onUpdated, ref, inject, provide, toRaw} from 'vue';
 import {useRouter, useRoute} from 'vue-router'
 import {profiles} from '@/profiles';
 import {ROCrate} from 'ro-crate';
@@ -9,6 +9,7 @@ import {first, find, uniqBy} from 'lodash';
 
 import {v4 as uuidv4} from 'uuid';
 import Welcome from "@/components/Welcome.vue";
+import EntityLinks from "@/components/EntityLinks.vue";
 
 //import {crateDataService} from "@/crate.service";
 const entitiesByType = {};
@@ -53,19 +54,27 @@ function updateBreadcrumb(index) {
 }
 
 function loadEntity(id) {
-  data.definitions = getProfileClasses();
   data.entity = crate.getItem(id);
-  data.entityTypesDefinitions = getEntityTypesDefinitions();
-  $router.push({query: {id: encodeURIComponent(id)}});
-  if (id !== data.rootId) {
-    const index = data.breadcrumb.findIndex(b => b['@id'] === id);
-    if (index >= 0) {
-      data.breadcrumb.splice(index + 1, data.breadcrumb.length - (index + 1));
+  if (data.entity) {
+    data.entityId = data.entity['@id'];
+    data.definitions = getProfileClasses();
+    data.entityTypesDefinitions = getEntityTypesDefinitions();
+    $router.push({query: {id: encodeURIComponent(id)}});
+    if (id !== data.rootId) {
+      const index = data.breadcrumb.findIndex(b => b['@id'] === id);
+      if (index >= 0) {
+        data.breadcrumb.splice(index + 1, data.breadcrumb.length - (index + 1));
+      } else {
+        data.breadcrumb.push(data.entity);
+      }
     } else {
-      data.breadcrumb.push(data.entity);
+      data.breadcrumb = [];
     }
   } else {
-    data.breadcrumb = [];
+    if (confirm('No reference found in this crate, would you like to try to open it in a tab?')) {
+      window.open(id, '_blank').focus();
+    }
+    loadEntity(data.entityId);
   }
 }
 
@@ -75,6 +84,7 @@ const data = reactive({
   entityTypesDefinitions: [],
   rootId: '',
   rootName: '',
+  profiles: profiles,
   profile: profiles[selectedProfile],
   loading: false,
   /** @type {?FileSystemFileHandle} */
@@ -90,8 +100,10 @@ const data = reactive({
 });
 
 onMounted(() => {
-  console.log(`Route: $route.query.id`);
-});
+  if (!data.entityId) {
+    $router.push({query: null});
+  }
+})
 
 function getProfileClasses(type) {
   const classes = data.profile?.classes;
@@ -110,36 +122,35 @@ function getEntityTypesDefinitions() {
   const classes = data.profile?.classes;
   //console.log("CLASSES", classes)
   let types = data.entity?.['@type'];
-  var inputs = [];
+  let profileInputs = [];
   for (let t of types) {
-    let moreInputs = [];
     if (classes[t]) {
       if (classes[t].inputs) {
-        inputs = inputs.concat(classes[t].inputs);
+        profileInputs = profileInputs.concat(toRaw(classes[t].inputs));
       }
     }
   }
-
+  const fileInputs = [];
   for (const prop in data.entity) {
-    var exists = false;
-    for (let i of inputs) {
-      console.log("checking", prop, i?.id, crate.resolveTerm(prop))
+    let exists = false;
+    for (let i of profileInputs) {
+      // console.log("checking", prop, i?.id, crate.resolveTerm(prop))
       if (i?.id === prop || i?.id === crate.resolveTerm(prop)) {
-        exists = true;   
-        console.log("Found repeat", prop,) 
+        exists = true;
+        // console.log("Found repeat", prop,)
       }
     }
-
     if (!exists) {
       const newProp = {
         "id": crate.resolveTerm(prop),
         "name": prop,
         "type": ["Text"]
       }
-     inputs.push(newProp)
+      fileInputs.push(newProp);
     }
   }
-  return uniqBy(inputs, 'id');
+  const inputs = fileInputs.concat(profileInputs);
+  return uniqBy(inputs, 'name'); //Changed to name, if resolveTerm is undefined cannot get uniques
 }
 
 function findPropertyDefinition(property) {
@@ -156,7 +167,6 @@ function findPropertyDefinition(property) {
 
 watch($route, (c, o) => {
   if (!data.metadataHandle) { //checking crate if it has not been loaded
-    window.alert('Directory not loaded!');
   } else {
     if (c.query?.id) {
       const id = decodeURIComponent(c.query?.id);
@@ -168,8 +178,8 @@ watch($route, (c, o) => {
 });
 
 function updateRoute(id) {
-  $router.push({query: {id: encodeURIComponent(id)}});
   loadEntity(id);
+  $router.push({query: {id: encodeURIComponent(id)}});
 }
 
 const commands = {
@@ -191,14 +201,12 @@ const commands = {
   },
 
   async loadProfile() {
-     try {
+    try {
       const [profileHandle] = await window.showOpenFilePicker();
-      let file = await profileHandle   .getFile();
+      let file = await profileHandle.getFile();
       const prof = await file.text();
       data.profile = JSON.parse(prof);
-      profiles.push(data.profile);
-      
-
+      data.profiles.push(data.profile);
     } catch (error) {
       console.error(error);
       window.alert(error);
@@ -228,7 +236,7 @@ const commands = {
         crate = new ROCrate({}, {array: true, link: true});
       }
       data.entity = crate.rootDataset;
-      data.rootId = crate.rootId;
+      data.entityId = data.rootId = crate.rootId;
       data.rootName = first(crate.rootDataset['name']) || 'Start';
       loadEntity(crate.rootId);
     } catch (error) {
@@ -351,7 +359,7 @@ function hideAddItemSelectType() {
                 Load Files
               </el-tooltip>
             </el-dropdown-item>
-            <el-dropdown-item command="save">
+            <el-dropdown-item command="save" :disabled="data.dirHandle?.name === undefined">
               <el-tooltip effect="dark" placement="right"
                           content="Save crate metadata to the currently opened directory">
                 Save Progress
@@ -369,7 +377,8 @@ function hideAddItemSelectType() {
     </el-form-item>
     <el-form-item label="Profile:" class="w-8/12">
       <el-select v-model="data.selectedProfile" class="w-full" placeholder="Select" @change="changeProfile">
-        <el-option v-for="(profile, index) of profiles" :label="profile.metadata.name" :value="index" class="w-auto">
+        <el-option v-for="(profile, index) of data.profiles" :label="profile.metadata.name" :value="index"
+                   class="w-auto">
           <span>{{ profile.metadata.name }}</span>&nbsp;
           <span>{{ profile.metadata.description }}</span>
         </el-option>
@@ -389,30 +398,30 @@ function hideAddItemSelectType() {
       <span v-for="(b,i) in data.breadcrumb">
         <el-button :link="true"
                    @click="updateBreadcrumb(i)"
-                   :disabled="b['@id'] === data.entity['@id']"
+                   :disabled="b['@id'] === data.entity?.['@id']"
         >{{ b.name?.[0] || b['@id'] }}
         </el-button>
         /
       </span>
     </el-col>
     <el-col :span="4">
-      <el-button link="true" v-show="data.addItemSpan===0"
-                 title="This will delete the entity and all its references"
-                 @click="addItemSelectType({reference: data.rootId })"><i
-          class="fa-solid fa-trash"></i>Delete Entity
-      </el-button>
+      <!--      <el-button :link="true" v-show="data.addItemSpan===0"-->
+      <!--                 title="This will delete the entity and all its references"-->
+      <!--                 @click="addItemSelectType({reference: data.rootId })"><i-->
+      <!--          class="fa-solid fa-trash"></i>Delete Entity-->
+      <!--      </el-button>-->
     </el-col>
   </el-row>
   <el-row class="crate-o" v-if="data.dirHandle">
-    <el-col :span="data.entitySpan" class="p-2">
+    <el-col :span="16" class="p-2">
       <el-form label-width="150px">
-        <template v-for="def in data.entityTypesDefinitions" :key="data.entity['@id'] + '_' +def.name ">
-          <entity-property v-if="data.entity[def.name]"
+        <template v-for="def in data.entityTypesDefinitions" :key="def.name">
+          <entity-property v-if="data.entity?.[def.name]"
                            :key="def.name"
                            :property="def.name"
-                           :value="data.entity[def.name]"
+                           :value="data.entity?.[def.name]"
                            :index="0"
-                           :id="data.entity['@id']"
+                           :id="data.entity?.['@id']"
                            :definition="findPropertyDefinition(def.name)"
                            @load-entity="loadEntity"
                            @update-entity="updateEntity"
@@ -423,8 +432,8 @@ function hideAddItemSelectType() {
                 :key="def.name"
                 :property="def.name"
                 :index="0"
-                :value="data.entity[def.name] || ''"
-                :id="data.entity['@id'] || ''"
+                :value="data.entity?.[def.name] || ''"
+                :id="data.entity?.['@id'] || ''"
                 :definition="findPropertyDefinition(def.name)"
                 @load-entity="loadEntity"
                 @update-entity="updateEntity"
@@ -434,13 +443,14 @@ function hideAddItemSelectType() {
         </template>
       </el-form>
     </el-col>
-    <el-col :span="data.addItemSpan" v-show="data.addItemSpan !== 0"
-            class="bg-blue-100 h-screen">
-      <el-row>
-        <el-button @click="hideAddItemSelectType()">Close</el-button>
-      </el-row>
-      <el-row>
-        Not implemented...
+    <el-col :span="8"
+            class="h-screen p-2">
+      <el-row class="p-2">
+        <entity-links v-if="data.entity?.['@reverse']"
+                      v-for="key in Object.keys(data.entity['@reverse'])"
+                      :key="key"
+                      :value="data.entity['@reverse'][key]"
+                      @update-route="updateRoute"/>
       </el-row>
     </el-col>
   </el-row>
