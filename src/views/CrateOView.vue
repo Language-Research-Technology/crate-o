@@ -6,7 +6,6 @@ import {ROCrate} from 'ro-crate';
 import {Lookup} from '@/lookup';
 import EntityProperty from "@/components/EntityProperty.vue";
 import {first, find, uniqBy} from 'lodash';
-
 import {v4 as uuidv4} from 'uuid';
 import Welcome from "@/components/Welcome.vue";
 import EntityLinks from "@/components/EntityLinks.vue";
@@ -415,7 +414,7 @@ function hideAddItemSelectType() {
   <el-row class="crate-o" v-if="data.dirHandle">
     <el-col :span="16" class="p-2">
       <el-form label-width="150px">
-        <template v-for="def in data.entityTypesDefinitions" :key="def.name">
+        <template v-for="def in data.entityTypesDefinitions" :key="uuidv4()">
           <entity-property v-if="data.entity?.[def.name]"
                            :key="def.name"
                            :property="def.name"
