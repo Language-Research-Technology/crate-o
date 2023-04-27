@@ -22,6 +22,7 @@ function newItem({type}) {
 }
 
 function addItem({type}) {
+  console.log("Adding", type)
   emit('addItem', {reference: props.id, type, property: props.property});
 }
 
@@ -73,7 +74,7 @@ function handleIconClick() {
                   class="inline-input w-full"
               >
                 <template #default="{ item }">
-                  <div class="value">{{ item.name[0] }}</div>
+                  <div class="value">{{ item?.name[0] }}</div>
                 </template>
               </el-autocomplete>
             </el-row>

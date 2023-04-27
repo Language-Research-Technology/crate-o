@@ -53,7 +53,13 @@ function addProperty() {
 
 function addItem({type}) {
   emit('addItem', {reference: props.id, type, property: props.property});
-  data.values = props.value.map((v, i) => [i, v[1]]);
+  if (Array.isArray(props.value)) {
+    data.values = props.value.map((v, i) => [i, v[1]]);
+    data.filteredValues = data.values;
+  } else {
+    data.values = props.value;
+  }
+ 
 }
 
 function linkItem({item}) {

@@ -9,6 +9,11 @@ const argv = yargs(process.argv.slice(2))
         describe: 'A path to the SoSS crate',
         type: 'string',
     })
+    .option('p', {
+        alias: 'profile-path',
+        describe: 'A path to the profile to output including ${filename}.json',
+        type: 'string',
+    })
     .help().argv;
 
 
@@ -31,6 +36,7 @@ async function main() {
     
     for (let entity of vocabCrate.entities()) {
         if (entity["@type"].includes("rdfs:Class")) {
+            console.log(entity["rdfs:label"])
             profile.classes[entity["rdfs:label"]] = {
                 "definition": "override",
                 "subClassOf": entity.subClassOf,
@@ -45,6 +51,7 @@ async function main() {
                         "type": prop?.rangeIncludes.map((t) => {return t["rdfs:label"]}).flat(),
                         "multiple": true
                     }
+                    
                     if (input.type.length === 0 ) {
                         input.type = ['Text']
                     }
@@ -61,8 +68,8 @@ async function main() {
         }
     }
 
-
-    console.log(JSON.stringify(profile, null, 2))
+    await fs.writeJson(argv.profilePath, profile, {spaces: 2});
+    //console.log(JSON.stringify(profile, null, 2))
 
 
 }
