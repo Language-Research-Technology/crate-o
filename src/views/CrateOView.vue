@@ -445,11 +445,22 @@ function hideAddItemSelectType() {
     <el-col :span="8"
             class="h-screen p-2">
       <el-row class="p-2">
-        <entity-links v-if="data.entity?.['@reverse']"
-                      v-for="key in Object.keys(data.entity['@reverse'])"
-                      :key="key"
-                      :value="data.entity['@reverse'][key]"
-                      @update-route="updateRoute"/>
+        <el-tabs class="w-full">
+          <el-tab-pane label="All Entities" name="first">
+            <entity-links v-if="crate"
+                          :value="Array.from(crate.entities())"
+                          @update-route="updateRoute"
+                          :icon="'fa-pencil'"/>
+          </el-tab-pane>
+          <el-tab-pane label="Reverse Links" name="second">
+            <entity-links v-if="data.entity?.['@reverse']"
+                          v-for="key in Object.keys(data.entity['@reverse'])"
+                          :key="key"
+                          :value="data.entity['@reverse'][key]"
+                          @update-route="updateRoute"
+                          :icon="'fa-arrow-left'"/>
+          </el-tab-pane>
+        </el-tabs>
       </el-row>
     </el-col>
   </el-row>
