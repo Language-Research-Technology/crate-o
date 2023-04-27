@@ -56,7 +56,7 @@ There are a number of ways that linked-data groups are using to describe profile
 -  Schema.org - style “Schemas” which describe linked-data entities; Classes, Properties and DefinedTerms in a simple structural way. As these entities are a packaged in a flat JSON-LD graph, they can be distributed as RO-Crates and edited directly using Crate-O or other RO-Crate tools.
 -  Describo “profiles” which describe a Schema for an RO-Crate along with the layout of entry forms and name-authority lookups.
 -  JSON (not JSON-LD) schemas as seen in Bioschemas
--  SHACL “shapes” that provide a schema; this has been raised by developers at the Indigenous Data Network and is being explored by colleagues in the RO-Crate group. 
+-  SHACL “shapes” that provide a schema; this has been raised by developers at the Indigenous Data Network [IDN] and is being explored by colleagues in the [RO-Crate] working group. 
 
 It will take some time to work with our partners on which of  these approaches Crate-O should support, but In Q3 2023 we aim to support a toolchain which allows:
 
@@ -90,12 +90,13 @@ LDaCA plans to make suitable annotations available as part of the language-data 
 This approach can potentially be used by any agent, to maintain their view of one or more collections, with additional context, errata or refutation and unlike centralized services like HuNI (1) will allow for individuals to create their own linked-data documents and datasets and to publish them anywhere (eg Github or Zenodo).
 
 ## Cultural Collections (Potential – no work yet scheduled)
+
 Crate-O has been tested on cultural data collections, incidentally to an [ARDC] funded project to extract data from the OHRM, a legacy application for maintaining collections  (the project was presented the project at [this event](https://ardc.edu.au/article/advancing-hass-and-indigenous-research-infrastructure-a-symposium/).
 
-Potential work on Cultural collections will be enabled by  the other functions we are planning to implement, such as; being able to add to name-authorities (such as adding new entities to a historical database), the ability to publish crates or fragments of crates and pathways for managing schemas, and maintenance of domain-specific schemas using Crate-O itself.
+Potential work on Cultural collections will be enabled by  the other functions we are planning to implement, such as; being able to add to name-authorities (such as adding new entities to a historically-focussed database or an encyclopedia), the ability to publish crates or fragments of crates and pathways for managing schemas, and maintenance of domain-specific schemas using Crate-O itself.
 
-
-[RO-Crate-Excel]: https://github.com/Arkisto-Platform/ro-crate-excel
+[IDN]: https://mspgh.unimelb.edu.au/centres-institutes/centre-for-health-equity/research-group/indigenous-data-network
+[RO-Crate Excel]: https://github.com/Arkisto-Platform/ro-crate-excel
 [RO-Crate]:  https://www.researchobject.org/ro-crate/
 [OWL]: https://www.w3.org/OWL/
 [SHACL]: https://www.w3.org/TR/shacl/
@@ -110,6 +111,7 @@ Potential work on Cultural collections will be enabled by  the other functions w
 [Describo]: https://github.com/Describo
 [Arkisto]: https://arkisto-platform.github.io/
 [Data Packs]: https://github.com/describo/data-packs
+
 
 
 
