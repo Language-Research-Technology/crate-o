@@ -49,8 +49,18 @@ function handleIconClick() {
 </script>
 <template>
     <div v-if="definition?.type">
+      <el-select v-if="definition.type.length > 1 && definition?.multiple"  placeholder="+ Add ..."
+ >
+        <el-option v-for="t of definition?.type" :label="type" :value="index"
+                   class="w-auto"
+                    @click="newItem({type: t})"
+                    v-show="data.showNewItem !== t">
+          <i class="fa-solid fa-plus"></i>&nbsp;{{ t }}
+        </el-option>
+      </el-select>
+
       <div v-for="t of definition?.type">
-        <el-button type="default" v-if="definition?.multiple" v-show="data.showNewItem !== t"
+        <el-button  v-if="definition.type.length <= 1 && definition?.multiple" type="default"  v-show="data.showNewItem !== t"
                    @click="newItem({type: t})"><i class="fa-solid fa-plus"></i>&nbsp;{{ t }}
         </el-button>
         <div class="p-2">
