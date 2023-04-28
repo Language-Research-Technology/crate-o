@@ -22,7 +22,6 @@ function newItem({type}) {
 }
 
 function addItem({type}) {
-  console.log("Adding", type)
   emit('addItem', {reference: props.id, type, property: props.property});
 }
 
@@ -38,7 +37,6 @@ function querySearch(queryString, cb) {
 }
 
 function handleSelect(item) {
-  console.log(item)
   emit('linkItem', {item})
 }
 
@@ -84,7 +82,9 @@ function handleIconClick() {
                   class="inline-input w-full"
               >
                 <template #default="{ item }">
-                  <div class="value">{{ item?.name[0] }}</div>
+                  
+                  <div v-if="item.name" class="value">{{ item?.name[0] }}</div>
+                  <div v-else class="value">item?.["rdfs:label"][0]</div>
                 </template>
               </el-autocomplete>
             </el-row>

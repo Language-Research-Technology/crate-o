@@ -311,7 +311,7 @@ function addItem({reference, type, property}) {
     "@id": crate.uniqueId('#entity-'),
     "@type": type
   }
-  const inputs = definitions?.inputs;
+  const inputs = definitions?.inputs || [];
   for (let item of inputs) {
     if (item.multiple) { // does this matter?
       newItem[item.name] = [""];
