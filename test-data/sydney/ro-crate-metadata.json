@@ -43,7 +43,7 @@
     },
     {
       "@id": "#BCNT",
-      "@type": "Dataset, RepositoryCollection",
+      "@type": ["Dataset", "RepositoryCollection"],
       "@reverse": {
         "hasMember": {
           "@id": "./"
@@ -55,7 +55,7 @@
     },
     {
       "@id": "#SSDS",
-      "@type": "Dataset, RepositoryCollection",
+      "@type": ["Dataset", "RepositoryCollection"],
       "@reverse": {
         "hasMember": {
           "@id": "./"
@@ -101,7 +101,7 @@
     },
     {
       "@id": "#SydS",
-      "@type": "Dataset, RepositoryCollection",
+      "@type": ["Dataset", "RepositoryCollection"],
       "@reverse": {
         "hasMember": {
           "@id": "./"
