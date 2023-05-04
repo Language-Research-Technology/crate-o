@@ -80,6 +80,7 @@ function loadEntity(id) {
 const data = reactive({
   test: 'a',
   entity: {},
+  entities: [],
   entityTypesDefinitions: [],
   rootId: '',
   rootName: '',
@@ -95,7 +96,8 @@ const data = reactive({
   definitions: [],
   entitySpan: 24,
   showPropsFirst: ["name", "description"],
-  addItemSpan: 0
+  addItemSpan: 0,
+  activeTab: 'first'
 });
 
 onMounted(() => {
@@ -237,6 +239,7 @@ const commands = {
       data.entity = crate.rootDataset;
       data.entityId = data.rootId = crate.rootId;
       data.rootName = first(crate.rootDataset['name']) || 'Start';
+      data.entities = Array.from(crate.entities());
       loadEntity(crate.rootId);
     } catch (error) {
       console.error(error);
@@ -422,6 +425,7 @@ function hideAddItemSelectType() {
                            :index="0"
                            :id="data.entity?.['@id']"
                            :definition="findPropertyDefinition(def.name)"
+                           :lookup="data.profile.lookup"
                            @load-entity="loadEntity"
                            @update-entity="updateEntity"
                            @delete-entity=""
@@ -434,6 +438,7 @@ function hideAddItemSelectType() {
                 :value="data.entity?.[def.name] || ''"
                 :id="data.entity?.['@id'] || ''"
                 :definition="findPropertyDefinition(def.name)"
+                :lookup="data.profile.lookup"
                 @load-entity="loadEntity"
                 @update-entity="updateEntity"
                 @delete-entity=""
@@ -445,12 +450,12 @@ function hideAddItemSelectType() {
     <el-col :span="8"
             class="h-screen p-2">
       <el-row class="p-2">
-        <el-tabs class="w-full">
+        <el-tabs class="w-full" v-model="data.activeTab">
           <el-tab-pane label="All Entities" name="first">
-            <entity-links v-if="crate"
-                          :value="Array.from(crate.entities())"
-                          @update-route="updateRoute"
-                          :icon="'fa-pencil'"/>
+            <entity-links
+                :value="data.entities"
+                @update-route="updateRoute"
+                :icon="'fa-pencil'"/>
           </el-tab-pane>
           <el-tab-pane label="Reverse Links" name="second">
             <entity-links v-if="data.entity?.['@reverse']"

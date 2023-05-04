@@ -1,7 +1,7 @@
 <script setup>
 import {onMounted, onUpdated, reactive} from "vue";
 
-const props = defineProps(['id', 'name', 'value', 'index', 'property', 'deletable', 'definition']);
+const props = defineProps(['id', 'name', 'value', 'index', 'property', 'deletable', 'definition', 'lookup']);
 
 const data = reactive({
   newValue: props.value

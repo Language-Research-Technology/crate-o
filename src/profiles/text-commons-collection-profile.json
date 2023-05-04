@@ -1,7 +1,7 @@
 {
   "metadata": {
     "name": "Language Data Commons top level Collection (corpus)",
-    "description": "Describo profile for https://purl.archive.org/language-data-commons/profile#Collection",
+    "description": "RO-Crate Editor Profile that implements the language data commons RO-Crate Metadata Profile for top level collection described here: https://purl.archive.org/language-data-commons/profile#Collection",
     "version": "0.1.1"
   },
   "rootDatasets": {
@@ -59,6 +59,15 @@
       "definition": "override",
       "subClassOf": [],
       "inputs": [
+        {
+          "id": "https://schema.org/language",
+          "name": "language",
+          "label": "Language",
+          "help": "Attach a language",
+          "type": ["Language"],
+          "required": true,
+          "multiple": true
+        },
         {
           "id": "http://schema.org/conformsTo",
           "name": "conformsTo",
@@ -740,6 +749,7 @@
   },
   "lookup": {
     "Language": {
+      "type": "datapack",
       "fields": [
         "@id",
         "name",
@@ -749,6 +759,9 @@
         "glottologCode",
         "languageCode"
       ]
+    },
+    "Organization": {
+      "type": "ror"
     }
   },
   "enabledClasses": [
