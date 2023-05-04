@@ -3,7 +3,6 @@ import {reactive, onMounted, watch, onUpdated, ref, inject, provide, toRaw} from
 import {useRouter, useRoute} from 'vue-router'
 import {profiles} from '@/profiles';
 import {ROCrate} from 'ro-crate';
-import {Lookup} from '@/lookup';
 import EntityProperty from "@/components/EntityProperty.vue";
 import {first, find, uniqBy} from 'lodash';
 import {v4 as uuidv4} from 'uuid';
@@ -37,7 +36,6 @@ const $router = useRouter();
 const $route = useRoute();
 
 let crate;
-const lookup = new Lookup();
 const selectedProfile = 1;
 
 const notThisFiles = [
