@@ -1,6 +1,8 @@
 
 # Crate-O?
 
+Status: PRE ALPHA WORK IN PROGRESS -- planning for an alpha release in May 2023.
+
 Crate-O is a  browser-based editor for  Research Object Crates  ([RO-Crate]). RO-Crate is a flexible, developer-friendly approach to linked-data description and packaging . Crate-O is designed to:
 - describe files on a user’s computer and to add contextual information about those files
 - OR, to skip the files and describe abstract contextual entities such as in a Cultural Collection or an encyclopaedia
