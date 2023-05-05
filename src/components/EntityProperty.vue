@@ -64,7 +64,10 @@ function addItem({type}) {
 }
 
 function linkItem({item}) {
-  data.values.push([data.values.length, item]);
+  if (!data.values) {
+    data.values = [];
+  }
+  data.values.push([data.values?.length, item]);
   emit('updateEntity', {property: props.property, value: data.values.map((v) => v[1])});
 }
 
