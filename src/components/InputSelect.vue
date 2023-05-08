@@ -1,7 +1,12 @@
 <script setup>
 import { ref, reactive, watch, computed } from "vue";
 
-const props = defineProps(['modelValue', 'options']);
+const props = defineProps({
+  modelValue: { type: [String, Object] },
+  options: { type: Array, default: [] },
+  allowCreate: { type: Boolean },
+});
+
 const emit = defineEmits(['update:modelValue']);
 
 const value = computed(() => props.modelValue?.['@id'] || props.modelValue);
@@ -14,7 +19,8 @@ function onChange(newValue) {
 </script>
 
 <template>
-  <el-select-v2  class="flex-grow" filterable clearable :modelValue="value" :options="values" @change="onChange"></el-select-v2>
+  <el-select-v2  class="flex-grow" filterable :allow-create="allowCreate"
+  :model-value="value" :options="values" @change="onChange"></el-select-v2>
   <!--input :value="modelValue" @input="$emit('update:modelValue', $event.target.value)"/-->
 </template>
 

@@ -1,8 +1,8 @@
 <script setup>
 import { reactive, computed, onMounted } from 'vue';
 import Entity from '../components/Entity.vue';
-import testData from '../../test-data/cooee/ro-crate-metadata.json' ;
-//import testData from '../../test-data/sydney/ro-crate-metadata.json' ;
+//import testData from '../../test-data/cooee/ro-crate-metadata.json' ;
+import testData from '../../test-data/sydney/ro-crate-metadata.json' ;
 
 import {DataStore} from '../stores/data' ;
 import langProfile from '../profiles/text-commons-collection-profile.json';

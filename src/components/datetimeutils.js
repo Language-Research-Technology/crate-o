@@ -76,7 +76,7 @@ export const utilsByType = {
       return this.dateTo(this.dateFrom(v)).slice(0,-1);
     },
     fromNative(val, oldVal) {
-      var m = oldVal.match(/^.+([zZ+-].*)$/);
+      var m = oldVal.match(/^.+T.+([zZ]|(?:[+-]\d\d\:\d\d).*)$/);
       return val + (m && m[1] ? m[1] : '');
     }
   }

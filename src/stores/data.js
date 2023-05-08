@@ -6,6 +6,24 @@ import InputSelect from '../components/InputSelect.vue';
 import LinkEntity from '../components/LinkEntity.vue';
 import dateTimeUtils from '../components/datetimeutils';
 
+
+const entityComponent = [LinkEntity, {}];
+const primitiveComponents = {
+  boolean: ['el-checkbox', { border: true }],
+  text: [InputText, { type: 'textarea' }],
+  textarea: [InputText, { type: 'textarea' }],
+  number: [InputText, { type: 'number' }],
+  url: [InputText, { type: 'url' }],
+  time: [InputDateTime, { type: 'time' }],
+  date: [InputDateTime, { type: 'date' }],
+  datetime: [InputDateTime, { type: 'datetime' }],
+  select: [InputSelect],
+  selectobject: [InputSelect],
+  selecturl: [InputSelect],
+  value: [InputText, { type: 'text', disabled: true }]
+};
+const primitiveTypes = new Set(Object.keys(primitiveComponents));
+
 const jsonldKeywords = {
   // '@context': {
   //   _component: [InputText]
@@ -20,13 +38,17 @@ const jsonldKeywords = {
   '@type': {
     id: '@type',
     name: '@type',
-    component: InputText,
+    component: InputSelect,
+    type: ['Select'],
+    props: {allowCreate: true},
     min: 1
   }
   // '@value': {
   //   _component: [InputText],
   // }
 };
+
+const lookupPromises = {};
 
 function isUri(value) {
   try {
@@ -41,6 +63,7 @@ export class DataStore {
   /** @type {ROCrate} */
   static crate;
   static profile;
+  /** definition cache */
   static defByType;
   static async setCrate(rawCrate) {
     this.crate = new ROCrate(rawCrate, { array: true, link: true });
@@ -50,6 +73,15 @@ export class DataStore {
   static setProfile(profile) {
     this.profile = profile;
     this.defByType = {};
+    // set select options for @type lookup
+    jsonldKeywords['@type'].props.options = profile.enabledClasses;
+    // async load lookup modules
+    for (const type in profile.lookup) {
+      const l = profile.lookup[type];
+      lookupPromises[type] = Promise.any(
+        [l.module, '../lookups/'+l.module].map(m => import(m))
+      ).then(m => new m.default({type, ...l})).catch((e)=>null);
+    }
   }
 
   /**
@@ -59,11 +91,12 @@ export class DataStore {
   static getProfileDefinitions(types = []) {
     const profile = this.profile;
     const defByType = this.defByType;
+    const common = { ...jsonldKeywords };
     if (!profile) return {};
-    if (!types.length) return jsonldKeywords;
+    if (!types.length) return common;
     const typesId = types.join('|');
     if (!defByType[typesId]) {
-      let definitions = { ...jsonldKeywords };
+      let definitions = common;
       const classes = types.map(t => profile.classes[t]).filter(e => e);
       for (const c of classes) {
         for (const input of (c.inputs || [])) {
@@ -95,17 +128,18 @@ export class DataStore {
       undefinedProperties.delete(defId) || undefinedProperties.delete(definitions[defId].name);
     }
     // create definition for properties not defined in the profile inputs
+    console.log(undefinedProperties);
     for (const [id, name] of undefinedProperties) {
       definitions[id] = { id, name };
-      //console.log(id,name);
     }
     return definitions;
   }
 }
 
 export function resolveComponent(value, definition = {}) {
-  if (definition.component) return [definition.component, definition.props];
-  const types = definition.type ?? [];
+  console.log('resolveComponent');
+  if (definition.component) return [definition.component, definition.props, definition.events];
+  const types = definition.type ?? ['text'];
   const values = definition.values ?? [];
   const valueType = typeof value;
   switch (valueType) {
@@ -115,13 +149,13 @@ export function resolveComponent(value, definition = {}) {
           return [InputSelect, { options: values }];
         }
       } else if (Object.prototype.toString.call(value) === '[object Date]' && !isNaN(value)) {
-        return [InputDateTime, { type: 'datetime' }];
+        return primitiveComponents.datetime;
       }
-      return [LinkEntity, {}];
+      return entityComponent;
     case 'number': case 'bigint':
-      return [InputText, { type: 'number' }];
+      return primitiveComponents.number;
     case 'boolean':
-      return ['el-checkbox', { border: true }];
+      return primitiveComponents.boolean;
     case 'string':
       /** @type {Array.<[number, object]>} */
       let components = [];
@@ -129,34 +163,32 @@ export function resolveComponent(value, definition = {}) {
       let p = 1;
       for (const t of types) {
         const type = t.toLowerCase();
+        component = primitiveComponents[type];
+        // use switch and a weight p to give different priorities 
         switch (type) {
+          case 'value':
+            components.push([p++, component]);
+            break;
           case 'select': case 'selecturl':
             component = [InputSelect, { options: values }];
             components.push([p++, component]);
             if (values.includes(value)) return component;
             break;
           case 'time': case 'date': case 'datetime':
-            component = [InputDateTime, { type }];
             components.push([p++, component]);
             if (!isNaN(dateTimeUtils[type].dateFrom(value))) return component;
             break;
           case 'url':
-            component = [InputText, { type }];
             components.push([p++, component]);
             if (isUri(value)) return component;
             break;
           case 'number':
-            component = [InputText, { type }];
             components.push([p++, component]);
             if (!isNaN(value)) return component;
             break;
-          case 'value':
-            component = [InputText, { type: 'text', disabled: true }];
-            components.push([p++, component]);
-            break;
           case 'text': case 'textarea':
           default:
-            components.push([p++, [InputText, { type: 'textarea' }]]);
+            components.push([p++, component]);
         }
       }
       if (components.length) {
@@ -165,4 +197,33 @@ export function resolveComponent(value, definition = {}) {
     default:
       return [];
   }
+}
+
+export function isPrimitive(type) {
+  return primitiveTypes.has(type.toLowerCase());
+}
+
+/**
+ * Get a component tuple [component, props, events] for a specific primitive type only
+ * @param {string} type 
+ * @param {object} props 
+ */
+export function getPrimitiveComponent(type, props = {}) {
+  var t = type.toLowerCase();
+  if (primitiveTypes.has(t)) {
+    if (t in {select:0, selecturl:0, selectobject:0}) {
+      if (!props.options && props.options.length) props.allowCreate = true;      
+      return [InputSelect, props];
+    } else {
+      return primitiveComponents[t];
+    }   
+  }
+  //return entityComponent;
+}
+
+export async function remoteSearch(type, query) {
+  if (!lookupPromises[type]) return [];
+  const lookup = await lookupPromises[type];
+  console.log(lookup);
+  return lookup?.search({query}) || [];
 }

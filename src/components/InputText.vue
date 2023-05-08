@@ -42,7 +42,7 @@ function onChange(newValue) {
 
 
 <template>
-  <el-input class="flex-grow" ref="input" clearable :class="{ 'is-error': isError }" :show-password="props.type === 'password'"
+  <el-input class="flex-grow" ref="input" :class="{ 'is-error': isError }" :show-password="props.type === 'password'"
     :modelValue="value" :type="type" :autosize="{ minRows: 1, maxRows: 6 }" @input="onInput" @change="onChange">
   </el-input>
   <!--input :value="modelValue" @input="$emit('update:modelValue', $event.target.value)"/-->

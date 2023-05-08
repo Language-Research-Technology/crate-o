@@ -1,9 +1,9 @@
 <script setup>
 import { reactive, computed, watch, onMounted, onUpdated, toRaw } from "vue";
 import { DataStore, resolveComponent } from '../stores/data';
-import Property from '../components/Property.vue';
+import Property from './Property.vue';
 
-const props = defineProps(['modelValue', 'profile', 'onUpdate']);
+const props = defineProps(['modelValue', 'profile']);
 const emit = defineEmits(['update:modelValue']);
 
 watch(props, (val, oldVal) => {
@@ -24,7 +24,8 @@ onMounted(() => {
 });
 
 const data = reactive({
-  entity: props.modelValue
+  entity: props.modelValue,
+  activeLayout: '0'
 });
 //const entity = computed(() => props.modelValue);
 const definitions = computed(() => DataStore.getDefinitions(props.modelValue));
@@ -67,8 +68,9 @@ function updateProperty(def, value) {
 
 <template>
   <el-form id="#entityForm" label-width="auto" novalidate>
-    <component :is="layouts?'el-tabs':'div'" tab-position="left">
-      <component :is="layouts?'el-tab-pane':'div'" v-for="layout in (layouts || [{definitions}])" :label="layout.name">
+    <component :is="layouts?'el-tabs':'div'" tab-position="left" v-model="data.activeLayout">
+      <component :is="layouts?'el-tab-pane':'div'" v-for="(layout, i) in (layouts || [{ definitions }])"
+        :label="layout.name">
         <Property v-for="def in layout.definitions" :key="def.id" :modelValue="modelValue[def.id] ?? modelValue[def.name]"
           :definition="def" @update:modelValue="v => updateProperty(def, v)"></Property>
       </component>

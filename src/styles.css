@@ -16,3 +16,10 @@
 label.el-form-item__label, div.el-form-item__label {
   align-items: center;
 }
+
+.el-button.active {
+  color: var(--el-button-active-text-color);
+  border-color: var(--el-button-active-border-color);
+  background-color: var(--el-button-active-bg-color);
+  outline: 0;
+}

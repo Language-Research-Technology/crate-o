@@ -52,14 +52,20 @@ const data = reactive({
   test: 'a',
   datetime: '',
   values: {},
-  form: {}
+  form: {},
+  select: null,
+  options: [
+    {name:'a', desc:'da', test: 1},
+    {name:'b', desc:'db', test: 2},
+    {name:'cc', desc:'dc', test: 3}
+  ]
 });
 window.data = data;
 function deleteProperty() {
 
 }
-function test1() {console.log('fntest1')}
-function test2() {console.log('fntest2')}
+function test1(v) { console.log(v); }
+function test2() { console.log('fntest2'); }
 </script>
 
 <template>
@@ -84,6 +90,11 @@ function test2() {console.log('fntest2')}
       </el-form>
       <InputGeo v-model="data.test" @update:model-value="test1"></InputGeo>
       <div v-for="i in 10">{{ i }}</div>
+      <el-select v-model="data.select" value-key="name" @change="test1">
+        <el-option v-for="item in data.options" :key="item.name" :value="item" :label="item.name">
+          {{ item.name }} - {{ item.desc }}
+        </el-option>
+      </el-select>
     </el-main>
   </el-container>
 </template>
