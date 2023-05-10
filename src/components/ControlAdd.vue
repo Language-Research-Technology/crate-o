@@ -100,7 +100,7 @@ function createLabel(entity) {
 <template>
   <div v-if="!definition.max || !modelValue.length || definition.max > 1">
     <!-- Add buttons -->
-    <el-select v-if="types.length > 2" :modelValue="data.selectedType" @clear="data.selectedType = ''" placeholder="..."
+    <el-select v-if="types.length > 1" :modelValue="data.selectedType" @clear="data.selectedType = ''" placeholder="..."
       size="small" clearable>
       <template #prefix>
         <el-icon>
@@ -111,7 +111,8 @@ function createLabel(entity) {
         {{ t }}
       </el-option>
     </el-select>
-    <el-button v-else v-for="t of types" size="small" type="primary" :icon="data.selectedType === t ? Close : Plus"
+    <el-button v-else v-for="t of types" size="small" type="primary" 
+      :icon="data.selectedType === t ? Close : Plus"
       :class="{ active: data.selectedType === t }" @click="onClick(t)">
       {{ t }}
     </el-button>

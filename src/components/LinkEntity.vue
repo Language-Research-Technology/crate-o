@@ -4,6 +4,8 @@ import { Edit } from '@element-plus/icons-vue';
 import { DataStore } from '../stores/data';
 import { useRouter, useRoute } from 'vue-router';
 
+const $router = useRouter();
+
 const props = defineProps({
   modelValue: [Object],
   icon: {
@@ -21,8 +23,7 @@ function showEntity() {
   const id = props.modelValue['@id'];
   const e = DataStore.crate?.getEntity(id);
   if (e) {
-    //useRouter().push({query: {id: encodeURIComponent(id)}});
-    window.data.entity = e;
+    $router.push({query: {id: encodeURIComponent(id)}});
   } else {
     dialogVisible.value = true;
   }

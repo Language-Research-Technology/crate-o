@@ -12,16 +12,6 @@
       }
     },
     {
-      "@id": "https://purl.archive.org/textcommons/profile#Collection",
-      "@type": "URL",
-      "@reverse": {
-        "conformsTo": {
-          "@id": "./"
-        }
-      },
-      "name": "https://purl.archive.org/textcommons/profile#Collection"
-    },
-    {
       "@id": "#c8b41c9f-b966-4f07-8128-b75ab0b2579f",
       "@type": "Organization",
       "@reverse": {

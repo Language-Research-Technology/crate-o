@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import CrateOView from "../views/CrateOView.vue";
+//import CrateOView from "../views/CrateOView.vue";
+import CrateoView from "../views/CrateoView.vue";
 //const base = document.querySelector('base').href;
 const router = createRouter({
   history: createWebHashHistory(),
@@ -7,7 +8,8 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: CrateOView
+      component: CrateoView
+      //component: CrateOView
     },
     {
       path: '/test',

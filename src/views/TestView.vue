@@ -4,6 +4,7 @@ import InputDateTime from '../components/InputDateTime.vue';
 import InputGeo from '../components/InputGeo.vue';
 import InputText from '../components/InputText.vue';
 import InputSelect from '../components/InputSelect.vue';
+import FilteredPaged from '../components/FilteredPaged.vue';
 
 const testValues = [
   {
@@ -58,7 +59,8 @@ const data = reactive({
     {name:'a', desc:'da', test: 1},
     {name:'b', desc:'db', test: 2},
     {name:'cc', desc:'dc', test: 3}
-  ]
+  ],
+  items: ['aaabbb', 'cccddd', 'sadfdsaf', 'eqwrds', 'xcvds', 'bbbbb', 'bbdfdasd', 'asdfdsf', 'gewrdsf', 'asdfsa', 'fgddaf', 'sgfdsg']
 });
 window.data = data;
 function deleteProperty() {
@@ -66,6 +68,9 @@ function deleteProperty() {
 }
 function test1(v) { console.log(v); }
 function test2() { console.log('fntest2'); }
+function alert(s) {
+  window.alert(s);
+}
 </script>
 
 <template>
@@ -95,6 +100,9 @@ function test2() { console.log('fntest2'); }
           {{ item.name }} - {{ item.desc }}
         </el-option>
       </el-select>
+      <FilteredPaged v-model="data.items" v-slot="{ index }">
+        <el-button @click="alert(data.items[index])">{{ data.items[index] }}</el-button>
+      </FilteredPaged>
     </el-main>
   </el-container>
 </template>

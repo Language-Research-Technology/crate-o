@@ -1,3 +1,4 @@
+import { ref } from 'vue';
 import { ROCrate } from 'ro-crate';
 import InputDateTime from '../components/InputDateTime.vue';
 import InputGeo from '../components/InputGeo.vue';
@@ -5,7 +6,7 @@ import InputText from '../components/InputText.vue';
 import InputSelect from '../components/InputSelect.vue';
 import LinkEntity from '../components/LinkEntity.vue';
 import dateTimeUtils from '../components/datetimeutils';
-
+import lookupModules from '../lookups';
 
 const entityComponent = [LinkEntity, {}];
 const primitiveComponents = {
@@ -62,26 +63,29 @@ function isUri(value) {
 export class DataStore {
   /** @type {ROCrate} */
   static crate;
-  static profile;
+  static profile = ref(null);
   /** definition cache */
   static defByType;
   static async setCrate(rawCrate) {
     this.crate = new ROCrate(rawCrate, { array: true, link: true });
     await this.crate.resolveContext();
+    return this.crate;
   }
 
   static setProfile(profile) {
-    this.profile = profile;
+    this.profile.value = profile;
     this.defByType = {};
     // set select options for @type lookup
     jsonldKeywords['@type'].props.options = profile.enabledClasses;
     // async load lookup modules
     for (const type in profile.lookup) {
       const l = profile.lookup[type];
-      lookupPromises[type] = Promise.any(
-        [l.module, '../lookups/'+l.module].map(m => import(m))
-      ).then(m => new m.default({type, ...l})).catch((e)=>null);
+      const mod = l.module || "datapack";
+      lookupPromises[type] = import(/* @vite-ignore */mod).catch((e) => {}).
+        then(m => new (m?.default || lookupModules[mod])({type, ...l})).
+        catch(e => {});
     }
+    return profile;
   }
 
   /**
@@ -89,7 +93,7 @@ export class DataStore {
    * @param {string[]} types 
    */
   static getProfileDefinitions(types = []) {
-    const profile = this.profile;
+    const profile = this.profile.value;
     const defByType = this.defByType;
     const common = { ...jsonldKeywords };
     if (!profile) return {};
@@ -128,7 +132,7 @@ export class DataStore {
       undefinedProperties.delete(defId) || undefinedProperties.delete(definitions[defId].name);
     }
     // create definition for properties not defined in the profile inputs
-    console.log(undefinedProperties);
+    //console.log(undefinedProperties);
     for (const [id, name] of undefinedProperties) {
       definitions[id] = { id, name };
     }
@@ -137,7 +141,7 @@ export class DataStore {
 }
 
 export function resolveComponent(value, definition = {}) {
-  console.log('resolveComponent');
+  //console.log('resolveComponent');
   if (definition.component) return [definition.component, definition.props, definition.events];
   const types = definition.type ?? ['text'];
   const values = definition.values ?? [];
@@ -224,6 +228,6 @@ export function getPrimitiveComponent(type, props = {}) {
 export async function remoteSearch(type, query) {
   if (!lookupPromises[type]) return [];
   const lookup = await lookupPromises[type];
-  console.log(lookup);
+  //console.log(lookup);
   return lookup?.search({query}) || [];
 }

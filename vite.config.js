@@ -4,10 +4,10 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
 // https://vitejs.dev/config/
-export default defineConfig((config) => ({
+export default defineConfig(({mode}) => ({
   plugins: [vue()],
   optimizeDeps: {
-    include: ['lodash', 'validator', 'leaflet', 'leaflet-area-select']
+    include: ['datapack', 'validator', 'leaflet', 'leaflet-area-select']
   },
   resolve: {
     alias: {
@@ -15,7 +15,7 @@ export default defineConfig((config) => ({
     }
   },
   esbuild: {
-    drop: config.mode === 'production' ? ['console', 'debugger'] : [],
+    drop: mode === 'production' ? ['console', 'debugger'] : [],
   },
   base: './',
   build: {

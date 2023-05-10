@@ -19,10 +19,15 @@ onMounted(async function() {
   window.data = data;
   window.crate = DataStore.crate;
 });
+
+function showJson() {
+  console.log(DataStore.crate.toJSON());
+}
 </script>
 
 <template>
   <div class="container mx-auto px-4">
+    <el-button @click="showJson">Show JSON</el-button>
     <Entity v-if="data.entity && data.profile" v-model="data.entity" :profile="data.profile"></Entity>
   </div>
 </template>

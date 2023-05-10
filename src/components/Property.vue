@@ -110,8 +110,10 @@ function updateValue(i, value) {
 
 function removeValue(i) {
   const vals = toRaw(props.modelValue);
-  vals.splice(i, 1);
-  emit('update:modelValue', vals);
+  if (Array.isArray(vals)) {
+    vals.splice(i, 1);
+    emit('update:modelValue', vals);
+  }
 }
 function filterValues() {
   data.currentPage = 1;
@@ -124,7 +126,7 @@ function mapIndex(i) {
 </script>
 
 <template>
-  <el-form-item class="hover:bg-violet-200 p-2">
+  <el-form-item class="hover:bg-violet-100 p-2">
     <template #label>
       <span class="mr-1" :title="definition.id">{{ label }} </span>
       <el-icon :title="definition.help">

@@ -1,9 +1,9 @@
 <script setup>
-import {RouterLink, RouterView} from 'vue-router';
+import { RouterLink, RouterView } from 'vue-router';
 
-import {reactive} from "vue";
+import { reactive } from "vue";
 
-import {detect} from 'detect-browser';
+import { detect } from 'detect-browser';
 const browser = detect();
 
 const data = reactive({
@@ -21,7 +21,7 @@ if (browser && (browser.name !== 'chrome' && parseFloat(browser.version) < 86)) 
     <el-row :gutter="10" class="flex items-center justify-center min-w-md">
       <el-col :span="8">
         <span class="flex flex-col justify-center items-center ml-2">
-          <img alt="Crate-O an RO-Crate Editor" class="logo min-h-full p-0 h-20" src="@/assets/logo.svg" width="85"/>
+          <img alt="Crate-O an RO-Crate Editor" class="logo min-h-full p-0 h-16" src="@/assets/logo.svg" width="85" />
         </span>
       </el-col>
       <el-col :span="16">
@@ -36,14 +36,11 @@ if (browser && (browser.name !== 'chrome' && parseFloat(browser.version) < 86)) 
       <RouterLink to="/describo">Describo</RouterLink>
     </nav> -->
   </header>
-  <RouterView/>
-  <el-dialog
-      v-model="data.noBrowserSupport"
-      title="Browser Not Supported"
-      width="50%"
-  >
+  <RouterView />
+
+  <el-dialog v-model="data.noBrowserSupport" title="Browser Not Supported" width="50%">
     <span>This Browser is not supported, please use the latest version of <a target="_blank" class="font-bold"
-                                                                             href="https://www.google.com/chrome/">Google Chrome</a></span>
+        href="https://www.google.com/chrome/">Google Chrome</a></span>
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="data.noBrowserSupport = false">Cancel</el-button>

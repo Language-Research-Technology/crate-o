@@ -1,20 +1,20 @@
 <script setup>
-import { reactive, computed, watch, onMounted, onUpdated, toRaw } from "vue";
-import { DataStore, resolveComponent } from '../stores/data';
+import { reactive, computed, watch, onMounted, onUpdated } from "vue";
+import { DataStore } from '../stores/data';
 import Property from './Property.vue';
 
-const props = defineProps(['modelValue', 'profile']);
+const props = defineProps(['modelValue']);
 const emit = defineEmits(['update:modelValue']);
 
-watch(props, (val, oldVal) => {
-  console.log('props changed');
-  console.log(val, oldVal);
-  if (val && oldVal) {
-    console.log(val.modelValue === oldVal.modelValue ? '' : 'entity changed');
-    console.log(val.profile === oldVal.profile ? '' : 'profile changed');
+// watch(props, (val, oldVal) => {
+//   console.log('props changed');
+//   console.log(val, oldVal);
+//   if (val && oldVal) {
+//     console.log(val.modelValue === oldVal.modelValue ? '' : 'entity changed');
+//     //console.log(val.profile === oldVal.profile ? '' : 'profile changed');
 
-  }
-}, { immediate: true });
+//   }
+// }, { immediate: true });
 
 onUpdated(() => {
   console.log('updated');
@@ -32,9 +32,9 @@ const definitions = computed(() => DataStore.getDefinitions(props.modelValue));
 const layouts = computed(() => {
   let d = definitions.value;
   let otherIds = new Set(Object.keys(d));
-  console.log('getDefinitions', d);
+  //console.log('getDefinitions', d);
   const types = props.modelValue['@type'] || [];
-  const layoutsByType = props.profile.layouts;
+  const layoutsByType = DataStore.profile.value?.layouts || [];
   let layouts = types.reduce((l, t) => l || layoutsByType[t], null);
   if (layouts) {
     layouts = [{
