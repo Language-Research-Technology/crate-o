@@ -6,7 +6,7 @@ import ControlAdd from "./ControlAdd.vue";
 const pageSize = 10; //Later do in conf the page size
 
 const props = defineProps({
-  modelValue: { type: [String, Array] },
+  modelValue: {  },
   definition: { type: Object, required: true }
 });
 const emit = defineEmits(['update:modelValue']);
@@ -74,18 +74,23 @@ const data = reactive({
 
 function addValue(type) {
   //props.modelValue.push();
-  const vals = toRaw(props.modelValue);
-  if (!Array.isArray(vals)) return;
+  var vals = toRaw(props.modelValue);
   const options = props.definition.values;
   const propsOpt = {...props.definition.props, ...(options && { options })};
-  console.log(props.definition)
+  //console.log(props.definition)
+  //console.log('addValue');
+  //console.log(vals);
   var c = getPrimitiveComponent(type, propsOpt);
-  console.log(c);
+  var len;
+  //console.log(c);
   if (c) {
-    let len = vals.push('');
+    if (Array.isArray(vals)) {
+      len = vals.push('');
+    } else {
+      vals = '';
+      len = 1;
+    }
     components[len - 1] = c;
-    //console.log('addValue');
-    //console.log(vals);
     emit('update:modelValue', vals);
   }
 }
