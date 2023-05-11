@@ -2,6 +2,7 @@
 import { reactive, computed, watch, onMounted, onUpdated } from "vue";
 import { DataStore } from '../stores/data';
 import Property from './Property.vue';
+import { ElTabs, ElTabPane } from 'element-plus';
 
 const props = defineProps(['modelValue']);
 const emit = defineEmits(['update:modelValue']);
@@ -68,8 +69,8 @@ function updateProperty(def, value) {
 
 <template>
   <el-form id="#entityForm" label-width="auto" novalidate>
-    <component :is="layouts?'el-tabs':'div'" tab-position="left" v-model="data.activeLayout">
-      <component :is="layouts?'el-tab-pane':'div'" v-for="(layout, i) in (layouts || [{ definitions }])"
+    <component :is="layouts?ElTabs:'div'" tab-position="left" v-model="data.activeLayout">
+      <component :is="layouts?ElTabPane:'div'" v-for="(layout, i) in (layouts || [{ definitions }])"
         :label="layout.name">
         <Property v-for="def in layout.definitions" :key="def.id" :modelValue="modelValue[def.id] ?? modelValue[def.name]"
           :definition="def" @update:modelValue="v => updateProperty(def, v)"></Property>

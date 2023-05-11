@@ -35,23 +35,45 @@ DataStore.setProfile(profiles[1]);
 const reverseEntities = computed(() => Object.values(data.entity?.['@reverse']||{}).
   reduce((a, e) => a.concat(e), []).filter(e => e !== DataStore.crate.metadataFileEntity));
 
-window.addEventListener("popstate", (event) => {
-  // console.log(event.state);
-  // console.log('historyStart', historyStart);
-  // console.log('history', data.history);
-  // if (event.state?.pos) {
-  //   data.history.splice(event.state.pos - 1);
-  // }
-});
-
 var historyStart = window.history.length;
+
 onBeforeRouteUpdate((to, from) => {
-  console.log('before update');
-  console.log(to, from);
-  //const id = decodeURIComponent([].concat(to.query?.id)[0]);
-  if (!to.query?.id) return false;
+  console.log('before update, entity id= ', data.entity?.['@id']);
+  console.log('to:', to);
+  console.log('from:', from);
   console.log('state', window.history.state);
   console.log('historyStart', historyStart);
+  // The window.history.state in this handler is still of the `from` path instead of `to` path
+  // except when the history traverse back (eg back button is pressed), it is of the `to` path 
+
+  const id = decodeURIComponent([].concat(to.query?.id)[0]);
+  // check if the requested id is already in the breadcrumb stack
+  // if it is, move browser history back to the same id
+  console.log('query id:', id);
+  if (!to.query?.id) return false;
+  if (data.metadataHandle && data.entity) {
+    if (window.history.state.current === to.fullPath) {
+      // when traverse back in history, remove the stack 
+      const i = data.history.findIndex(e => e['@id'] === id);
+      console.log('splice', i+1);
+      if (i >= 0 || id === data.rootDataset['@id']) {
+        data.history.splice(i+1);
+        return;
+      }
+    }
+    var pages = 0;
+    if (id === data.rootDataset['@id']) {
+      pages = data.history.length;
+    } else {
+      var i = data.history.findIndex(e => e['@id'] === id);
+      if (i > -1) pages = data.history.length - i - 1;
+    }
+    if (pages) {
+      console.log('pages', pages);
+      $router.go(-pages);
+      return false;
+    }
+  }
 });
 
 watch(() => $route.query.id, (eid, oldId) => {
@@ -61,43 +83,20 @@ watch(() => $route.query.id, (eid, oldId) => {
     if (id && data.entity) {
       console.log('id=', id);
       if (data.entity['@id'] !== id) data.entity = DataStore.crate.getEntity(id);
-      if (window.history.state.position > historyStart + data.history.length) {
-        // new page
-        data.history.push(data.entity); 
-        // if (data.entity === data.rootDataset) {
-        //   console.log('root');
-        //   //updateRouter(0);
-        //   $router.go(historyStart - window.history.state.position);
-        // } else {
-        //   const i = data.history.findIndex(e => e['@id'] === id);
-        //   console.log('i', i);
-        //   if (i < 0) {
-        //     data.history.push(data.entity); 
-        //   } else {
-        //     updateRouter(i);
-        //   }
-        // }
-      } else {
-        // detect back button or programmatic history jumping
-        console.log('splice', window.history.state.position - historyStart)
-        data.history.splice(window.history.state.position - historyStart);
+      console.log('pos',window.history.state.position);
+      console.log('historyStart', historyStart);
+      console.log('data.history.length', data.history.length);
+      //if (window.history.state.position > historyStart + data.history.length) {
+      if (!data.history.length || id !== data.history[data.history.length - 1]['@id']) {
+        if (data.entity !== data.rootDataset) {
+          // new page
+          data.history.push(data.entity);
+        }
       }
     }
   }
 }, {immediate: true});
 
-/**
- * Rollback a state in router history. Use updateRouter(0) to reset everything. 
- * @param {number} i - The index in history to jump to .
- */
- function updateRouter(i) {
-  const len = data.history.length;
-  console.log('updateRouter', i, len);
-  if (len && i < len) {
-    //data.history.splice(i);
-    $router.go(i - len);
-  }
-}
 
 // onMounted(() => {
 //   if (!data.entityId) {
@@ -142,7 +141,7 @@ const commands = {
       }
       const crate = await DataStore.setCrate(rawCrate);
       data.entity = data.rootDataset = crate.rootDataset;
-      data.entities = Array.from(crate.entities());
+      data.entities = Array.from(crate.entities({filter: e => e !== DataStore.crate.metadataFileEntity}));
       data.history = [];
       historyStart = window.history.state.position + 1;
       $router.push({query: {id: encodeURIComponent(DataStore.crate.rootId)}});
@@ -265,15 +264,15 @@ function updateEntity({property, value}) {
   <el-row class="bg-slate-300 p-2" v-if="data.rootDataset">
     <el-breadcrumb separator="/">
       <el-breadcrumb-item>
-        <el-link :icon="HomeFilled" :href="`#/?id=${encodeURIComponent(data.rootDataset['@id'])}`" 
-          @click.stop.prevent="updateRouter(0)">
-        {{ data.rootDataset.name[0] || 'Root Dataset' }}
+        <el-link :disabled="!data.history.length" :icon="HomeFilled" 
+          :href="`#/?id=${encodeURIComponent(data.rootDataset['@id'])}`">
+        {{ data.rootDataset.name?.[0] || 'Root Dataset' }}
         </el-link>
       </el-breadcrumb-item>
       <el-breadcrumb-item v-for="e,i in data.history">
         <!-- <router-link to="/">Go to Home</router-link> -->
-        <el-link :href="`#/?id=${encodeURIComponent(e['@id'])}`"
-          @click.stop.prevent="updateRouter(i+1)">
+        <el-link :disabled="i === data.history.length - 1" 
+          :href="`#/?id=${encodeURIComponent(e['@id'])}`">
           {{e.name?.[0]||e['@id']}}
         </el-link>
       </el-breadcrumb-item>
