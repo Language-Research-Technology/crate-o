@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@element-plus/theme-chalk": "^2.2.16",
-    "@fortawesome/fontawesome-free": "^6.4.0",
     "detect-browser": "^5.3.0",
     "element-plus": "^2.3.1",
     "pinia": "^2.0.35",
@@ -43,7 +42,10 @@
     "postcss-loader": "^6.1.1",
     "sass": "^1.57.1",
     "tailwindcss": "^3.3.1",
+    "unplugin-auto-import": "^0.15.3",
+    "unplugin-vue-components": "^0.24.1",
     "vite": "^4.0.0",
+    "vite-plugin-html": "^3.2.0",
     "vitest": "^0.25.6",
     "vue-loader": "^17.0.1",
     "webpack": "^5.72.0",
