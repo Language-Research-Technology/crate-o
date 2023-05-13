@@ -38,24 +38,24 @@ const reverseEntities = computed(() => Object.values(data.entity?.['@reverse']||
 var historyStart = window.history.length;
 
 onBeforeRouteUpdate((to, from) => {
-  console.log('before update, entity id= ', data.entity?.['@id']);
-  console.log('to:', to);
-  console.log('from:', from);
-  console.log('state', window.history.state);
-  console.log('historyStart', historyStart);
+  // console.log('before update, entity id= ', data.entity?.['@id']);
+  // console.log('to:', to);
+  // console.log('from:', from);
+  // console.log('state', window.history.state);
+  // console.log('historyStart', historyStart);
   // The window.history.state in this handler is still of the `from` path instead of `to` path
   // except when the history traverse back (eg back button is pressed), it is of the `to` path 
 
   const id = decodeURIComponent([].concat(to.query?.id)[0]);
   // check if the requested id is already in the breadcrumb stack
   // if it is, move browser history back to the same id
-  console.log('query id:', id);
+  //console.log('query id:', id);
   if (!to.query?.id) return false;
   if (data.metadataHandle && data.entity) {
     if (window.history.state.current === to.fullPath) {
       // when traverse back in history, remove the stack 
       const i = data.history.findIndex(e => e['@id'] === id);
-      console.log('splice', i+1);
+      // console.log('splice', i+1);
       if (i >= 0 || id === data.rootDataset['@id']) {
         data.history.splice(i+1);
         return;
@@ -69,7 +69,7 @@ onBeforeRouteUpdate((to, from) => {
       if (i > -1) pages = data.history.length - i - 1;
     }
     if (pages) {
-      console.log('pages', pages);
+      // console.log('pages', pages);
       $router.go(-pages);
       return false;
     }
@@ -81,11 +81,11 @@ watch(() => $route.query.id, (eid, oldId) => {
   if (data.metadataHandle) { //checking crate if it has not been loaded
     const id = decodeURIComponent([].concat(eid)[0]);
     if (id && data.entity) {
-      console.log('id=', id);
+      //console.log('id=', id);
       if (data.entity['@id'] !== id) data.entity = DataStore.crate.getEntity(id);
-      console.log('pos',window.history.state.position);
-      console.log('historyStart', historyStart);
-      console.log('data.history.length', data.history.length);
+      // console.log('pos',window.history.state.position);
+      // console.log('historyStart', historyStart);
+      // console.log('data.history.length', data.history.length);
       //if (window.history.state.position > historyStart + data.history.length) {
       if (!data.history.length || id !== data.history[data.history.length - 1]['@id']) {
         if (data.entity !== data.rootDataset) {

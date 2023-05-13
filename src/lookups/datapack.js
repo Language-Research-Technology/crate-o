@@ -4,7 +4,7 @@ export default class Lookup {
   }
   async search({ query, limit = 10, fields = this.fields }) {
     let response = await fetch("https://lookups.ldaca.edu.au/data/_search", {
-      method: "GET",
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": "ApiKey bXJWcEVvY0JrZXVEdG93dy14c046YndJOVBLcGFUVk9zQW0xN282NERSQQ==" // Read only api-key

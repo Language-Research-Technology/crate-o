@@ -7,20 +7,24 @@ const pageSize = 10; //Later do in conf the page size
 
 const props = defineProps({
   modelValue: {  },
+  components: { type: Array, required: true },
   definition: { type: Object, required: true }
 });
 const emit = defineEmits(['update:modelValue']);
 
 const label = computed(() => {
-  var label = props.definition.name;
+  var label = props.definition.label || props.definition.name || props.definition.id;
   var namespace;
-  if (!label) {
-    label = props.definition.id;
-    try {
-      const url = new URL(label);
+  var isUrl;
+  try {
+    const url = new URL(label);
+    if (url.host) {
       label = url.pathname.split('/').pop();
-    } catch (error) { }
-  } else {
+      isUrl = true;
+    }
+  } catch (error) { 
+  }
+  if (!isUrl) {
     let m = label.match(/(.+):(.+)/);
     if (m) [, namespace, label] = m;
   }
@@ -49,9 +53,10 @@ const indexes = computed(() => {
   return filtered;
 });
 
-var components = [];
 const rows = computed(() => {
-  //console.log('get rows ', label.value);
+  const components = props.components;
+  console.log('get rows ', props.definition.id);
+  console.log('components',props.definition.id,JSON.stringify(components));
   let start = (data.currentPage - 1) * data.pageSize;
   let end = start + data.pageSize;
   if (end > indexes.value.length) end = indexes.value.length;
@@ -59,10 +64,14 @@ const rows = computed(() => {
   for (let i = start; i < end; ++i) {
     let index = indexes.value[i];
     let value = values.value[index];
+    console.log(components[index]);
+    console.log(value, props.definition.id);
     var c = components[index] ?? (components[index] = resolveComponent(value, props.definition));
+    console.log(c);
     //console.log(value);
     if (c) result.push([index, value, ...c]);
   }
+  console.log(result);
   return result;
 });
 
@@ -90,16 +99,17 @@ function addValue(type) {
       vals = '';
       len = 1;
     }
-    components[len - 1] = c;
+    //console.log('addValue', c)
+    props.components[len - 1] = c;
     emit('update:modelValue', vals);
   }
 }
 
 function addEntity(e) {
   //const vals = toRaw(props.modelValue);
-  const vals = props.modelValue;
-  if (!Array.isArray(vals)) return;
-  let len = vals.push(e);
+  var vals = props.modelValue;
+  if (Array.isArray(vals)) vals.push(e);
+  else vals = e;
   emit('update:modelValue', vals);
 }
 
@@ -117,6 +127,7 @@ function removeValue(i) {
   const vals = toRaw(props.modelValue);
   if (Array.isArray(vals)) {
     vals.splice(i, 1);
+    props.components.splice(i, 1);
     emit('update:modelValue', vals);
   }
 }
@@ -131,7 +142,7 @@ function mapIndex(i) {
 </script>
 
 <template>
-  <el-form-item class="hover:bg-violet-100 p-2">
+  <el-form-item class="hover:bg-violet-100 px-2 p-2">
     <template #label>
       <span class="mr-1" :title="definition.id">{{ label }} </span>
       <el-icon :title="definition.help">
@@ -150,8 +161,9 @@ function mapIndex(i) {
         <component :is="component" v-bind="p" :modelValue="value" @update:modelValue="value => updateValue(i, value)">
         </component>
         <div class="pl-2 flex flex-nowrap">
-          <el-button :disabled="definition.min > i" @click="removeValue(i)" type="danger" plain :icon="Delete"
-            :class="{ invisible: definition.min > i }" size="small"></el-button>
+          <!-- Delete Button -->
+          <el-button :disabled="definition.min >= values.length" @click="removeValue(i)" type="danger" plain :icon="Delete"
+            :class="{ invisible: definition.min >= values.length }" size="small"></el-button>
           <el-button size="small" :icon="QuestionFilled" type="info" plain></el-button>
         </div>
       </div>
@@ -162,3 +174,8 @@ function mapIndex(i) {
   </el-form-item>
 </template>
 
+<style>
+.el-form-item {
+  margin-bottom: 0px;
+}
+</style>

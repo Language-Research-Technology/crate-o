@@ -63,11 +63,13 @@ function isUri(value) {
 export class DataStore {
   /** @type {ROCrate} */
   static crate;
+  static meta; // cache data type info of each actual value of properties
   static profile = ref(null);
   /** definition cache */
   static defByType;
   static async setCrate(rawCrate) {
     this.crate = new ROCrate(rawCrate, { array: true, link: true });
+    this.meta = {};
     await this.crate.resolveContext();
     return this.crate;
   }
@@ -129,6 +131,9 @@ export class DataStore {
     const crate = this.crate;
     const undefinedProperties = new Map(Object.keys(entity).map(name => [crate?.resolveTerm(name) || name, name]));
     for (const defId in definitions) {
+      // if (definitions[defId].name in entity && !undefinedProperties.has(defId)) {
+      //   definitions[defId] = { ...definitions[defId], name:defId };
+      // }
       undefinedProperties.delete(defId) || undefinedProperties.delete(definitions[defId].name);
     }
     // create definition for properties not defined in the profile inputs
@@ -136,6 +141,7 @@ export class DataStore {
     for (const [id, name] of undefinedProperties) {
       definitions[id] = { id, name };
     }
+    //console.log(definitions);
     return definitions;
   }
 }

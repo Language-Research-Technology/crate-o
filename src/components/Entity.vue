@@ -25,11 +25,19 @@ onMounted(() => {
 });
 
 const data = reactive({
-  entity: props.modelValue,
-  activeLayout: '0'
+//  entity: props.modelValue,
+  activeLayout: ''
 });
+
+watch(() => props.modelValue, (e) => {
+  data.activeLayout = 'About'
+  DataStore.meta[e['@id']] ??= {};
+}, { immediate: true });
+
 //const entity = computed(() => props.modelValue);
-const definitions = computed(() => DataStore.getDefinitions(props.modelValue));
+//const definitions = computed(() => DataStore.getDefinitions(props.modelValue));
+const definitions = computed(() => {console.log(props.modelValue['@id']); return DataStore.getDefinitions(props.modelValue)});
+
 const layouts = computed(() => {
   let d = definitions.value;
   let otherIds = new Set(Object.keys(d));
@@ -60,9 +68,23 @@ const layouts = computed(() => {
 });
 
 function updateProperty(def, value) {
-  const name = def.id in props.modelValue ? def.id : def.name;
-  if (props.modelValue[name] !== value) props.modelValue[name] = value;
-  emit('update:modelValue', props.modelValue);
+  const entity = props.modelValue;
+  const name = def.id in entity || DataStore.crate.resolveTerm(def.name) !== def.id ? def.id : def.name;
+  if (entity[name] !== value) entity[name] = value;
+  emit('update:modelValue', entity);
+}
+
+function getProperty(def) {
+  console.log('getProperty', def.name);
+  const entity = props.modelValue;
+  const name = def.id in entity || DataStore.crate.resolveTerm(def.name) !== def.id ? def.id : def.name;
+  return entity[name];
+}
+
+function getComponents(def) {
+  const entity = props.modelValue;
+  const c = DataStore.meta[entity['@id']][def.id] ??= [];
+  return c;
 }
 
 </script>
@@ -70,9 +92,10 @@ function updateProperty(def, value) {
 <template>
   <el-form id="#entityForm" label-width="auto" novalidate>
     <component :is="layouts?ElTabs:'div'" tab-position="left" v-model="data.activeLayout">
-      <component :is="layouts?ElTabPane:'div'" v-for="(layout, i) in (layouts || [{ definitions }])"
-        :label="layout.name">
-        <Property v-for="def in layout.definitions" :key="def.id" :modelValue="modelValue[def.id] ?? modelValue[def.name]"
+      <component :is="layouts?ElTabPane:'div'" v-for="(layout, i) in (layouts || [{ name: 'About', definitions }])"
+        :label="layout.name" :name="layout.name">
+        <Property v-if="data.activeLayout === layout.name" v-for="def in layout.definitions" :key="def.id" 
+          :modelValue="getProperty(def)" :components="getComponents(def)"
           :definition="def" @update:modelValue="v => updateProperty(def, v)"></Property>
       </component>
     </component>
