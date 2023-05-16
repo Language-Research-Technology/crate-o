@@ -4,7 +4,7 @@ import {useRouter, useRoute, onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue
 import {profiles} from '@/profiles';
 import Welcome from "@/components/Welcome.vue";
 import {DataStore} from '../stores/data' ;
-import { HomeFilled, ArrowLeftBold } from '@element-plus/icons-vue';
+import { HomeFilled, ArrowLeftBold, ArrowDown } from '@element-plus/icons-vue';
 import FilteredPaged from '../components/FilteredPaged.vue';
 import LinkEntity from '../components/LinkEntity.vue';
 import Entity from '../components/Entity.vue';
@@ -77,7 +77,7 @@ onBeforeRouteUpdate((to, from) => {
 });
 
 watch(() => $route.query.id, (eid, oldId) => {
-  console.log('state2', window.history.state);
+  //console.log('state2', window.history.state);
   if (data.metadataHandle) { //checking crate if it has not been loaded
     const id = decodeURIComponent([].concat(eid)[0]);
     if (id && data.entity) {
@@ -133,6 +133,7 @@ const commands = {
           //No metadataHandle found start a new Crate
         }
       }
+      data.loading = true;
       let rawCrate = {};
       if (data.metadataHandle) {
         let file = await data.metadataHandle.getFile();
@@ -144,6 +145,7 @@ const commands = {
       data.entities = Array.from(crate.entities({filter: e => e !== DataStore.crate.metadataFileEntity}));
       data.history = [];
       historyStart = window.history.state.position + 1;
+      data.loading = false;
       $router.push({query: {id: encodeURIComponent(DataStore.crate.rootId)}});
     } catch (error) {
       console.error(error);
@@ -214,7 +216,7 @@ function updateEntity({property, value}) {
     <el-form :inline="true">
     <el-form-item class="">
       <el-dropdown trigger="click" @command="command => commands[command]?.()">
-        <el-button type="primary">File &nbsp;<i class="fa-solid fa-caret-down"></i></el-button>
+        <el-button type="primary">File &nbsp;<el-icon class="el-icon--right"><ArrowDown/></el-icon></el-button>
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item command="open">
@@ -279,7 +281,7 @@ function updateEntity({property, value}) {
     </el-breadcrumb>  
   </el-row>
 
-  <el-row class="crate-o" v-if="data.dirHandle">
+  <el-row v-loading="data.loading" class="crate-o" v-if="data.dirHandle">
     <el-col :span="18" class="p-2">
       <Entity v-if="data.entity" v-model="data.entity"></Entity>
     </el-col>

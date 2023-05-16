@@ -36,8 +36,10 @@ function openUrl() {
 </script>
 
 <template>
-  <el-button color="#626aef" type="primary" plain :icon="icon" @click="showEntity" :title="modelValue['@id']">
-    <el-tag size="small" type="info" v-for="type of modelValue['@type']">{{ type }}</el-tag>
+  <el-button class="link-entity" color="#626aef" type="primary" plain @click="showEntity" :title="modelValue['@id']">
+    <span class="flex mr-2">
+      <el-tag class="mr-1 font-bold" size="small" plain v-for="type of modelValue['@type']">{{ type }}</el-tag>
+    </span>
     <slot> {{ label }} </slot>
     <!-- <el-icon class="el-icon--right">
         <Edit />
@@ -59,4 +61,15 @@ function openUrl() {
   </el-dialog>
 </template>
 
-    
+<style>
+.el-button.link-entity {
+  height: fit-content;
+  min-height: 32px;
+}
+.el-button.link-entity>span {
+  flex-wrap: wrap;
+  row-gap: 0.5em;
+  white-space: normal;
+  text-align: left;
+}
+</style>
