@@ -10,7 +10,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue']);
 
 const value = computed(() => props.modelValue?.['@id'] || props.modelValue);
-const values = computed(() => props.options.map(o => (typeof o === 'string') ? { value: o, label: o } : { value: o['@id'], label: o.name }));
+const values = computed(() => props.options.map(o => (typeof o === 'string') ? { value: o, label: o } : { value: o['@id'], label: o.name || o['@id'] }));
 function onChange(newValue) {
   var v = props.options.find(o => o['@id'] && o['@id'] === newValue) || newValue;
   emit('update:modelValue', v);

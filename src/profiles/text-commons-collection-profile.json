@@ -73,10 +73,10 @@
           "name": "conformsTo",
           "help": "A link to the Text Commons RO-Crate profile for collections",
           "type": [
-            "SelectUrl"
+            "Select"
           ],
           "values": [
-            "https://purl.archive.org/language-data-commons/profile#Collection"
+            { "@id": "https://purl.archive.org/language-data-commons/profile#Collection" }
           ],
           "multiple": false
         },
@@ -200,14 +200,14 @@
       "subClassOf": [],
       "inputs": [
         {
-          "id": "http://schema.org/conformsTo",
+          "id": "http://purl.org/dc/terms/conformsTo",
           "name": "conformsTo",
           "help": "A link to the Text Commons RO-Crate profile for collections",
           "type": [
-            "SelectURL"
+            "Select"
           ],
           "values": [
-            "https://purl.archive.org/language-data-commons/profile#Collection"
+            { "@id": "https://purl.archive.org/language-data-commons/profile#Collection" }
           ],
           "multiple": false
         },

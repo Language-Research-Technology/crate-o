@@ -10,7 +10,7 @@ const props = defineProps({
   modelValue: [Object],
   icon: {
     type: [String, Object],
-    default: Edit
+    default: ''
   }
 });
 
@@ -37,6 +37,7 @@ function openUrl() {
 
 <template>
   <el-button class="link-entity" color="#626aef" type="primary" plain @click="showEntity" :title="modelValue['@id']">
+    <el-icon v-if="icon"><component :is="icon"></component></el-icon>
     <span class="flex mr-2">
       <el-tag class="mr-1 font-bold" size="small" plain v-for="type of modelValue['@type']">{{ type }}</el-tag>
     </span>
