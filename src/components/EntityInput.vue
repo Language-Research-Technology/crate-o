@@ -37,7 +37,7 @@ const emit = defineEmits(['newEntity', 'removeValue'])
                 type="text"
                 v-model="data.newValue">
         <template #append v-if="deletable">
-          <el-button @click="$emit('removeValue', {index})"><i class="fa-solid fa-trash"></i></el-button>
+          <el-button style="margin-left:-100%" @click="$emit('removeValue', {index})"><i class="fa-solid fa-trash"></i></el-button>
         </template>
       </el-input>
     </el-col>

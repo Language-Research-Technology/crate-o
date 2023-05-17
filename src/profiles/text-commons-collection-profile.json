@@ -69,7 +69,7 @@
           "multiple": true
         },
         {
-          "id": "http://schema.org/conformsTo",
+          "id": "http://purl.org/dc/terms/conformsTo",
           "name": "conformsTo",
           "help": "A link to the Text Commons RO-Crate profile for collections",
           "type": [
@@ -81,7 +81,7 @@
           "multiple": false
         },
         {
-          "id": "https://schema.org/name",
+          "id": "http://schema.org/name",
           "name": "name",
           "label": "Name",
           "help": "The name of this collection",
@@ -144,7 +144,7 @@
           "name": "temporalCoverage",
           "help": "The range of years of creation for items in this dataset eg 1900-1945. If there are sub collections with different coverages put this on the sub-collections not the top-level. ",
           "type": [
-            "Text"
+            "DateTime","Text"
           ],
           "multiple": true
         },
@@ -176,7 +176,7 @@
           "multiple": false
         },
         {
-          "id": "http://schema.org/hasMember",
+          "id": "http://pcdm.org/models#hasMember",
           "name": "hasMember",
           "help": "If this collection has sub-collections add them here.",
           "type": [
@@ -212,7 +212,7 @@
           "multiple": false
         },
         {
-          "id": "https://schema.org/name",
+          "id": "http://schema.org/name",
           "name": "name",
           "label": "Name",
           "help": "The name of this collection",
@@ -280,7 +280,7 @@
           "multiple": false
         },
         {
-          "id": "http://schema.org/hasMember",
+          "id": "http://pcdm.org/models#hasMember",
           "name": "hasMember",
           "help": "Sub Collection",
           "type": [
@@ -298,7 +298,7 @@
           "multiple": false
         },
         {
-          "id": "https://schema.org/language",
+          "id": "http://schema.org/language",
           "name": "language",
           "label": "Language",
           "help": "Attach a language",
@@ -328,7 +328,7 @@
       "subClassOf": [],
       "inputs": [
         {
-          "id": "https://schema.org/name",
+          "id": "http://schema.org/name",
           "name": "name",
           "label": "Name",
           "help": "The name of this book",
@@ -391,7 +391,7 @@
       "subClassOf": [],
       "inputs": [
         {
-          "id": "https://schema.org/name",
+          "id": "http://schema.org/name",
           "name": "name",
           "label": "Name",
           "help": "The name of this collection",
@@ -454,7 +454,7 @@
       "subClassOf": [],
       "inputs": [
         {
-          "id": "https://schema.org/name",
+          "id": "http://schema.org/name",
           "name": "name",
           "label": "Name",
           "help": "The name of this article",
@@ -526,7 +526,7 @@
       "subClassOf": [],
       "inputs": [
         {
-          "id": "https://schema.org/name",
+          "id": "http://schema.org/name",
           "name": "name",
           "label": "Name",
           "help": "The name of this artilce",
@@ -609,7 +609,7 @@
       "subClassOf": [],
       "inputs": [
         {
-          "id": "https://schema.org/name",
+          "id": "http://schema.org/name",
           "name": "name",
           "label": "name",
           "help": "The name the place",
@@ -629,7 +629,7 @@
           "multiple": false
         },
         {
-          "id": "https://schema.org/location",
+          "id": "http://schema.org/location",
           "name": "affiliation",
           "label": "affiliation",
           "help": "The name the person",
@@ -646,7 +646,7 @@
       "subClassOf": [],
       "inputs": [
         {
-          "id": "https://schema.org/name",
+          "id": "http://schema.org/name",
           "name": "name",
           "label": "name",
           "help": "The name the person",
@@ -666,7 +666,7 @@
           "multiple": false
         },
         {
-          "id": "https://schema.org/affiliation",
+          "id": "http://schema.org/affiliation",
           "name": "affiliation",
           "label": "affiliation",
           "help": "The name the person",
@@ -683,7 +683,7 @@
       "subClassOf": [],
       "inputs": [
         {
-          "id": "https://schema.org/name",
+          "id": "http://schema.org/name",
           "name": "name",
           "label": "name",
           "help": "The name of the organization",
@@ -749,7 +749,7 @@
   },
   "lookup": {
     "Language": {
-      "type": "datapack",
+      "module": "datapack",
       "fields": [
         "@id",
         "name",
@@ -761,12 +761,13 @@
       ]
     },
     "Organization": {
-      "type": "ror"
+      "module": "ror"
     }
   },
   "enabledClasses": [
     "Dataset",
     "Person",
+    "Place",
     "Organization",
     "Book",
     "ScholarlyArticle",
