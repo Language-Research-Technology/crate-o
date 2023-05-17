@@ -33,53 +33,45 @@ const label = computed(() => {
 });
 
 const values = computed(() => {
-  /**
-   * @type {string|object[]}
-   */
-  const value = props.modelValue;
+  const value = /** @type {string|object[]} */(props.modelValue);
   return value ? (Array.isArray(value) ? value : [value]) : [];
 });
-const valueIndexes = computed(() => Array.from(values.value.keys()));
-const indexes = computed(() => {
-  let filtered = valueIndexes.value;
-  if (data.keyword) {
-    let re = new RegExp(data.keyword.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&'), "i");
-    filtered = valueIndexes.value.filter(i => {
-      const v = values.value[i];
-      return (v['@id'] ? [v.name?.[0], v['@id']] : [v]).reduce((r, text) =>
-        r ||= (text && text.match(re)), false);
-    });
-  }
-  return filtered;
-});
 
-const rows = computed(() => {
-  const components = props.components;
-  console.log('get rows ', props.definition.id);
-  console.log('components',props.definition.id,JSON.stringify(components));
-  let start = (data.currentPage - 1) * data.pageSize;
-  let end = start + data.pageSize;
-  if (end > indexes.value.length) end = indexes.value.length;
-  let result = [];
-  for (let i = start; i < end; ++i) {
-    let index = indexes.value[i];
-    let value = values.value[index];
-    console.log(components[index]);
-    console.log(value, props.definition.id);
-    var c = components[index] ?? (components[index] = resolveComponent(value, props.definition));
-    console.log(c);
-    //console.log(value);
-    if (c) result.push([index, value, ...c]);
-  }
-  console.log(result);
-  return result;
-});
+// const valueIndexes = computed(() => Array.from(values.value.keys()));
+// const indexes = computed(() => {
+//   let filtered = valueIndexes.value;
+//   if (data.keyword) {
+//     let re = new RegExp(data.keyword.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&'), "i");
+//     filtered = valueIndexes.value.filter(i => {
+//       const v = values.value[i];
+//       return (v['@id'] ? [v.name?.[0], v['@id']] : [v]).reduce((r, text) =>
+//         r ||= (text && text.match(re)), false);
+//     });
+//   }
+//   return filtered;
+// });
 
-const data = reactive({
-  currentPage: 1,
-  keyword: '',
-  pageSize: pageSize
-});
+// const rows = computed(() => {
+//   const components = props.components;
+//   console.log('get rows ', props.definition.id);
+//   console.log('components',props.definition.id,JSON.stringify(components));
+//   let start = (data.currentPage - 1) * data.pageSize;
+//   let end = start + data.pageSize;
+//   if (end > indexes.value.length) end = indexes.value.length;
+//   let result = [];
+//   for (let i = start; i < end; ++i) {
+//     let index = indexes.value[i];
+//     let value = values.value[index];
+//     console.log(components[index]);
+//     console.log(value, props.definition.id);
+//     var c = components[index] ?? (components[index] = resolveComponent(value, props.definition));
+//     console.log(c);
+//     //console.log(value);
+//     if (c) result.push([index, value, ...c]);
+//   }
+//   console.log(result);
+//   return result;
+// });
 
 function addValue(type) {
   //props.modelValue.push();
@@ -131,14 +123,7 @@ function removeValue(i) {
     emit('update:modelValue', vals);
   }
 }
-function filterValues() {
-  data.currentPage = 1;
-}
 
-function mapIndex(i) {
-  let index = i - 1 + (data.currentPage - 1) * data.pageSize;
-  return indexes.value[index];
-}
 </script>
 
 <template>
@@ -150,23 +135,20 @@ function mapIndex(i) {
       </el-icon>
     </template>
     <div class="flex flex-col flex-grow">
-      <div v-if="values.length > data.pageSize" class="flex flex-row flex-nowrap mb-3">
-        <el-input v-model="data.keyword" placeholder="Enter keyword to filter the values" clearable
-          @input="filterValues" />
-        <el-pagination v-model:current-page="data.currentPage" v-model:page-size="data.pageSize"
-          layout="prev, pager, next, total" :total="indexes.length" />
-      </div>
-
-      <div v-for="[i, value, component, p] of rows" class="flex flex-row flex-nowrap mb-3" :key="i">
-        <component :is="component" v-bind="p" :modelValue="value" @update:modelValue="value => updateValue(i, value)">
-        </component>
+      <FilteredPaged :modelValue="values" v-slot="{ value, index }">
+        <template v-for="[component, componentProps] of [(components[index] ??= resolveComponent(value, definition))]">
+          <component :is="component" v-bind="componentProps" :modelValue="value" 
+              @update:modelValue="value => updateValue(index, value)">
+          </component>
+        </template>
         <div class="pl-2 flex flex-nowrap">
           <!-- Delete Button -->
-          <el-button :disabled="definition.min >= values.length" @click="removeValue(i)" type="danger" plain :icon="Delete"
+          <el-button :disabled="definition.min >= values.length" @click="removeValue(index)" 
+            type="danger" plain :icon="Delete"
             :class="{ invisible: definition.min >= values.length }" size="small"></el-button>
-          <el-button size="small" :icon="QuestionFilled" type="info" plain></el-button>
+          <!-- <el-button size="small" :icon="QuestionFilled" type="info" plain></el-button> -->
         </div>
-      </div>
+      </FilteredPaged>
 
       <ControlAdd :modelValue="values" :definition="definition" class="flex flex-row flex-nowrap" @add="addValue" @addEntity="addEntity">
       </ControlAdd>

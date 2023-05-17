@@ -22,11 +22,14 @@ const filteredIndexes = computed(() => {
   let filtered = indexes.value;
   if (data.keyword) {
     let re = new RegExp(data.keyword.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&'), "i");
-    filtered = indexes.value.filter(i => {
-      const v = props.modelValue[i];
-      return (v['@id'] ? [v.name?.[0], v['@id']] : [v]).reduce((r, text) =>
-        r ||= (text && text.match(re)), false);
+    const values = props.modelValue;
+    filtered = filtered.filter(i => {
+      const val = values[i];
+      for (const text of (val['@id'] ? [val.name?.[0], val['@id']] : [val])) {
+        return text && text.match(re);
+      }
     });
+    //console.log(filtered.map(i => values[i].name));
   }
   return filtered;
 });
@@ -37,13 +40,7 @@ const pagedIndexes = computed(() => {
   if (end > filteredIndexes.value.length) {
     end = filteredIndexes.value.length;
   }
-  let result = [];
-  for (let i = start; i < end; ++i) {
-    let index = indexes.value[i];
-    //let value = props.modelValue[index];
-    result.push(index);
-  }
-  return result;
+  return filteredIndexes.value.slice(start, end);
 });
 
 function filterValues() {
@@ -54,14 +51,22 @@ function filterValues() {
 </script>
 
 <template>
-  <div v-if="modelValue.length > data.pageSize" class="flex flex-row flex-nowrap mb-3">
+  <div v-if="modelValue.length > data.pageSize" class="filtered-paged flex flex-row flex-wrap mb-3">
     <el-input v-model="data.keyword" placeholder="Enter keyword to filter the values" clearable
       @input="filterValues" />
     <el-pagination v-model:current-page="data.currentPage" v-model:page-size="data.pageSize"
-      layout="prev, pager, next, total" :total="filteredIndexes.length" />
+      layout="prev, pager, next, total" :total="filteredIndexes.length" :pager-count="5"/>
   </div>
 
   <div v-for="i of pagedIndexes" class="flex flex-row flex-nowrap mb-3" :key="i">
     <slot :index="i" :value="modelValue[i]"></slot>
   </div>
 </template>
+
+<style>
+.filtered-paged .el-input {
+  width: auto;
+  flex-grow: 1;
+  min-width: min-content;
+}
+</style>
