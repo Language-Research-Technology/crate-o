@@ -1,7 +1,7 @@
 <script setup>
-import { reactive, computed, markRaw } from "vue";
+import { reactive, computed, markRaw, inject } from "vue";
 import { Plus, Close } from '@element-plus/icons-vue';
-import { isPrimitive, DataStore, remoteSearch } from "../stores/data";
+import { $state } from './keys';
 
 const props = defineProps({
   /** The full property values */
@@ -11,6 +11,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue', 'add', 'addEntity']);
 
+const state = inject($state);
 const types = computed(() => props.definition.type ?? ['Text', 'Number', 'Entity']);
 
 const data = reactive({
@@ -30,7 +31,7 @@ const vFocus = (el, binding, vnode) => el.getElementsByTagName('input')[0].focus
 
 function onClick(type) {
   console.log(type);
-  if (isPrimitive(type)) {
+  if (state.isPrimitive(type)) {
     emit('add', type);
     return;
   }
@@ -50,8 +51,8 @@ function addEntity(v) {
 function addNewEntity() {
   const type = data.selectedType;
   const name = data.keyword;
-  const id = name && !DataStore.crate.getEntity('#' + name) ? '#' + name :
-    DataStore.crate.uniqueId(`#${name || type}-`);
+  const id = name && !state.crate.getEntity('#' + name) ? '#' + name :
+    state.crate.uniqueId(`#${name || type}-`);
   const e = {
     "@id": id,
     "@type": type,
@@ -74,7 +75,7 @@ function search(query) {
   // local search
   const qRegex = new RegExp(query, 'i');
   const localOptions = [];
-  for (const entity of DataStore.crate.entities({ filter: { '@type': new RegExp(type, 'i') } })) {
+  for (const entity of state.crate.entities({ filter: { '@type': new RegExp(type, 'i') } })) {
     const vals = (entity.name ?? []).concat(entity['@id']);
     if (vals.reduce(((r, v) => r || qRegex.test(v)), false)) {
       localOptions.push(entity);
@@ -84,7 +85,7 @@ function search(query) {
   data.options[0].options = markRaw(localOptions);
   // remote search
   data.loading = true;
-  remoteSearch(type, query).then(result => {
+  state.remoteSearch(type, query).then(result => {
     console.log(result);
     data.options[1].options = markRaw(result);
     data.loading = false;

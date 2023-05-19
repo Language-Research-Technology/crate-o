@@ -1,8 +1,10 @@
 <script setup>
-import { reactive, computed, toRaw } from "vue";
-import { DataStore, resolveComponent, getPrimitiveComponent } from '../stores/data';
+import { reactive, computed, toRaw, onBeforeMount, inject } from "vue";
+//import { resolveComponent, getPrimitiveComponent } from '../stores/data';
 import { QuestionFilled, Delete, InfoFilled } from '@element-plus/icons-vue';
 import ControlAdd from "./ControlAdd.vue";
+import { $state } from './keys';
+const state = inject($state);
 const pageSize = 10; //Later do in conf the page size
 
 const props = defineProps({
@@ -37,42 +39,6 @@ const values = computed(() => {
   return value ? (Array.isArray(value) ? value : [value]) : [];
 });
 
-// const valueIndexes = computed(() => Array.from(values.value.keys()));
-// const indexes = computed(() => {
-//   let filtered = valueIndexes.value;
-//   if (data.keyword) {
-//     let re = new RegExp(data.keyword.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&'), "i");
-//     filtered = valueIndexes.value.filter(i => {
-//       const v = values.value[i];
-//       return (v['@id'] ? [v.name?.[0], v['@id']] : [v]).reduce((r, text) =>
-//         r ||= (text && text.match(re)), false);
-//     });
-//   }
-//   return filtered;
-// });
-
-// const rows = computed(() => {
-//   const components = props.components;
-//   console.log('get rows ', props.definition.id);
-//   console.log('components',props.definition.id,JSON.stringify(components));
-//   let start = (data.currentPage - 1) * data.pageSize;
-//   let end = start + data.pageSize;
-//   if (end > indexes.value.length) end = indexes.value.length;
-//   let result = [];
-//   for (let i = start; i < end; ++i) {
-//     let index = indexes.value[i];
-//     let value = values.value[index];
-//     console.log(components[index]);
-//     console.log(value, props.definition.id);
-//     var c = components[index] ?? (components[index] = resolveComponent(value, props.definition));
-//     console.log(c);
-//     //console.log(value);
-//     if (c) result.push([index, value, ...c]);
-//   }
-//   console.log(result);
-//   return result;
-// });
-
 function addValue(type) {
   //props.modelValue.push();
   var vals = toRaw(props.modelValue);
@@ -81,7 +47,7 @@ function addValue(type) {
   //console.log(props.definition)
   //console.log('addValue');
   //console.log(vals);
-  var c = getPrimitiveComponent(type, propsOpt);
+  var c = state.getPrimitiveComponent(type, propsOpt);
   var len;
   //console.log(c);
   if (c) {
@@ -136,7 +102,7 @@ function removeValue(i) {
     </template>
     <div class="flex flex-col flex-grow">
       <FilteredPaged :modelValue="values" v-slot="{ value, index }">
-        <template v-for="[component, componentProps] of [(components[index] ??= resolveComponent(value, definition))]">
+        <template v-for="[component, componentProps] of [(components[index] ??= state.resolveComponent(value, definition))]">
           <component :is="component" v-bind="componentProps" :modelValue="value" 
               @update:modelValue="value => updateValue(index, value)">
           </component>

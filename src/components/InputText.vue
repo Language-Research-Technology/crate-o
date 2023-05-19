@@ -15,26 +15,16 @@ const props = defineProps({
 });
 const emit = defineEmits(['update:modelValue']);
 
-const value = ref('' + props.modelValue);
+const value = ref();
 const input = ref(null);
-const isError = ref(false);
+const isValid = computed(() => input.value?.input?.validity?.valid ?? true);
 
 watch(() => props.modelValue, (val) => {
-  value.value = typeof val === 'string' ? ('' + val) : '';
+  value.value = val;
 }, { immediate: true });
 
-function onInput(newValue) {
-  value.value = newValue;
-  var nativeInput = input.value.input;
-  if (newValue && nativeInput && !nativeInput.validity.valid) {
-    isError.value = true;
-  } else {
-    isError.value = false;
-    if (props.type === 'number') newValue = +newValue;
-  }
-}
 function onChange(newValue) {
-  if (!isError.value) {
+  if (isValid.value) {
     emit('update:modelValue', newValue);
   }
 }
@@ -42,8 +32,8 @@ function onChange(newValue) {
 
 
 <template>
-  <el-input class="flex-grow" ref="input" :class="{ 'is-error': isError }" :show-password="props.type === 'password'"
-    :modelValue="value" :type="type" :autosize="{ minRows: 1, maxRows: 6 }" @input="onInput" @change="onChange">
+  <el-input class="flex-grow" ref="input" :class="{ 'is-error': !isValid }" :show-password="props.type === 'password'"
+    v-model="value" :type="type" :autosize="{ minRows: 1, maxRows: 6 }" @change="onChange">
   </el-input>
   <!--input :value="modelValue" @input="$emit('update:modelValue', $event.target.value)"/-->
 </template>

@@ -1,12 +1,12 @@
 <script setup>
-import { reactive, computed, watch, onMounted, onUpdated } from "vue";
-import { DataStore } from '../stores/data';
+import { reactive, computed, watch, onMounted, onUpdated, inject } from "vue";
+import { $state } from './keys';
 import Property from './Property.vue';
 import { ElTabs, ElTabPane } from 'element-plus';
 
 const props = defineProps(['modelValue']);
 const emit = defineEmits(['update:modelValue']);
-
+const state = inject($state);
 // watch(props, (val, oldVal) => {
 //   console.log('props changed');
 //   console.log(val, oldVal);
@@ -18,10 +18,11 @@ const emit = defineEmits(['update:modelValue']);
 // }, { immediate: true });
 
 onUpdated(() => {
-  console.log('updated');
+  console.log('entity updated');
 });
 onMounted(() => {
   console.log('mounted');
+  //console.log(definitions.value);
 });
 
 const data = reactive({
@@ -30,20 +31,18 @@ const data = reactive({
 });
 
 watch(() => props.modelValue, (e) => {
-  data.activeLayout = 'About'
-  DataStore.meta[e['@id']] ??= {};
+  data.activeLayout = 'About';
 }, { immediate: true });
 
-//const entity = computed(() => props.modelValue);
-//const definitions = computed(() => DataStore.getDefinitions(props.modelValue));
-const definitions = computed(() => {console.log(props.modelValue['@id']); return DataStore.getDefinitions(props.modelValue)});
+const definitions = computed(() => state.getDefinitions(props.modelValue));
+//const definitions = computed(() => {console.log(props.modelValue['@id']); return state.getDefinitions(props.modelValue)});
 
 const layouts = computed(() => {
   let d = definitions.value;
   let otherIds = new Set(Object.keys(d));
   //console.log('getDefinitions', d);
   const types = props.modelValue['@type'] || [];
-  const layoutsByType = DataStore.profile.value?.layouts || [];
+  const layoutsByType = state.profile?.layouts || [];
   let layouts = types.reduce((l, t) => l || layoutsByType[t], null);
   if (layouts) {
     layouts = [{
@@ -69,22 +68,24 @@ const layouts = computed(() => {
 
 function updateProperty(def, value) {
   const entity = props.modelValue;
-  const name = def.id in entity || DataStore.crate.resolveTerm(def.name) !== def.id ? def.id : def.name;
-  if (entity[name] !== value) entity[name] = value;
+  const key = def.key || def.name;
+  if (entity[key] !== value) entity[key] = value;
   emit('update:modelValue', entity);
 }
 
 function getProperty(def) {
-  console.log('getProperty', def.name);
+  // console.log('getProperty', def.name);
+  // console.log('def.id', def.id);
+  // console.log('def.name', def.name);
+  // console.log('def.key', def.key);
   const entity = props.modelValue;
-  const name = def.id in entity || DataStore.crate.resolveTerm(def.name) !== def.id ? def.id : def.name;
-  return entity[name];
+  const key = def.key || def.name;
+  return entity[key];
 }
 
 function getComponents(def) {
   const entity = props.modelValue;
-  const c = DataStore.meta[entity['@id']][def.id] ??= [];
-  return c;
+  return state.getComponents(entity['@id'], def.id);
 }
 
 </script>

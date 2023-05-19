@@ -1,7 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { Edit } from '@element-plus/icons-vue';
-import { DataStore } from '../stores/data';
 import { useRouter, useRoute } from 'vue-router';
 
 const $router = useRouter();
@@ -21,8 +20,7 @@ const dialogVisible = ref(false);
 
 function showEntity() {
   const id = props.modelValue['@id'];
-  const e = DataStore.crate?.getEntity(id);
-  if (e) {
+  if (props.modelValue['@type']) {
     $router.push({query: {id: encodeURIComponent(id)}});
   } else {
     dialogVisible.value = true;
@@ -47,7 +45,7 @@ function openUrl() {
       </el-icon> -->
   </el-button>
   <el-dialog v-model="dialogVisible" :title="label" width="50%">
-    <span>No entity found in this crate referenced by id {{ }}. Please select from the following options:</span>
+    <span>No entity with identifier <pre>{{ modelValue['@id'] }}</pre> found in this crate. Please select from the following options:</span>
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogVisible = false">Cancel</el-button>

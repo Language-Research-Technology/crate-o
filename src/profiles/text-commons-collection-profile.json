@@ -60,7 +60,7 @@
       "subClassOf": [],
       "inputs": [
         {
-          "id": "https://schema.org/language",
+          "id": "http://schema.org/language",
           "name": "language",
           "label": "Language",
           "help": "Attach a language",
@@ -311,17 +311,7 @@
     "RepositoryObject": {
       "definition": "override",
       "subClassOf": [],
-      "inputs": [
-        {
-          "id": "https://purl.archive.org/language-data-commons/terms#language",
-          "name": "language",
-          "help": "A link to the Text Commons RO-Crate profile for collections",
-          "type": [
-            "SelectURL"
-          ],
-          "multiple": true
-        }
-      ]
+      "inputs": []
     },
     "Book": {
       "definition": "override",
@@ -718,7 +708,7 @@
       "subClassOf": [],
       "inputs": [
         {
-          "id": "https://schema.org/encodingFormat",
+          "id": "http://schema.org/encodingFormat",
           "name": "encodingFormat",
           "help": "Media type typically expressed using a MIME format",
           "type": [

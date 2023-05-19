@@ -4,24 +4,25 @@ import Entity from '../components/Entity.vue';
 //import testData from '../../test-data/cooee/ro-crate-metadata.json' ;
 import testData from '../../test-data/sydney/ro-crate-metadata.json' ;
 
-import {DataStore} from '../stores/data' ;
+import {EditorState} from '../components/EditorState' ;
 import langProfile from '../profiles/text-commons-collection-profile.json';
 const data = reactive({
   entity: null,
   profile: langProfile
 });
 
+const state = new EditorState();
 onMounted(async function() {
-  await DataStore.setCrate(testData);
-  DataStore.setProfile(langProfile);
-  data.entity = DataStore.crate.rootDataset;
+  await state.setCrate(testData);
+  state.setProfile(langProfile);
+  data.entity = state.crate.rootDataset;
 
   window.data = data;
-  window.crate = DataStore.crate;
+  window.state = state;
 });
 
 function showJson() {
-  console.log(DataStore.crate.toJSON());
+  console.log(state.crate.toJSON());
 }
 </script>
 

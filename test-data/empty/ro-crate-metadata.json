@@ -16,7 +16,21 @@
       "@id": "./",
       "@type": "Dataset",
       "@reverse": {},
-      "name": "./"
+      "name": "./",
+      "licence": ["https://purl.archive.org/language-data-commons/terms#DataLicense"]
+    },
+    {
+      "@id": "https://purl.archive.org/language-data-commons/terms#DataLicense",
+      "@type": "rdfs:Class",
+      "name": "DataLicense",
+      "rdfs:label": "DataLicense",
+      "rdfs:comment": "A licence document for data licensing. This is a superclass of DataReuseLicense and DataLicense",
+      "rdfs:subClassOf": {
+        "@id": "http://schema.org/CreativeWork"
+      },
+      "sameAs": {
+        "@id": "https://creativecommons.org/ns#License"
+      }
     }
   ]
 }

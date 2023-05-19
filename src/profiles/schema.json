@@ -27,7 +27,7 @@
           "multiple": true
         },
         {
-          "id": "https://schema.org/name",
+          "id": "http://schema.org/name",
           "name": "name",
           "label": "Name",
           "help": "The name of this ontology",
@@ -72,7 +72,7 @@
       "subClassOf": [],
       "inputs": [
         {
-          "id": "https://schema.org/name",
+          "id": "http://schema.org/name",
           "name": "name",
           "label": "Name",
           "help": "The name of this Class",
@@ -112,7 +112,7 @@
           "multiple": false
         },
         {
-          "id": "https://schema.org/sameAs",
+          "id": "http://schema.org/sameAs",
           "name": "sameAs",
           "help": "URL of an equivalent term",
           "type": [
@@ -127,7 +127,7 @@
       "subClassOf": [],
       "inputs": [
         {
-          "id": "https://schema.org/name",
+          "id": "http://schema.org/name",
           "name": "name",
           "label": "Name",
           "help": "The name of this DefinedTerm",
@@ -138,7 +138,7 @@
           ]
         },
         {
-          "id": "https://schema.org/description",
+          "id": "http://schema.org/description",
           "name": "description",
           "help": "A description of the defined Term",
           "type": [
@@ -147,7 +147,7 @@
           "multiple": false
         },
         {
-          "id": "https://schema.org/inDefinedTermSet",
+          "id": "http://schema.org/inDefinedTermSet",
           "name": "inDefinedTermSet",
           "help": "A set of defined terms that can be used for the range of values of a property",
           "type": [
@@ -156,7 +156,7 @@
           "multiple": false
         },
         {
-          "id": "https://schema.org/sameAs",
+          "id": "http://schema.org/sameAs",
           "name": "sameAs",
           "help": "URL of an equivalent term",
           "type": [
@@ -171,7 +171,7 @@
       "subClassOf": [],
       "inputs": [
         {
-          "id": "https://schema.org/name",
+          "id": "http://schema.org/name",
           "name": "name",
           "label": "Name",
           "help": "The name of this DefinedTermSet",
@@ -182,7 +182,7 @@
           ]
         },
         {
-          "id": "https://schema.org/description",
+          "id": "http://schema.org/description",
           "name": "description",
           "help": "A description of the defined set of defined terms",
           "type": [
@@ -191,7 +191,7 @@
           "multiple": false
         },
         {
-          "id": "https://schema.org/hasDefinedTerm",
+          "id": "http://schema.org/hasDefinedTerm",
           "name": "hasDefinedTerm",
           "help": "A set of defined terms that can be used for the range of values of a property",
           "type": [
@@ -200,7 +200,7 @@
           "multiple": true
         },
         {
-          "id": "https://schema.org/sameAs",
+          "id": "http://schema.org/sameAs",
           "name": "sameAs",
           "help": "URL of an equivalent term",
           "type": [
@@ -215,7 +215,7 @@
       "subClassOf": [],
       "inputs": [
         {
-          "id": "https://schema.org/name",
+          "id": "http://schema.org/name",
           "name": "name",
           "label": "Name",
           "help": "The name of this Class",
@@ -264,7 +264,7 @@
           "multiple": true
         },
         {
-          "id": "https://schema.org/definedTermSet",
+          "id": "http://schema.org/definedTermSet",
           "name": "definedTermSet",
           "help": "A set of defined terms that can be used for the range of values of this property",
           "type": [
@@ -283,7 +283,7 @@
           "multiple": false
         },
         {
-          "id": "https://schema.org/sameAs",
+          "id": "http://schema.org/sameAs",
           "name": "sameAs",
           "help": "URL of an equivalent term",
           "type": [
@@ -298,7 +298,7 @@
       "subClassOf": [],
       "inputs": [
         {
-          "id": "https://schema.org/name",
+          "id": "http://schema.org/name",
           "name": "name",
           "label": "name",
           "help": "The name the person",
@@ -318,7 +318,7 @@
           "multiple": false
         },
         {
-          "id": "https://schema.org/affiliation",
+          "id": "http://schema.org/affiliation",
           "name": "affiliation",
           "label": "affiliation",
           "help": "The name the person",
@@ -335,7 +335,7 @@
       "subClassOf": [],
       "inputs": [
         {
-          "id": "https://schema.org/name",
+          "id": "http://schema.org/name",
           "name": "name",
           "label": "name",
           "help": "The name of the organization",
