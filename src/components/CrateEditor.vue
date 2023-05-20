@@ -1,6 +1,6 @@
 <script setup>
 
-import { shallowReactive, reactive, watch, computed, provide, onUpdated } from "vue";
+import { ref, shallowReactive, reactive, watch, computed, provide, onUpdated } from "vue";
 import { $state } from './keys';
 import { EditorState } from './EditorState';
 import { HomeFilled, ArrowLeftBold } from '@element-plus/icons-vue';
@@ -105,7 +105,7 @@ watch(() => $route.query.id, (eid, oldId) => {
     // console.log('data.history.length', data.history.length);
     //if (window.history.state.position > historyStart + data.history.length) {
     if (!data.history.length || id !== data.history[data.history.length - 1]['@id']) {
-      if (data.entity !== data.rootDataset) {
+      if (data.entity['@id'] !== data.rootDataset['@id']) {
         // new page
         data.history.push(data.entity);
       }
@@ -131,18 +131,21 @@ watch(() => props.profile, (profile) => {
 
 const reverseEntities = computed(() => Object.values(data.entity?.['@reverse'] || {}).
   reduce((a, e) => a.concat(e), []).filter(e => e !== state.crate.metadataFileEntity));
-
-const crate = computed(() => state.crate.toJSON());
-function updateCrate(cb) {
-  cb(state.crate);
-}
-defineExpose({ crate });
+const forceKey = ref(0);
+defineExpose({ 
+  get rootDataset() { return data.rootDataset }, 
+  get crate() { return state.crate.toJSON(); },
+  updateCrate(cb) {
+    cb(state.crate);
+    forceKey.value++;
+  }
+});
 
 </script>
 
 
 <template>
-<div>
+<div :key="forceKey">
   <el-row class="bg-slate-300 p-2" v-if="data.rootDataset">
     <el-breadcrumb separator="/">
       <el-breadcrumb-item>

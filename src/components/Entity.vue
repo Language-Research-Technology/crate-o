@@ -30,7 +30,7 @@ const data = reactive({
   activeLayout: ''
 });
 
-watch(() => props.modelValue, (e) => {
+watch([state, () => props.modelValue], () => {
   data.activeLayout = 'About';
 }, { immediate: true });
 

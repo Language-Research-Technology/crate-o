@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, ref, computed } from 'vue';
+import { shallowReactive, ref, computed } from 'vue';
 import { profiles } from '@/profiles';
 import Welcome from "@/components/Welcome.vue";
 //import {DataStore} from '../stores/data' ;
@@ -7,7 +7,7 @@ import { HomeFilled, ArrowLeftBold, ArrowDown } from '@element-plus/icons-vue';
 
 //import EntityLinks from "@/components/EntityLinks.vue";
 
-const data = reactive({
+const data = shallowReactive({
   /** @type {?FileSystemDirectoryHandle} */
   dirHandle: null,
   /** @type {?FileSystemFileHandle} */
@@ -66,7 +66,7 @@ const commands = {
 
   async addFiles() {
     const dirHandle = data.dirHandle;
-    await processFiles({ dirHandle, root: '' });
+    editor.value.rootDataset.hasPart = await collectFiles({ dirHandle, root: '' });
   },
 
   async save() {
@@ -94,32 +94,43 @@ const commands = {
   }
 };
 
-const notThisFiles = [
-  'ro-crate-metadata.json',
-  '.DS_Store',
-  '.git',
-  'node_modules'
-];
+const excludedFiles = {
+  'ro-crate-metadata.json':'',
+  'node_modules':''
+};
 
-async function processFiles({ dirHandle, root }) {
-  for await (const [key, handle] of dirHandle.entries()) {
-    let filePath = root ? root + '/' + key : key;
-    if (handle.kind === 'directory' && !notThisFiles.includes(key)) {
-      await processFiles({ dirHandle: handle, root: filePath });
-    } else if (handle.kind === 'file' && !notThisFiles.includes(key)) {
-      const file = {
-        "@id": filePath,
-        "@type": "File"
-      };
-      editor.value.updateCrate(crate => {
-        crate.addValues(crate.rootDataset, 'hasPart', file);
-      });
+/**
+ * 
+ * @param {object} param0 
+ * @param {FileSystemDirectoryHandle} param0.dirHandle
+ * @param {string} param0.root
+ */
+async function collectFiles({ dirHandle, root }) {
+  const files = [];
+  /** @type {[string, FileSystemFileHandle|FileSystemDirectoryHandle][]} */
+  const stack = [[root, dirHandle]];
+  /** @type {[string, FileSystemFileHandle|FileSystemDirectoryHandle]} */
+  var entry;
+  while ((entry = stack.pop())) {
+    let [name, handle] = entry;
+    if (handle.kind === 'directory') {
+      if (name) name += '/'
+      const entries = [];
+      for await (const entry of handle.entries()) {
+        entries.push(entry);
+      }
+      for(var i = entries.length; i--;) {
+        const e = entries[i];
+        if (!e[0].startsWith('.') && !(e[0] in excludedFiles)) {
+          e[0] = name + e[0];
+          stack.push(e);
+        }
+      }
+    } else {
+      files.push({"@id": name, "@type": "File"});
     }
   }
-}
-
-function updateEntity({ property, value }) {
-  //  data.entity[property] = value;
+  return files;
 }
 
 </script>
@@ -140,12 +151,12 @@ function updateEntity({ property, value }) {
                   Open Directory
                 </el-tooltip>
               </el-dropdown-item>
-              <el-dropdown-item command="addFiles" :disabled="data.dirHandle?.name === undefined">
+              <el-dropdown-item command="addFiles" :disabled="!data.dirHandle">
                 <el-tooltip effect="dark" placement="right" content="Load Files (With Selected Directory)">
                   Load Files
                 </el-tooltip>
               </el-dropdown-item>
-              <el-dropdown-item command="save" :disabled="data.dirHandle?.name === undefined">
+              <el-dropdown-item command="save" :disabled="!data.dirHandle">
                 <el-tooltip effect="dark" placement="right"
                   content="Save crate metadata to the currently opened directory">
                   Save Progress
@@ -177,8 +188,8 @@ function updateEntity({ property, value }) {
     </el-form>
   </div>
 
-  <CrateEditor ref="editor" v-loading="data.loading" v-if="data.crate"
-    v-model:entityId="data.entityId" :crate="data.crate" :profile="profile" @ready="data.loading=false">
+  <CrateEditor ref="editor" v-loading="data.loading" v-if="data.crate" v-model:entityId="data.entityId"
+    :crate="data.crate" :profile="profile" @ready="data.loading = false">
   </CrateEditor>
   <div v-else>
     <welcome />
