@@ -2,6 +2,7 @@
 import { reactive, computed, watch, onMounted, onUpdated, inject } from "vue";
 import { $state } from './keys';
 import Property from './Property.vue';
+import None from './None.vue';
 import { ElTabs, ElTabPane } from 'element-plus';
 
 const props = defineProps(['modelValue']);
@@ -26,7 +27,7 @@ onMounted(() => {
 });
 
 const data = reactive({
-//  entity: props.modelValue,
+  //  entity: props.modelValue,
   activeLayout: ''
 });
 
@@ -91,14 +92,14 @@ function getComponents(def) {
 </script>
 
 <template>
-  <el-form id="#entityForm" label-width="auto" novalidate>
-    <component :is="layouts?ElTabs:'div'" tab-position="left" v-model="data.activeLayout">
-      <component :is="layouts?ElTabPane:'div'" v-for="(layout, i) in (layouts || [{ name: 'About', definitions }])"
-        :label="layout.name" :name="layout.name">
-        <Property v-if="data.activeLayout === layout.name" v-for="def in layout.definitions" :key="def.id" 
-          :modelValue="getProperty(def)" :components="getComponents(def)"
-          :definition="def" @update:modelValue="v => updateProperty(def, v)"></Property>
-      </component>
+  <component :is="layouts?ElTabs:None" tab-position="left" v-model="data.activeLayout">
+    <component :is="layouts?ElTabPane:None" v-for="(layout, i) in (layouts || [{ name: 'About', definitions }])"
+      :label="layout.name" :name="layout.name">
+      <el-form id="#entityForm" label-width="auto" novalidate v-if="data.activeLayout === layout.name">
+        <Property v-for="def in layout.definitions" :key="def.id"
+          :modelValue="getProperty(def)" :components="getComponents(def)" :definition="def"
+          @update:modelValue="v => updateProperty(def, v)"></Property>
+      </el-form>
     </component>
-  </el-form>
+  </component>
 </template>
