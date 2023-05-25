@@ -17,7 +17,7 @@
       "subClassOf": [],
       "inputs": [
         {
-          "id": "http://schema.org/conformsTo",
+          "id": "http://purl.org/dc/terms/conformsTo",
           "name": "conformsTo",
           "help": "The URL for 'Workflow RO-Crate profile 1.0'",
           "type": [
@@ -48,6 +48,7 @@
           ],
           "multiple": false
         },
+        {
           "id": "https://schema.org/datePublished",
           "name": "datePublished",
           "help": "Date of this release",
@@ -323,6 +324,9 @@
         "glottologCode",
         "languageCode"
       ]
+    },
+    "Organization": {
+      "module": "ror"
     }
   },
   "enabledClasses": [
