@@ -40,6 +40,14 @@
           ]
         },
         {
+          "id": "http://schema.org/creditText",
+          "name": "creditText",
+          "help": "A text based citation for this notebook data package",
+          "type": [
+            "TextArea"
+          ],
+          "multiple": false
+        },
           "id": "https://schema.org/datePublished",
           "name": "datePublished",
           "help": "Date of this release",
@@ -135,7 +143,7 @@
         {
           "id": "http://schema.org/creditText",
           "name": "creditText",
-          "help": "A text based citation",
+          "help": "A text based citation for this work",
           "type": [
             "TextArea"
           ],
