@@ -1,12 +1,12 @@
 {
   "metadata": {
     "name": "Language Data Commons Jupyter Notebook",
-    "description": "Describo profile for a Jupyter Notebook",
+    "description": "RO-Crate editor profile for a Jupyter Notebook",
     "version": "0.0.1"
   },
   "rootDatasets": {
     "Schema": {
-      "type": "Dataset, RepositoryCollection"
+      "type": "Dataset"
     }
   },
   "hide": {"Dataset": []},
@@ -19,12 +19,12 @@
         {
           "id": "http://schema.org/conformsTo",
           "name": "conformsTo",
-          "help": "A link to the Text Commons RO-Crate profile for collections",
+          "help": "The URL for 'Workflow RO-Crate profile 1.0'",
           "type": [
             "SelectUrl"
           ],
           "values": [
-            "https://purl.archive.org/language-data-commons/profile#Collection"
+            "https://w3id.org/workflowhub/workflow-ro-crate/1.0"
           ],
           "multiple": false
         },
@@ -32,7 +32,7 @@
           "id": "https://schema.org/name",
           "name": "name",
           "label": "Name",
-          "help": "The name of this collection",
+          "help": "The name of this notebook",
           "required": true,
           "multiple": false,
           "type": [
@@ -42,7 +42,7 @@
         {
           "id": "https://schema.org/datePublished",
           "name": "datePublished",
-          "help": "Date of first broadcast/publication.",
+          "help": "Date of this release",
           "type": [
             "Date"
           ],
@@ -51,7 +51,7 @@
         {
           "id": "http://schema.org/author",
           "name": "author",
-          "help": "The person or organization responsible for creating this collection of data",
+          "help": "The person or organization responsible for creating this collection of notebook",
           "type": [
             "Person",
             "Organization"
@@ -61,7 +61,7 @@
         {
           "id": "http://schema.org/publisher",
           "name": "publisher",
-          "help": "The organization responsible for releasing this collection of data",
+          "help": "The organization responsible for releasing this notebook",
           "type": [
             "Organization"
           ],
@@ -70,7 +70,7 @@
         {
           "id": "http://schema.org/funder",
           "name": "funder",
-          "help": "Organization(s) responsible for funding the creation or collection of this data",
+          "help": "Organization(s) responsible for funding the creation of this notebook",
           "type": [
             "Organization"
           ],
@@ -81,8 +81,7 @@
           "name": "citation",
           "help": "Associated Publications",
           "type": [
-            "Book",
-            "ScholarlyArticle",
+            
             "CreativeWork"
           ],
           "multiple": true
@@ -90,268 +89,25 @@
         {
           "id": "http://schema.org/description",
           "name": "description",
-          "help": "An abstract of the collection. Include as much detail as possible about the motivation and use of the collection, including things that we do not yet have properties for",
+          "help": "An abstract of the notebook. Include as much detail as possible about the motivation and use of the collection, including things that we do not yet have properties for",
           "type": [
             "TextArea"
           ],
           "multiple": false
         },
-        {
-          "id": "http://schema.org/temporalCoverage",
-          "name": "temporalCoverage",
-          "help": "The range of years of creation for items in this dataset eg 1900-1945. If there are sub collections with different coverages put this on the sub-collections not the top-level. ",
-          "type": [
-            "Text"
-          ],
-          "multiple": false
-        },
-        {
-          "id": "http://schema.org/spatialCoverage",
-          "name": "spatialCoverage",
-          "help": "The spatialCoverage of a CreativeWork indicates the place(s) which are the focus of the content. It is a subproperty of contentLocation intended primarily for more technical and detailed materials. For example with a Dataset, it indicates areas that the dataset describes: a dataset Cape York languages would have spatialCoverage which was the place: the outline of the Cape. ",
-          "type": [
-            "Geo"
-          ],
-          "multiple": false
-        },
-        {
-          "id": "http://schema.org/hasCollectionProtocol",
-          "name": "hasCollectionProtocol",
-          "help": "Link to a CollectionProtocol object with (at least) a summary of how resources were selected or elicited for this collection / sub-collection",
-          "type": [
-            "CollectionProtocol"
-          ],
-          "multiple": false
-        },
-        {
-          "id": "http://schema.org/contentLocation",
-          "name": "hasCollectionProtocol",
-          "help": "What place is associated with this collection",
-          "type": [
-            "CollectionProtocol"
-          ],
-          "multiple": false
-        },
-        {
-          "id": "http://schema.org/hasMember",
-          "name": "hasMember",
-          "help": "If this collection has sub-collections add them here.",
-          "type": [
-            "RepositoryCollection"
-          ],
-          "multiple": true
-        },
-        {
-          "id": "http://schema.org/hasPart",
-          "name": "hasPart",
-          "help": "Indicates an item or CreativeWork that is part of this item, or CreativeWork (in some sense).",
-          "type": [
-            "File"
-          ],
-          "multiple": true
-        },
+       
         {
           "id": "http://schema.org/mainEntity",
           "name": "mainEntity",
           "help": "Indicates the Main Workflow",
           "type": [
-            "File", "SoftwareSourceCode", "ComputationalWorkflow"
+            "File"
           ],
           "multiple": true
         }
       ]
     },
-    "RepositoryCollection": {
-      "definition": "override",
-      "subClassOf": [],
-      "inputs": [
-        {
-          "id": "http://schema.org/conformsTo",
-          "name": "conformsTo",
-          "help": "A link to the Text Commons RO-Crate profile for collections",
-          "type": [
-            "SelectURL"
-          ],
-          "values": [
-            "https://purl.archive.org/language-data-commons/profile#Collection"
-          ],
-          "multiple": false
-        },
-        {
-          "id": "https://schema.org/name",
-          "name": "name",
-          "label": "Name",
-          "help": "The name of this collection",
-          "required": true,
-          "multiple": false,
-          "type": [
-            "Text"
-          ]
-        },
-        {
-          "id": "http://schema.org/author",
-          "name": "author",
-          "help": "The person or organization responsible for creating this collection of data. Authors should be identified using URIs such as ORCiD or ROR",
-          "type": [
-            "Person",
-            "Organization"
-          ],
-          "multiple": true
-        },
-        {
-          "id": "http://schema.org/funder",
-          "name": "funder",
-          "help": "Organization(s) responsible for funding the creation or collection of this data",
-          "type": [
-            "Organization"
-          ],
-          "multiple": true
-        },
-        {
-          "id": "http://schema.org/citation",
-          "name": "citation",
-          "help": "Associated Publications",
-          "type": [
-            "Book",
-            "ScholarlyArticle",
-            "CreativeWork"
-          ],
-          "multiple": true
-        },
-        {
-          "id": "http://schema.org/description",
-          "name": "description",
-          "help": "A description of the collection",
-          "type": [
-            "TextArea"
-          ],
-          "multiple": false
-        },
-        {
-          "id": "http://schema.org/temporalCoverage",
-          "name": "temporalCoverage",
-          "help": "The range of years of creation for items in this dataset eg 1900-1945. If there are sub collections with different coverages put this on the sub-collections not the top-level. ",
-          "type": [
-            "Text"
-          ],
-          "multiple": false
-        },
-        {
-          "id": "http://schema.org/hasCollectionProtocol",
-          "name": "hasCollectionProtocol",
-          "help": "Link to a CollectionProtocol object with (at least) a summary of how resources were selected or elicited for this collection / sub-collection",
-          "type": [
-            "CollectionProtocol"
-          ],
-          "multiple": false
-        },
-        {
-          "id": "http://schema.org/hasMember",
-          "name": "hasMember",
-          "help": "Sub Collection",
-          "type": [
-            "RepositoryCollection"
-          ],
-          "multiple": true
-        },
-        {
-          "id": "http://schema.org/dateCreated",
-          "name": "dateCreated",
-          "help": "The (earliest) date the data in this dataset were created",
-          "type": [
-            "Date"
-          ],
-          "multiple": false
-        },
-        {
-          "id": "https://schema.org/language",
-          "name": "language",
-          "label": "Language",
-          "help": "Attach a language",
-          "type": ["Language"],
-          "required": true,
-          "multiple": true
-        }
-      ]
-    },
-    "RepositoryObject": {
-      "definition": "override",
-      "subClassOf": [],
-      "inputs": [
-        {
-          "id": "https://purl.archive.org/language-data-commons/terms#language",
-          "name": "language",
-          "help": "A link to the Text Commons RO-Crate profile for collections",
-          "type": [
-            "SelectURL"
-          ],
-          "multiple": true
-        }
-      ]
-    },
-    "Book": {
-      "definition": "override",
-      "subClassOf": [],
-      "inputs": [
-        {
-          "id": "https://schema.org/name",
-          "name": "name",
-          "label": "Name",
-          "help": "The name of this collection",
-          "required": true,
-          "multiple": false,
-          "type": [
-            "Text"
-          ]
-        },
-        {
-          "id": "http://schema.org/author",
-          "name": "author",
-          "help": "The person or organization responsible for creating this collection of data",
-          "type": [
-            "Person",
-            "Organization"
-          ],
-          "multiple": true
-        },
-        {
-          "id": "http://schema.org/description",
-          "name": "description",
-          "help": "A description of the collection",
-          "type": [
-            "TextArea"
-          ],
-          "multiple": false
-        },
-        {
-          "id": "http://schema.org/datePublished",
-          "name": "datePublished",
-          "help": "The (earliest) date the data in this dataset were created",
-          "type": [
-            "Date"
-          ],
-          "multiple": false
-        },
-        {
-          "id": "http://schema.org/publisher",
-          "name": "publisher",
-          "help": "The Organization that published this work (use ROR IDs for institutions)",
-          "type": [
-            "Organization"
-          ],
-          "multiple": false
-        },
-        {
-          "id": "http://schema.org/isbn",
-          "name": "isbn",
-          "help": "The ISBN for this book",
-          "type": [
-            "Text"
-          ],
-          "multiple": false
-        }
-      ]
-    },
+    
     "CreativeWork": {
       "definition": "override",
       "subClassOf": [],
@@ -370,7 +126,16 @@
         {
           "id": "http://schema.org/description",
           "name": "description",
-          "help": "An abstract of the book. Include citation details.",
+          "help": "An abstract of the work",
+          "type": [
+            "TextArea"
+          ],
+          "multiple": false
+        },
+        {
+          "id": "http://schema.org/creditText",
+          "name": "creditText",
+          "help": "A text based citation",
           "type": [
             "TextArea"
           ],
@@ -379,7 +144,7 @@
         {
           "id": "http://schema.org/author",
           "name": "author",
-          "help": "The person or organization responsible for creating this collection of data",
+          "help": "The person or organization responsible for creating this work",
           "type": [
             "Person",
             "Organization"
@@ -398,7 +163,7 @@
         {
           "id": "http://schema.org/datePublished",
           "name": "datePublished",
-          "help": "The (earliest) date the data in this dataset were created",
+          "help": "The date this work was published",
           "type": [
             "Date"
           ],
@@ -407,203 +172,11 @@
         {
           "id": "http://schema.org/publisher",
           "name": "publisher",
-          "help": "The Organization that published this work (use ROR IDs for institutions",
+          "help": "The Organization that published this work (use ROR IDs for institutions)",
           "type": [
-            "Organization"
+            "Organization", "Text"
           ],
           "multiple": false
-        }
-      ]
-    },
-    "ScholarlyArticle": {
-      "definition": "override",
-      "subClassOf": [],
-      "inputs": [
-        {
-          "id": "https://schema.org/name",
-          "name": "name",
-          "label": "Name",
-          "help": "The name of this article",
-          "required": true,
-          "multiple": false,
-          "type": [
-            "Text"
-          ]
-        },
-        {
-          "id": "http://schema.org/description",
-          "name": "description",
-          "help": "An abstract of the article, include details of how to cite it. ",
-          "type": [
-            "TextArea"
-          ],
-          "multiple": false
-        },
-        {
-          "id": "http://schema.org/author",
-          "name": "author",
-          "help": "The person or organization responsible for creating this collection of data",
-          "type": [
-            "Person",
-            "Organization"
-          ],
-          "multiple": true
-        },
-        {
-          "id": "http://schema.org/description",
-          "name": "description",
-          "help": "A description of the collection",
-          "type": [
-            "TextArea"
-          ],
-          "multiple": false
-        },
-        {
-          "id": "http://schema.org/datePublished",
-          "name": "datePublished",
-          "help": "The (earliest) date the data in this dataset were created",
-          "type": [
-            "Date"
-          ],
-          "multiple": false
-        },
-        {
-          "id": "http://schema.org/publisher",
-          "name": "publisher",
-          "help": "The Organization that published this work (use ROR IDs for institution",
-          "type": [
-            "Organization"
-          ],
-          "multiple": false
-        },
-        {
-          "id": "http://schema.org/issn",
-          "name": "issn",
-          "help": "The ISSN for this publication",
-          "type": [
-            "Text"
-          ],
-          "multiple": false
-        }
-      ]
-    },
-    "CollectionProtocol": {
-      "definition": "override",
-      "subClassOf": [],
-      "inputs": [
-        {
-          "id": "https://schema.org/name",
-          "name": "name",
-          "label": "Name",
-          "help": "The name of this artilce",
-          "required": true,
-          "multiple": false,
-          "type": [
-            "Text"
-          ]
-        },
-        {
-          "id": "http://schema.org/description",
-          "name": "description",
-          "help": "An abstract of the article, include details of how to cite it. ",
-          "type": [
-            "TextArea"
-          ],
-          "multiple": false
-        },
-        {
-          "id": "http://schema.org/author",
-          "name": "author",
-          "help": "The person or organization responsible for creating this collection of data",
-          "type": [
-            "Person",
-            "Organization"
-          ],
-          "multiple": true
-        },
-        {
-          "id": "http://schema.org/description",
-          "name": "description",
-          "help": "A summary of the collection protocol used for this collection or subcollection - eg how texts were selected, or what prompts were given to participants",
-          "type": [
-            "TextArea"
-          ],
-          "multiple": false
-        },
-        {
-          "id": "http://purl.archive.org/language-data-commons/terms#CollectionProtocolType",
-          "name": "collectionProtocolType",
-          "help": "What kind of collection protocol is this",
-          "type": [
-            "SelectObject"
-          ],
-          "values": [
-            {
-              "@id": "txc:ElicitationTask",
-              "@type": "DefinedTerm",
-              "description": "The collection protocol includes a task-based prompt to participants",
-              "inDefinedTermSet": {
-                "@id": "txc:CollectionProtocolTypeTerms"
-              },
-              "name": "ElicitationTask"
-            },
-            {
-              "@id": "txc:TextSelectionCriteria",
-              "@type": "DefinedTerm",
-              "description": "A description of the criteria used to select texts in a collection",
-              "inDefinedTermSet": {
-                "@id": "txc:CollectionProtocolTypeTerms"
-              },
-              "name": "TextSelectionCriteria"
-            }
-          ],
-          "multiple": false
-        },
-        {
-          "id": "http://schema.org/datePublished",
-          "name": "datePublished",
-          "help": "The (earliest) date the data in this dataset were created",
-          "type": [
-            "Date"
-          ],
-          "multiple": false
-        }
-      ]
-    },
-    "Place": {
-      "definition": "override",
-      "subClassOf": [],
-      "inputs": [
-        {
-          "id": "https://schema.org/name",
-          "name": "name",
-          "label": "name",
-          "help": "The name the place",
-          "required": true,
-          "multiple": false,
-          "type": [
-            "Text"
-          ]
-        },
-        {
-          "id": "http://schema.org/description",
-          "name": "description",
-          "help": "Add any additional info not covered by other properties here.",
-          "type": [
-            "TextArea"
-          ],
-          "multiple": false
-        },
-        {
-          "id": "https://schema.org/location",
-          "name": "affiliation",
-          "label": "affiliation",
-          "help": "The name the person",
-          "required": false,
-          "multiple": true,
-          "type": [
-            "Geo"
-          ]
         }
       ]
     },
@@ -635,11 +208,11 @@
           "id": "https://schema.org/affiliation",
           "name": "affiliation",
           "label": "affiliation",
-          "help": "The name the person",
+          "help": "The oganizational affiliation for a person",
           "required": false,
           "multiple": true,
           "type": [
-            "Organization"
+            "Organization", "Text"
           ]
         }
       ]
@@ -662,7 +235,7 @@
         {
           "id": "http://schema.org/description",
           "name": "description",
-          "help": "An abstract of the collection. Include as much detail as possible about the motivation and use of the collection, including things that we do not yet have properties for",
+          "help": "A description of the organization",
           "type": [
             "TextArea"
           ],
@@ -698,14 +271,6 @@
           "type": [
             "Text"
           ]
-        },
-        {
-          "id": "https://purl.archive.org/language-data-commons/terms#modality",
-          "name": "modality",
-          "help": "The mode (spoken, written, signed etc) of this resource. There may be more than one value for this property.",
-          "type": [
-            "Text"
-          ]
         }
       ]
     },
@@ -713,9 +278,23 @@
       "definition": "override",
       "subClassOf": [],
       "inputs": [
+        {
+          "id": "https://schema.org/programmingLanguage",
+          "name": "programmingLanguage",
+          "help": "Media type typically expressed using a MIME format",
+          "type": [
+            "ComputerLanguage"
+          ]
+        }
       ]
     },
     "ComputationalWorkflow": {
+      "definition": "override",
+      "subClassOf": [],
+      "inputs": [
+      ]
+    },
+    "ComputerLanguage": {
       "definition": "override",
       "subClassOf": [],
       "inputs": [

@@ -21,8 +21,8 @@
           "type": [
             "rdfs:Class",
             "rdf:Property",
-            "definedTerm",
-            "definedTermSet"
+            "DefinedTerm",
+            "TefinedTermSet"
           ],
           "multiple": true
         },
