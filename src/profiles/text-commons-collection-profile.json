@@ -60,31 +60,10 @@
       "subClassOf": [],
       "inputs": [
         {
-          "id": "http://schema.org/language",
-          "name": "language",
-          "label": "Language",
-          "help": "Attach a language",
-          "type": ["Language"],
-          "required": true,
-          "multiple": true
-        },
-        {
-          "id": "http://purl.org/dc/terms/conformsTo",
-          "name": "conformsTo",
-          "help": "A link to the Text Commons RO-Crate profile for collections",
-          "type": [
-            "Select"
-          ],
-          "values": [
-            { "@id": "https://purl.archive.org/language-data-commons/profile#Collection" }
-          ],
-          "multiple": false
-        },
-        {
           "id": "http://schema.org/name",
           "name": "name",
           "label": "Name",
-          "help": "The name of this collection",
+          "help": "The name of this dataset",
           "required": true,
           "multiple": false,
           "type": [
@@ -124,8 +103,6 @@
           "name": "citation",
           "help": "Associated Publications",
           "type": [
-            "Book",
-            "ScholarlyArticle",
             "CreativeWork"
           ],
           "multiple": true
@@ -153,9 +130,9 @@
           "name": "spatialCoverage",
           "help": "The spatialCoverage of a CreativeWork indicates the place(s) which are the focus of the content. It is a subproperty of contentLocation intended primarily for more technical and detailed materials. For example with a Dataset, it indicates areas that the dataset describes: a dataset Cape York languages would have spatialCoverage which was the place: the outline of the Cape. ",
           "type": [
-            "Geo"
+            "Place"
           ],
-          "multiple": false
+          "multiple": true
         },
         {
           "id": "http://schema.org/hasCollectionProtocol",
@@ -212,6 +189,15 @@
           "multiple": false
         },
         {
+          "id": "http://schema.org/language",
+          "name": "language",
+          "label": "Language",
+          "help": "The language(s) of the content in this Collection",
+          "type": ["Language"],
+          "required": true,
+          "multiple": true
+        },
+        {
           "id": "http://schema.org/name",
           "name": "name",
           "label": "Name",
@@ -246,8 +232,6 @@
           "name": "citation",
           "help": "Associated Publications",
           "type": [
-            "Book",
-            "ScholarlyArticle",
             "CreativeWork"
           ],
           "multiple": true
@@ -313,69 +297,6 @@
       "subClassOf": [],
       "inputs": []
     },
-    "Book": {
-      "definition": "override",
-      "subClassOf": [],
-      "inputs": [
-        {
-          "id": "http://schema.org/name",
-          "name": "name",
-          "label": "Name",
-          "help": "The name of this book",
-          "required": true,
-          "multiple": false,
-          "type": [
-            "Text"
-          ]
-        },
-        {
-          "id": "http://schema.org/author",
-          "name": "author",
-          "help": "The person or organization responsible for creating this book",
-          "type": [
-            "Person",
-            "Organization"
-          ],
-          "multiple": true
-        },
-        {
-          "id": "http://schema.org/description",
-          "name": "description",
-          "help": "A description of the collection",
-          "type": [
-            "TextArea"
-          ],
-          "multiple": false
-        },
-        {
-          "id": "http://schema.org/datePublished",
-          "name": "datePublished",
-          "help": "The (earliest) date the data in this dataset were created",
-          "type": [
-            "Date"
-          ],
-          "multiple": false
-        },
-        {
-          "id": "http://schema.org/publisher",
-          "name": "publisher",
-          "help": "The Organization that published this work (use ROR IDs for institutions)",
-          "type": [
-            "Organization"
-          ],
-          "multiple": false
-        },
-        {
-          "id": "http://schema.org/isbn",
-          "name": "isbn",
-          "help": "The ISBN for this book",
-          "type": [
-            "Text"
-          ],
-          "multiple": false
-        }
-      ]
-    },
     "CreativeWork": {
       "definition": "override",
       "subClassOf": [],
@@ -384,7 +305,7 @@
           "id": "http://schema.org/name",
           "name": "name",
           "label": "Name",
-          "help": "The name of this collection",
+          "help": "The name of this work",
           "required": true,
           "multiple": false,
           "type": [
@@ -394,7 +315,7 @@
         {
           "id": "http://schema.org/description",
           "name": "description",
-          "help": "An abstract of the book. Include citation details.",
+          "help": "An abstract of the work. Include citation details.",
           "type": [
             "TextArea"
           ],
@@ -403,26 +324,18 @@
         {
           "id": "http://schema.org/author",
           "name": "author",
-          "help": "The person or organization responsible for creating this collection of data",
+          "help": "The person or organization responsible for creating this work",
           "type": [
+            "Text",
             "Person",
             "Organization"
           ],
           "multiple": true
         },
         {
-          "id": "http://schema.org/description",
-          "name": "description",
-          "help": "A description of the collection",
-          "type": [
-            "TextArea"
-          ],
-          "multiple": false
-        },
-        {
           "id": "http://schema.org/datePublished",
           "name": "datePublished",
-          "help": "The (earliest) date the data in this dataset were created",
+          "help": "The (earliest) date this work were created",
           "type": [
             "Date"
           ],
@@ -433,70 +346,17 @@
           "name": "publisher",
           "help": "The Organization that published this work (use ROR IDs for institutions",
           "type": [
+            "Text",
             "Organization"
           ],
           "multiple": false
-        }
-      ]
-    },
-    "ScholarlyArticle": {
-      "definition": "override",
-      "subClassOf": [],
-      "inputs": [
+        },
         {
-          "id": "http://schema.org/name",
-          "name": "name",
-          "label": "Name",
-          "help": "The name of this article",
-          "required": true,
-          "multiple": false,
+          "id": "http://schema.org/isbn",
+          "name": "isbn",
+          "help": "The ISBN for this work, if applicable",
           "type": [
             "Text"
-          ]
-        },
-        {
-          "id": "http://schema.org/description",
-          "name": "description",
-          "help": "An abstract of the article, include details of how to cite it. ",
-          "type": [
-            "TextArea"
-          ],
-          "multiple": false
-        },
-        {
-          "id": "http://schema.org/author",
-          "name": "author",
-          "help": "The person or organization responsible for creating this collection of data",
-          "type": [
-            "Person",
-            "Organization"
-          ],
-          "multiple": true
-        },
-        {
-          "id": "http://schema.org/description",
-          "name": "description",
-          "help": "A description of the collection",
-          "type": [
-            "TextArea"
-          ],
-          "multiple": false
-        },
-        {
-          "id": "http://schema.org/datePublished",
-          "name": "datePublished",
-          "help": "The (earliest) date the data in this dataset were created",
-          "type": [
-            "Date"
-          ],
-          "multiple": false
-        },
-        {
-          "id": "http://schema.org/publisher",
-          "name": "publisher",
-          "help": "The Organization that published this work (use ROR IDs for institution",
-          "type": [
-            "Organization"
           ],
           "multiple": false
         },
@@ -519,7 +379,7 @@
           "id": "http://schema.org/name",
           "name": "name",
           "label": "Name",
-          "help": "The name of this artilce",
+          "help": "The name of this protocol",
           "required": true,
           "multiple": false,
           "type": [
@@ -601,7 +461,6 @@
         {
           "id": "http://schema.org/name",
           "name": "name",
-          "label": "name",
           "help": "The name the place",
           "required": true,
           "multiple": false,
@@ -612,21 +471,66 @@
         {
           "id": "http://schema.org/description",
           "name": "description",
-          "help": "Add any additional info not covered by other properties here.",
+          "help": "The description the place",
+          "multiple": false,
           "type": [
             "TextArea"
-          ],
-          "multiple": false
+          ]
         },
         {
-          "id": "http://schema.org/location",
-          "name": "affiliation",
-          "label": "affiliation",
-          "help": "The name the person",
+          "id": "http://schema.org/address",
+          "name": "address",
+          "help": "Physical address of the place",
           "required": false,
           "multiple": true,
           "type": [
-            "Geo"
+            "Text"
+          ]
+        },
+        {
+          "id": "http://schema.org/geo",
+          "name": "geo",
+          "help": "The geo coordinates of the place",
+          "required": false,
+          "multiple": true,
+          "type": [
+            "GeoCoordinates", "GeoShape"
+          ]
+        }
+      ]
+    },
+    "GeoCoordinates": {
+      "definition": "override",
+      "subClassOf": [],
+      "inputs": [
+        {
+          "id": "http://schema.org/name",
+          "name": "name",
+          "help": "The name the geo coordinate",
+          "required": true,
+          "multiple": false,
+          "type": [
+            "Text"
+          ]
+        },
+        {
+          "id": "http://schema.org/latitude",
+          "name": "latitude",
+          "help": "The latitude of a location",
+          "required": true,
+          "multiple": false,
+          "type": [
+            "Text"
+          ]
+        },
+        {
+          "id": "http://schema.org/longitude",
+          "name": "longitude",
+          "help": "The longitude of a location",
+          "required": true,
+          "multiple": false,
+          "type": [
+            "Text"
           ]
         }
       ]
@@ -635,6 +539,17 @@
       "definition": "override",
       "subClassOf": [],
       "inputs": [
+        {
+          "id": "@id",
+          "name": "@id",
+          "label": "Identifier",
+          "help": "The URL to ORCID entry if possible or another stable URL. Failing that, use format with prefix # followed by name without any space.",
+          "required": true,
+          "multiple": false,
+          "type": [
+            "Text"
+          ]
+        },
         {
           "id": "http://schema.org/name",
           "name": "name",
@@ -758,6 +673,8 @@
     "Dataset",
     "Person",
     "Place",
+    "GeoCoordinates",
+    "GeoShape",
     "Organization",
     "Book",
     "ScholarlyArticle",

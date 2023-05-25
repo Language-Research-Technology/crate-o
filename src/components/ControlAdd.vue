@@ -65,12 +65,12 @@ function addNewEntity() {
 
 function search(query) {
   console.log(query);
+  data.keyword = query;
   if (!query) {
     data.options[0].options = [];
     data.options[1].options = [];
     return;
   }
-  data.keyword = query;
   const type = data.selectedType;
   // local search
   const qRegex = new RegExp(query, 'i');
@@ -132,9 +132,22 @@ function createLabel(entity) {
           </el-option-group>
         </template>
       </el-select>
-      <el-button size="small" type="success" @click="addNewEntity">
+      <el-button class="add-new-entity" size="small" type="success" @click="addNewEntity">
         Create new {{ data.selectedType }}<span v-if="data.keyword">:&nbsp;</span>
         {{ data.keyword }}</el-button>
     </template>
   </div>
 </template>
+
+<style>
+.el-button.add-new-entity {
+  max-width: 200px;
+}
+.el-button.add-new-entity > span {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  display: inline;
+}
+
+</style>

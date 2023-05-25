@@ -28,6 +28,11 @@ const router = createRouter({
       path: '/testcrate',
       name: 'testcrate',
       component: () => import('../views/TestCrate.vue')
+    },
+    {
+      path: '/testschema',
+      name: 'testschema',
+      component: () => import('../views/TestSchema.vue')
     }
   ]
 })

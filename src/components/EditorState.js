@@ -36,6 +36,11 @@ const stringTypesPriorities = {
   text: 8,
   textarea: 8
 };
+const objectComponents = {
+  GeoCoordinates: [InputGeo, {}],
+  GeoShape: [InputGeo, {}]
+};
+
 const jsonldKeywords = {
   // '@context': {
   //   _component: [InputText]
@@ -179,8 +184,15 @@ export class EditorState {
           }
         } else if (Object.prototype.toString.call(value) === '[object Date]' && !isNaN(value)) {
           return primitiveComponents.datetime;
+        } else {
+          // console.log('aaaaaaaaaaaaaaaaaaaaaaaaaa')
+          // console.log(value);
+          // console.log(value['@type']);
+          for (const t of (value['@type']||[])) {
+            if (objectComponents[t]) return objectComponents[t];
+          }
+          return entityComponent;
         }
-        return entityComponent;
       case 'number': case 'bigint':
         return primitiveComponents.number;
       case 'boolean':

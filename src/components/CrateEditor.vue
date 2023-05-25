@@ -97,15 +97,15 @@ onBeforeRouteUpdate((to, from) => {
 watch(() => $route.query.id, (eid, oldId) => {
   //console.log('state2', window.history.state);
   const id = decodeURIComponent([].concat(eid)[0]);
-  if (id && data.entity) {
+  if (id && state.crate) {
     //console.log('id=', id);
-    if (data.entity['@id'] !== id) data.entity = state.crate.getEntity(id);
+    if (data.entity?.['@id'] !== id) data.entity = state.crate.getEntity(id);
     // console.log('pos',window.history.state.position);
     // console.log('historyStart', historyStart);
     // console.log('data.history.length', data.history.length);
     //if (window.history.state.position > historyStart + data.history.length) {
     if (!data.history.length || id !== data.history[data.history.length - 1]['@id']) {
-      if (data.entity['@id'] !== data.rootDataset['@id']) {
+      if (data.entity && data.entity['@id'] !== data.rootDataset?.['@id']) {
         // new page
         data.history.push(data.entity);
       }

@@ -149,6 +149,15 @@
             "File"
           ],
           "multiple": true
+        },
+        {
+          "id": "http://schema.org/mainEntity",
+          "name": "mainEntity",
+          "help": "Indicates the Main Workflow",
+          "type": [
+            "File", "SoftwareSourceCode", "ComputationalWorkflow"
+          ],
+          "multiple": true
         }
       ]
     },
@@ -700,26 +709,16 @@
         }
       ]
     },
-    "File, SoftwareSourceCode": {
+    "SoftwareSourceCode": {
       "definition": "override",
       "subClassOf": [],
       "inputs": [
-        {
-          "id": "https://schema.org/encodingFormat",
-          "name": "encodingFormat",
-          "help": "Media type typically expressed using a MIME format",
-          "type": [
-            "Text"
-          ]
-        },
-        {
-          "id": "https://purl.archive.org/language-data-commons/terms#size",
-          "name": "size",
-          "help": "Size in Bytes",
-          "type": [
-            "Number"
-          ]
-        }
+      ]
+    },
+    "ComputationalWorkflow": {
+      "definition": "override",
+      "subClassOf": [],
+      "inputs": [
       ]
     },
     "Language": {
@@ -749,6 +748,8 @@
     "CreativeWork",
     "CollectionProtocol",
     "File",
-    "Language"
+    "Language",
+    "ComputationalWorkflow",
+    "SoftwareSourceCode"
   ]
 }   
