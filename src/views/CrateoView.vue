@@ -1,5 +1,5 @@
 <script setup>
-import { shallowReactive, ref, computed } from 'vue';
+import { shallowReactive, reactive, ref, computed, watch } from 'vue';
 import { profiles } from '@/profiles';
 import Welcome from "@/components/Welcome.vue";
 //import {DataStore} from '../stores/data' ;
@@ -15,7 +15,7 @@ const data = shallowReactive({
   crate: null,
   entityId: '',
   selectedProfile: 1,
-  profiles: profiles,
+  profiles: reactive(profiles),
   loading: false,
 });
 window.data = data;
@@ -25,6 +25,7 @@ const editor = ref();
 
 const commands = {
   async loadProfile() {
+    console.log('click');
     try {
       const [profileHandle] = await window.showOpenFilePicker();
       let file = await profileHandle.getFile();
@@ -133,6 +134,13 @@ async function collectFiles({ dirHandle, root }) {
   return files;
 }
 
+// this is a workaround for el-select to revert the modelValue change to the valid option
+watch(()=>data.selectedProfile, (v, pv) => {
+  if (v < 0) {
+    data.selectedProfile = pv;
+    commands.loadProfile();
+  }
+});
 </script>
 
 <template>
@@ -162,11 +170,6 @@ async function collectFiles({ dirHandle, root }) {
                   Save Progress
                 </el-tooltip>
               </el-dropdown-item>
-              <el-dropdown-item command="loadProfile">
-                <el-tooltip effect="dark" placement="right" content="Load a new profile from your computer">
-                  Load profile
-                </el-tooltip>
-              </el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -179,6 +182,9 @@ async function collectFiles({ dirHandle, root }) {
               <p>{{ profile.metadata.name }}</p>
               <p class="text-slate-500 text-xs">{{ profile.metadata.description }}</p>
             </div>
+          </el-option>
+          <el-option :value="-1">
+            <p class="font-bold italic">Load and add a new profile from your computer ...</p>
           </el-option>
         </el-select>
       </el-form-item>

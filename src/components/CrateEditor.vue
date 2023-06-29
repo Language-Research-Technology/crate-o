@@ -38,7 +38,7 @@ const $route = useRoute();
 
 const data = reactive({
   entity: null,
-  entities: [],
+  //entities: [],
   rootDataset: null,
   loading: false,
   history: [],
@@ -99,7 +99,7 @@ watch(() => $route.query.id, (eid, oldId) => {
   const id = decodeURIComponent([].concat(eid)[0]);
   if (id && state.crate) {
     //console.log('id=', id);
-    if (data.entity?.['@id'] !== id) data.entity = state.crate.getEntity(id);
+    if (data.entity?.['@id'] !== id) data.entity = state.entity = state.crate.getEntity(id);
     // console.log('pos',window.history.state.position);
     // console.log('historyStart', historyStart);
     // console.log('data.history.length', data.history.length);
@@ -117,8 +117,7 @@ watch(() => props.crate, async crate => {
   console.log('watch crate');
   data.loading = true;
   await state.setCrate(crate);
-  data.entity = data.rootDataset = state.crate.rootDataset;
-  data.entities = Array.from(state.crate.entities({ filter: e => e !== state.crate.metadataFileEntity }));
+  data.entity = data.rootDataset = state.entity = state.crate.rootDataset;
   data.history = [];
   historyStart = window.history.state.position + 1;
   $router.push({ query: { id: encodeURIComponent(state.crate.rootId) } });
@@ -132,8 +131,8 @@ watch(() => props.profile, (profile) => {
 const reverseEntities = computed(() => Object.values(data.entity?.['@reverse'] || {}).
   reduce((a, e) => a.concat(e), []).filter(e => e !== state.crate.metadataFileEntity));
 const forceKey = ref(0);
-defineExpose({ 
-  get rootDataset() { return data.rootDataset }, 
+defineExpose({
+  get rootDataset() { return data.rootDataset; },
   get crate() { return state.crate.toJSON(); },
   updateCrate(cb) {
     cb(state.crate);
@@ -145,44 +144,49 @@ defineExpose({
 
 
 <template>
-<div :key="forceKey">
-  <el-row class="bg-slate-300 p-2" v-if="data.rootDataset">
-    <el-breadcrumb separator="/">
-      <el-breadcrumb-item>
-        <el-link :disabled="!data.history.length" :icon="HomeFilled"
-          :href="`#/?id=${encodeURIComponent(data.rootDataset['@id'])}`">
-          {{ data.rootDataset.name?.[0] || 'Root Dataset' }}
-        </el-link>
-      </el-breadcrumb-item>
-      <el-breadcrumb-item v-for="e, i in data.history">
-        <!-- <router-link to="/">Go to Home</router-link> -->
-        <el-link :disabled="i === data.history.length - 1" :href="`#/?id=${encodeURIComponent(e['@id'])}`">
-          {{ e.name?.[0] || e['@id'] }}
-        </el-link>
-      </el-breadcrumb-item>
-    </el-breadcrumb>
-  </el-row>
+  <div :key="forceKey">
+    <el-row class="bg-slate-300 p-2" v-if="data.rootDataset">
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item>
+          <el-link :disabled="!data.history.length" :icon="HomeFilled"
+            :href="`#/?id=${encodeURIComponent(data.rootDataset['@id'])}`">
+            {{ data.rootDataset.name?.[0] || 'Root Dataset' }}
+          </el-link>
+        </el-breadcrumb-item>
+        <el-breadcrumb-item v-for="e, i in data.history">
+          <!-- <router-link to="/">Go to Home</router-link> -->
+          <el-link :disabled="i === data.history.length - 1" :href="`#/?id=${encodeURIComponent(e['@id'])}`">
+            {{ e.name?.[0] || e['@id'] }}
+          </el-link>
+        </el-breadcrumb-item>
+      </el-breadcrumb>
+    </el-row>
 
-  <el-row v-loading="data.loading" class="crate-o">
-    <el-col :span="18" class="p-2">
-      <Entity v-if="data.entity" v-model="data.entity"></Entity>
-    </el-col>
+    <el-row v-loading="data.loading" class="crate-o">
+      <el-col :span="18" class="p-2">
+        <Entity v-if="data.entity" v-model="data.entity"></Entity>
+      </el-col>
 
-    <el-col :span="6" class="h-screen p-2">
-      <el-tabs class="w-full" v-model="data.activeTab">
-        <el-tab-pane label="Reverse Links" name="reverse">
-          <FilteredPaged :modelValue="reverseEntities" v-slot="{ value, index }">
-            <LinkEntity :modelValue="value" :icon="ArrowLeftBold"></LinkEntity>
-          </FilteredPaged>
-        </el-tab-pane>
-        <el-tab-pane label="All Entities" name="all" lazy>
-          <FilteredPaged :modelValue="data.entities" v-slot="{ value, index }">
-            <LinkEntity :modelValue="value"></LinkEntity>
-          </FilteredPaged>
-        </el-tab-pane>
-      </el-tabs>
+      <el-col :span="6" class="h-screen p-2">
+        <el-tabs class="w-full" v-model="data.activeTab">
+          <el-tab-pane label="Links from" name="reverse">
+            <section v-for="[prop, entities] in Object.entries(data.entity?.['@reverse'] || {})">
+              <template v-if="data.entity !== data.rootDataset || prop !== 'about'">
+                <h1>{{ prop }}:</h1>
+                <FilteredPaged :modelValue="entities" v-slot="{ value, index }">
+                  <LinkEntity :modelValue="value" :icon="ArrowLeftBold"></LinkEntity>
+                </FilteredPaged>
+              </template>
+            </section>
+          </el-tab-pane>
+          <el-tab-pane label="All Entities" name="all" lazy>
+            <FilteredPaged :modelValue="state.entities" v-slot="{ value, index }">
+              <LinkEntity :modelValue="value"></LinkEntity>
+            </FilteredPaged>
+          </el-tab-pane>
+        </el-tabs>
 
-    </el-col>
-  </el-row>
-</div>
+      </el-col>
+    </el-row>
+  </div>
 </template>

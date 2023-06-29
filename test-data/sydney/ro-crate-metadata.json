@@ -13,7 +13,7 @@
     },
     {
       "@id": "./",
-      "@type": "Dataset",
+      "@type": ["Dataset", "RepositoryCollection"],
       "name": "Sydney Speaks",
       "description": "A compilation of three sub-corpora of Australian English, made up of sociolinguistic interviews and oral histories. Recordings are from a total of 260 speakers, born from the 1890s to the 1990s, recorded in the 1970s~1980s and 2010s~2020s. The sub-corpora include the Bicentennial Oral History Project (with speakers born around 1900, and recorded in 1988); the Sydney Social Dialect Survey (with speakers born in the 1930s and 1960s, and recorded in 1977-1981; cf. Horvath 1985); and Sydney Speaks 2010s (with speakers born in the 1960s and 1990s, and recorded from 2014 to the present). All participants are native speakers of Australian English, and come from diverse ethnic backgrounds, currently Anglo-Celtic, Chinese, Greek and Italian (and this is under expansion). The sample is further stratified according to sex and social class. Approximately 5,000 words per speaker have been transcribed, for a total of some 1.5 million words. Orthographic transcriptions (including prosodic information) are time aligned at the level of the utterance, and have been force aligned to the level of the segment, making the data ideal for linguistic analysis at a range of levels. The socio-historical information in the recordings provides both information about the times the participants have lived through, and allows for social contextualisation of the linguistic patterns observed. ",
       "temporalCoverage": "1900",

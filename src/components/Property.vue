@@ -1,6 +1,5 @@
 <script setup>
-import { reactive, computed, toRaw, onBeforeMount, inject } from "vue";
-//import { resolveComponent, getPrimitiveComponent } from '../stores/data';
+import { reactive, computed, toRaw, nextTick, inject } from "vue";
 import { QuestionFilled, Delete, InfoFilled } from '@element-plus/icons-vue';
 import ControlAdd from "./ControlAdd.vue";
 import { $state } from './keys';
@@ -8,7 +7,7 @@ const state = inject($state);
 const pageSize = 10; //Later do in conf the page size
 
 const props = defineProps({
-  modelValue: {  },
+  modelValue: {},
   components: { type: Array, required: true },
   definition: { type: Object, required: true }
 });
@@ -16,6 +15,7 @@ const emit = defineEmits(['update:modelValue']);
 
 const label = computed(() => {
   var label = props.definition.label || props.definition.name || props.definition.id;
+  if (typeof label !== 'string') label = 'error';
   var namespace;
   var isUrl;
   try {
@@ -24,7 +24,7 @@ const label = computed(() => {
       label = url.pathname.split('/').pop();
       isUrl = true;
     }
-  } catch (error) { 
+  } catch (error) {
   }
   if (!isUrl) {
     let m = label.match(/(.+):(.+)/);
@@ -39,36 +39,30 @@ const values = computed(() => {
   return value ? (Array.isArray(value) ? value : [value]) : [];
 });
 
-function addValue(type) {
+function add(type, entity) {
   //props.modelValue.push();
   var vals = toRaw(props.modelValue);
-  const options = props.definition.values;
-  const propsOpt = {...props.definition.props, ...(options && { options })};
-  //console.log(props.definition)
-  //console.log('addValue');
-  //console.log(vals);
-  var c = state.getPrimitiveComponent(type, propsOpt);
+  console.log(props.definition)
+  console.log('addValue', type, entity);
+  console.log(vals);
   var len;
   //console.log(c);
-  if (c) {
-    if (Array.isArray(vals)) {
-      len = vals.push('');
-    } else {
-      vals = '';
-      len = 1;
-    }
-    //console.log('addValue', c)
-    props.components[len - 1] = c;
-    emit('update:modelValue', vals);
+  if (Array.isArray(vals)) {
+    len = vals.push(entity || '');
+  } else {
+    vals = entity || '';
+    len = 1;
   }
-}
-
-function addEntity(e) {
-  //const vals = toRaw(props.modelValue);
-  var vals = props.modelValue;
-  if (Array.isArray(vals)) vals.push(e);
-  else vals = e;
   emit('update:modelValue', vals);
+  if (entity) {
+    entity = state.crate.getEntity(entity['@id']);
+    state.entities.push(entity);
+  }
+  if (state.isInline(type)) {
+    const options = props.definition.values;
+    const propsOpt = { ...props.definition.props, ...(options && { options }) };
+    props.components[len - 1] = state.getInlineComponent(type, propsOpt);
+  }
 }
 
 function updateValue(i, value) {
@@ -81,11 +75,23 @@ function updateValue(i, value) {
   }
 }
 
-function removeValue(i) {
+function removeValue(i, value) {
   const vals = toRaw(props.modelValue);
   if (Array.isArray(vals)) {
     vals.splice(i, 1);
     props.components.splice(i, 1);
+    if (typeof value === 'object' && value['@id']) {
+      // count all reverse links
+      var linksCount = Object.values(value['@reverse']).reduce((count, refs) => count + refs.length, 0);
+      if (!linksCount) {
+        //todo: confirm to delete entity
+        const i = state.entities.findIndex(e => e['@id'] === value['@id']);
+        if (i >= 0) state.entities.splice(i, 1);
+        nextTick(() => {
+          state.crate.deleteEntity(value);
+        });
+      }
+    }
     emit('update:modelValue', vals);
   }
 }
@@ -102,21 +108,21 @@ function removeValue(i) {
     </template>
     <div class="flex flex-col flex-grow">
       <FilteredPaged :modelValue="values" v-slot="{ value, index }">
-        <template v-for="[component, componentProps] of [(components[index] ??= state.resolveComponent(value, definition))]">
-          <component :is="component" v-bind="componentProps" :modelValue="value" 
-              @update:modelValue="value => updateValue(index, value)">
+        <template
+          v-for="[component, componentProps] of [(components[index] ??= state.resolveComponent(value, definition))]">
+          <component :is="component" v-bind="componentProps" :modelValue="value"
+            @update:modelValue="value => updateValue(index, value)">
           </component>
         </template>
         <div class="pl-2 flex flex-nowrap">
           <!-- Delete Button -->
-          <el-button :disabled="definition.min >= values.length" @click="removeValue(index)" 
-            type="danger" plain :icon="Delete"
-            :class="{ invisible: definition.min >= values.length }" size="small"></el-button>
+          <el-button :disabled="definition.min >= values.length" @click="removeValue(index, value)" type="danger" plain
+            :icon="Delete" :class="{ invisible: definition.min >= values.length }" size="small"></el-button>
           <!-- <el-button size="small" :icon="QuestionFilled" type="info" plain></el-button> -->
         </div>
       </FilteredPaged>
 
-      <ControlAdd :modelValue="values" :definition="definition" class="flex flex-row flex-nowrap" @add="addValue" @addEntity="addEntity">
+      <ControlAdd :modelValue="values" :definition="definition" class="flex flex-row flex-nowrap" @add="add">
       </ControlAdd>
     </div>
   </el-form-item>

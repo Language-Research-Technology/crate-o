@@ -1,4 +1,4 @@
-import { ref } from 'vue';
+import { shallowReactive } from 'vue';
 import { ROCrate } from 'ro-crate';
 import InputDateTime from '../components/InputDateTime.vue';
 import InputGeo from '../components/InputGeo.vue';
@@ -6,7 +6,7 @@ import InputText from '../components/InputText.vue';
 import InputSelect from '../components/InputSelect.vue';
 import LinkEntity from '../components/LinkEntity.vue';
 import dateTimeUtils from '../components/datetimeutils';
-import lookupModules from '../lookups';
+import lookupModules from '../lookups/index';
 
 const entityComponent = [LinkEntity, {}];
 const primitiveComponents = {
@@ -23,7 +23,7 @@ const primitiveComponents = {
   selecturl: [InputSelect],
   value: [InputText, { type: 'text', disabled: true }]
 };
-const primitiveTypes = new Set(Object.keys(primitiveComponents));
+//const primitiveTypes = new Set(Object.keys(primitiveComponents));
 const stringTypesPriorities = {
   value: 1,
   select: 2,
@@ -37,6 +37,7 @@ const stringTypesPriorities = {
   textarea: 8
 };
 const objectComponents = {
+  Geo: [InputGeo, {}],
   GeoCoordinates: [InputGeo, {}],
   GeoShape: [InputGeo, {}]
 };
@@ -83,12 +84,15 @@ export class EditorState {
   /** cache of definition indexed by its type  */
   defByType;
   lookupPromises = {};
-
+  /** cache array of entities */
+  entities;
+  entity;
   async setCrate(rawCrate) {
-    this.crate = new ROCrate(rawCrate, { array: true, link: true });
+    const crate = this.crate = new ROCrate(rawCrate, { array: true, link: true });
     this.meta = {};
-    await this.crate.resolveContext();
-    return this.crate;
+    this.entities = shallowReactive(Array.from(crate.entities({ filter: e => e !== crate.metadataFileEntity })));
+    await crate.resolveContext();
+    return crate;
   }
 
   setProfile(profile) {
@@ -166,12 +170,13 @@ export class EditorState {
       // Add the resolved id to the definitions.
       definitions[id] = { id, name, key: name };
     }
+    //console.log(definitions);
     return definitions;
   }
 
   resolveComponent(value, definition = {}) {
     // console.log(definition.id);
-    // console.log(definition.type);
+    // console.log(value, definition);
     if (definition.component) return [definition.component, definition.props, definition.events];
     const types = [].concat(definition.type||[]).map(t => t.toLowerCase());
     const values = definition.values ?? [];
@@ -184,15 +189,12 @@ export class EditorState {
           }
         } else if (Object.prototype.toString.call(value) === '[object Date]' && !isNaN(value)) {
           return primitiveComponents.datetime;
-        } else {
-          // console.log('aaaaaaaaaaaaaaaaaaaaaaaaaa')
-          // console.log(value);
-          // console.log(value['@type']);
-          for (const t of (value['@type']||[])) {
-            if (objectComponents[t]) return objectComponents[t];
+        } else if (value['@type']) {
+          for (let i = value['@type'].length; i--; ) {
+            if (objectComponents[value['@type'][i]]) return objectComponents[value['@type'][i]];
           }
-          return entityComponent;
         }
+        return entityComponent;
       case 'number': case 'bigint':
         return primitiveComponents.number;
       case 'boolean':
@@ -238,7 +240,14 @@ export class EditorState {
   }
 
   isPrimitive(type) {
-    return primitiveTypes.has(type.toLowerCase());
+    const t = type.toLowerCase();
+    //console.log(t);
+    return (t in primitiveComponents);// || (type in objectComponents);
+  }
+
+  isInline(type) {
+    const t = type.toLowerCase();
+    return (t in primitiveComponents) || (type in objectComponents);
   }
 
   /**
@@ -246,15 +255,19 @@ export class EditorState {
    * @param {string} type 
    * @param {object} props 
    */
-  getPrimitiveComponent(type, props = {}) {
+  getInlineComponent(type, props = {}) {
     var t = type.toLowerCase();
-    if (primitiveTypes.has(t)) {
+    if (t in primitiveComponents) {
       if (t in { select: 0, selecturl: 0, selectobject: 0 }) {
         if (!props.options && props.options.length) props.allowCreate = true;
         return [InputSelect, props];
       } else {
         return primitiveComponents[t];
       }
+    } else if (type in objectComponents) {
+      return objectComponents[type];
+    } else {
+      return primitiveComponents.text;
     }
     //return entityComponent;
   }

@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, computed, markRaw, inject } from "vue";
+import { reactive, computed, markRaw, inject, nextTick } from "vue";
 import { Plus, Close } from '@element-plus/icons-vue';
 import { $state } from './keys';
 
@@ -9,7 +9,7 @@ const props = defineProps({
   definition: { type: Object, required: true }
 });
 
-const emit = defineEmits(['update:modelValue', 'add', 'addEntity']);
+const emit = defineEmits(['update:modelValue', 'add']);
 
 const state = inject($state);
 const types = computed(() => props.definition.type ?? ['Text', 'Number', 'Entity']);
@@ -25,34 +25,41 @@ const data = reactive({
   entity: null
 });
 
-const vFocus = (el, binding, vnode) => el.getElementsByTagName('input')[0].focus();
+const vFocus = { mounted: (el, binding, vnode) => el.getElementsByTagName('input')[0].focus() };
+//const searchInput = ref();
 
 //var options = [{ value: 1, label: 'a' }, { value: 2, label: 'b' }];
 
-function onClick(type) {
-  console.log(type);
+function add(type) {
+  // if (data.selectedType == type) {
+  //   data.selectedType = '';
+  // } else {
+  //   data.selectedType = type;
+  // }
   if (state.isPrimitive(type)) {
     emit('add', type);
-    return;
-  }
-  if (data.selectedType == type) {
-    data.selectedType = '';
   } else {
     data.selectedType = type;
+    addNewEntity();
+    data.selectedType = '';
   }
 }
 
 function addEntity(v) {
+  //console.log('addEntity');
+  const type = data.selectedType;
   data.keyword = '';
   data.selectedType = '';
-  emit('addEntity', v);
+  emit('add', type, v);
 }
 
 function addNewEntity() {
   const type = data.selectedType;
   const name = data.keyword;
+  const defaultName = state.entity.name + '-' + props.definition.name;
   const id = name && !state.crate.getEntity('#' + name) ? '#' + name :
-    state.crate.uniqueId(`#${name || type}-`);
+    state.crate.uniqueId(`#${name || defaultName}-`);
+  //console.log(name);
   const e = {
     "@id": id,
     "@type": type,
@@ -60,17 +67,17 @@ function addNewEntity() {
   };
   data.keyword = '';
   data.selectedType = '';
-  emit('addEntity', e);
+  emit('add', type, e);
 }
 
 function search(query) {
-  console.log(query);
-  data.keyword = query;
+  // console.log(query);
   if (!query) {
     data.options[0].options = [];
     data.options[1].options = [];
-    return;
+    return setTimeout(()=>data.keyword = query, 1);
   }
+  data.keyword = query;
   const type = data.selectedType;
   // local search
   const qRegex = new RegExp(query, 'i');
@@ -95,7 +102,9 @@ function search(query) {
 function createLabel(entity) {
   return ([].concat(entity.name))[0] || entity['@id'];
 }
-
+function clearKeyword(val) {
+console.log('blur', val);
+}
 </script>
 
 <template>
@@ -108,19 +117,19 @@ function createLabel(entity) {
           <Plus />
         </el-icon>
       </template>
-      <el-option v-for="t of types" :label="t" :value="t" @click="onClick(t)">
+      <el-option v-for="t of types" :label="t" :value="t" @click="add(t)">
         {{ t }}
       </el-option>
     </el-select>
     <el-button v-else v-for="t of types" size="small" type="primary" 
       :icon="data.selectedType === t ? Close : Plus"
-      :class="{ active: data.selectedType === t }" @click="onClick(t)">
+      :class="{ active: data.selectedType === t }" @click="add(t)">
       {{ t }}
     </el-button>
     <!-- search input -->
     <template v-if="data.selectedType">
       <el-select v-focus class="ml-2 mr-2 flex-grow" filterable remote clearable 
-        v-model="data.entity" value-key="@id" :loading="data.loading"
+        v-model="data.entity" value-key="@id" :loading="data.loading" @blur="clearKeyword"
         @change="addEntity" :filter-method="v => { }" :remote-method="search" size="small">
         <template v-for="group in data.options" :key="group.value">
           <el-option-group v-if="group.options.length" :label="group.label">
@@ -141,7 +150,7 @@ function createLabel(entity) {
 
 <style>
 .el-button.add-new-entity {
-  max-width: 200px;
+  max-width: 30%;
 }
 .el-button.add-new-entity > span {
   text-overflow: ellipsis;
