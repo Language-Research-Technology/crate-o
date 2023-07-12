@@ -51,8 +51,12 @@ const toSchemaOrg = {
   },
   polygon(shape) {
     const points = shape.getLatLngs();
+    console.log(points);
+
     if (!Array.isArray(points[0])) {
       return points.map(p => p.lat + ' ' + p.lng).join(' ');
+    } else {
+      return points[0].map(p => p.lat + ' ' + p.lng).join(' ');
     }
   }
 };
@@ -62,7 +66,7 @@ function convertFromSchemaOrg(val) {
   if (val.latitude && val.longitude) {
     const len = Math.min(val.latitude.length, val.longitude.length);
     for (let i = 0; i < len; ++i) {
-      result.push(['point', [val.latitude[i], val.longitude[i]]]);
+      result.push(L.marker([val.latitude[i], val.longitude[i]], { kind: 'point' }));
     }
   }
   for (const type in fromSchemaOrg) {
@@ -147,7 +151,14 @@ const convertTo = {
         data[shapeType].push(toSchemaOrg[shapeType](shape));
       }
     }
-    return Object.assign(entity, data);
+    for (const t in toSchemaOrg) {
+      if (data[t]) {
+        entity[t] = data[t];
+      } else if (t in entity) {
+        delete entity[t];
+      }
+    }
+    return entity;
   },
   GeoCoordinates(entity, shapes) {
     const data = { latitude: [], longitude: [] };

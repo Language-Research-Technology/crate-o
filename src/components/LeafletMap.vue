@@ -84,6 +84,7 @@ onMounted(() => {
   initControls(map, featuresLayer);
 
   watch(() => props.modelValue, (val) => {
+    console.log('shapes updated');
     featuresLayer.clearLayers();
     if (!val) return;
     for (const shape of val) {
@@ -92,20 +93,23 @@ onMounted(() => {
           shape.addTo(featuresLayer);
         } catch (error) {
           console.log(error);
+          console.log(shape);
         }
       }
     }
     console.log(featuresLayer.getLayers());
     const bounds = featuresLayer.getBounds();
-    if (bounds.isValid()) map.flyToBounds(bounds);
+    if (bounds.isValid()) map.flyToBounds(bounds, {maxZoom: 7});
   }, { immediate: true });
 
 });
 
 function initControls(map, featuresLayer) {
   const controls = typeof props.controls === 'string' ? props.controls.split(' ') : props.controls;
-  var lastDrawn;
+  var selectedShape;
+  var newShape;
   var actionLink;
+  var isModified = false;
   const tooltip = L.DomUtil.create('div', 'leaflet-draw-tooltip', map.getContainer());
 
   function deactivateAction() {
@@ -133,15 +137,6 @@ function initControls(map, featuresLayer) {
     //map.off('mousemove', moveTooltip);
     if (actionLink) L.DomUtil.removeClass(actionLink, 'active');
     actionLink = null;
-  }
-  function disableEdit() {
-    // disable all editing
-    for (const l of featuresLayer.getLayers()) {
-      if (lastDrawn !== l && (l.editor && !l.editor.drawing())) {
-        l.disableEdit();
-      }
-    }
-    lastDrawn = null;
   }
 
   L.Control.DrawControl = L.Control.extend({
@@ -189,6 +184,7 @@ function initControls(map, featuresLayer) {
           stopAction();
         } else {
           map.editTools.stopDrawing();
+          selectedShape?.disableEdit();
           startAction(link, 'Click on a point or shape to delete. Press Esc to finish.');
         }
       }));
@@ -196,20 +192,6 @@ function initControls(map, featuresLayer) {
     }
   });
   (new L.Control.EditControl()).addTo(map);
-
-  map.on('editable:drawing:start', function (e) {
-    console.log('editable:drawing:start');
-    //console.log(e.layer.options.kind);
-  });
-  map.on('editable:drawing:commit', function (e){ 
-    console.log('editable:drawing:commit') 
-    stopAction();
-    console.log(e.layer);
-    lastDrawn = e.layer;
-  });
-  // map.on('editable:drawing:end', function (e){
-  //   console.log('editable:drawing:end');
-  // });
 
   // press esc key to cancel all ongoing action
   map.on('keydown', function (e) {
@@ -220,56 +202,79 @@ function initControls(map, featuresLayer) {
     }
   });
   //L.DomEvent.on(document.getElementsByClassName('leaflet-control-container')[0], 'mousedown', L.DomEvent.stopPropagation);
-
-  map.on('preclick', disableEdit);
+  
+  map.on('click', function(e) {
+    console.log('map click', e);
+    selectedShape?.disableEdit();
+  });
+  map.on('editable:drawing:start', function (e){
+    console.log('editable:drawing:start', e.layer._leaflet_id);
+    selectedShape?.disableEdit();
+  });
+  map.on('editable:drawing:end', function (e){
+    console.log('editable:drawing:end', e);
+    stopAction();
+    if (isModified) {
+      setTimeout(()=>{
+        selectedShape = null;
+        e.layer.disableEdit();   
+      }, 1);
+    }
+  });
 
   featuresLayer.on('click', function(e) {
     console.log('click', e);
     L.DomEvent.stop(e);
     const layer = e.layer;
     const isDeleting = actionLink && L.DomUtil.hasClass(actionLink, 'leaflet-control-edit-delete');
+    console.log('isDeleting', isDeleting);
     if (isDeleting) {
       //if ((e.originalEvent.ctrlKey || e.originalEvent.metaKey) || isDeleting) {}
       //layer.editor.deleteShapeAt(e.latlng);
       featuresLayer.removeLayer(layer);
+      emit('update:modelValue', featuresLayer.getLayers());
       map.getContainer().focus();
     } else {
+      selectedShape?.disableEdit();
+      selectedShape = e.layer;
       layer.enableEdit();
       //layer.dragging.enable();
-      const shapes = featuresLayer.getLayers();
-      for (let i = 0; i < shapes.length; ++i) {
-        if (shapes[i] === layer) {
-          console.log(i);
-          return emit('update:current', i);
-        }
-      }      
+      // const shapes = featuresLayer.getLayers();
+      // for (let i = 0; i < shapes.length; ++i) {
+      //   if (shapes[i] === layer) {
+      //     return emit('update:current', i);
+      //   }
+      // }      
     }
   });
 
+  map.on('editable:created', (e) => console.log('editable:created', e));
   map.on('editable:enable', function (e) {
-    //console.log(e.layer.options.color);
+    console.log('editable:enable', e.layer._leaflet_id);
     if (e.layer.setStyle) e.layer.setStyle({color: 'DarkRed'});
     else if (e.layer._icon) e.layer._icon.style.filter = "hue-rotate(120deg)"
   });
   map.on('editable:disable', function (e) {
-    //console.log(e.layer.setStyle);
+    console.log('editable:disable');
     if (e.layer.setStyle) e.layer.setStyle({color: '#3388ff'});
     else if (e.layer._icon) e.layer._icon.style.filter = "";
+    if (isModified) {
+      console.log(featuresLayer.getLayers());
+      emit('update:modelValue', featuresLayer.getLayers())
+      isModified = false;
+    }
+    selectedShape = null;
   });
-
-  map.on('editable:dragend editable:drawing:commit editable:vertex:dragend editable:vertex:new editable:vertex:deleted', (e) => {
-    // finished new drawing
-    console.log(e.type);
-    L.DomEvent.stop(e);
-    //console.log(e.editTools.featuresLayer.getLayers());
-    emit('update:modelValue', featuresLayer.getLayers())
+  
+  map.on('editable:dragend editable:vertex:dragend editable:vertex:new editable:vertex:deleted editable:drawing:commit', (e) => {
+    // console.log(e.type);
+    // console.log(e.layer._leaflet_id);
+    isModified = true;
   });
   
   // map.on('editable:drawing:click', (e) => console.log('editable:drawing:click', e));
-  // map.on('editable:created', (e) => console.log('editable:created', e));
   //map.on('editable:editing', (e) => console.log('editable:editing', e));
   // map.on('editable:edited', (e) => console.log('edited', e));
-  // map.on('editable:changed', (e) => console.log('changed', e));
   // map.on('editable:shape:new', (e) => console.log('editable:shape:new', e));
   // map.on('editable:vertex:deleted', (e) => console.log('vertex:deleted', e));
 

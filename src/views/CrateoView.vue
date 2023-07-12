@@ -57,6 +57,8 @@ const commands = {
         let file = await data.metadataHandle.getFile();
         const content = await file.text();
         data.crate = JSON.parse(content);
+      } else {
+        data.crate = {};
       }
       //data.loading = false;
     } catch (error) {

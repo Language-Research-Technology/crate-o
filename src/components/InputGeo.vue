@@ -23,7 +23,9 @@ const shapes = computed({
   get() { return fromEntity(props.modelValue); },
   set(vals) {
     //const entity = props.modelValue.toJSON();
-    emit('update:modelValue', updateEntity(props.modelValue, vals));
+    const e = updateEntity(props.modelValue, vals);
+    console.log(e);
+    emit('update:modelValue', e);
     data.entity = props.modelValue.toJSON();
   }
 });
