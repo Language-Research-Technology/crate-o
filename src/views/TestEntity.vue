@@ -23,6 +23,7 @@ onMounted(async function () {
     '@id': '#TestPlace',
     '@type': 'Place',
     name: 'TestPlace',
+    smokingAllowed: true,
     geo: {
       '@id': '#TestPlace-geo-1',
       '@type': 'GeoShape',

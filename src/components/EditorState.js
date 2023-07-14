@@ -1,5 +1,6 @@
 import { shallowReactive } from 'vue';
 import { ROCrate } from 'ro-crate';
+import { ElCheckbox } from 'element-plus';
 import InputDateTime from '../components/InputDateTime.vue';
 import InputGeo from '../components/InputGeo.vue';
 import InputText from '../components/InputText.vue';
@@ -10,7 +11,7 @@ import lookupModules from '../lookups/index';
 
 const entityComponent = [LinkEntity, {}];
 const primitiveComponents = {
-  boolean: ['el-checkbox', { border: true }],
+  boolean: [ElCheckbox, { border: true }],
   text: [InputText, { type: 'textarea' }],
   textarea: [InputText, { type: 'textarea' }],
   number: [InputText, { type: 'number' }],

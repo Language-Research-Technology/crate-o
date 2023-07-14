@@ -56,6 +56,7 @@
   },
   "classes": {
     "Dataset": {
+      "id": "http://schema.org/Dataset",
       "definition": "override",
       "subClassOf": [],
       "inputs": [
@@ -488,13 +489,22 @@
           ]
         },
         {
+          "id": "http://schema.org/smokingAllowed",
+          "name": "smokingAllowed",
+          "required": false,
+          "multiple": false,
+          "type": [
+            "Boolean"
+          ]
+        },
+        {
           "id": "http://schema.org/geo",
           "name": "geo",
           "help": "The geo coordinates of the place",
           "required": false,
           "multiple": true,
           "type": [
-            "GeoCoordinates", "GeoShape"
+            "GeoCoordinates", "GeoShape", "Geometry"
           ]
         }
       ]
@@ -591,7 +601,8 @@
         }
       ]
     },
-    "http://www.opengis.net/ont/geosparql#Geometry": {
+    "Geometry": {
+      "id": "http://www.opengis.net/ont/geosparql#Geometry",
       "definition": "override",
       "subClassOf": [],
       "inputs": [

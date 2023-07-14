@@ -62,6 +62,7 @@ function add(type, entity) {
     const options = props.definition.values;
     const propsOpt = { ...props.definition.props, ...(options && { options }) };
     props.components[len - 1] = state.getInlineComponent(type, propsOpt);
+    console.log(props.components[len - 1]);
   }
 }
 

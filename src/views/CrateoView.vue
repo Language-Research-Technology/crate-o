@@ -179,14 +179,14 @@ watch(()=>data.selectedProfile, (v, pv) => {
 
       <el-form-item label="Profile:" class="w-9/12">
         <el-select v-model="data.selectedProfile" class="w-full" placeholder="Select a profile">
+          <el-option :value="-1">
+            <p class="font-bold italic">Load and add a new profile from your computer ...</p>
+          </el-option>
           <el-option v-for="(profile, index) of data.profiles" :label="profile.metadata.name" :value="index">
             <div class="border-b-1 mb-2">
               <p>{{ profile.metadata.name }}</p>
               <p class="text-slate-500 text-xs">{{ profile.metadata.description }}</p>
             </div>
-          </el-option>
-          <el-option :value="-1">
-            <p class="font-bold italic">Load and add a new profile from your computer ...</p>
           </el-option>
         </el-select>
       </el-form-item>
