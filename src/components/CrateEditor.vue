@@ -140,6 +140,9 @@ defineExpose({
   }
 });
 
+function showEntity(e) {
+  $router.push({query: {id: encodeURIComponent(e['@id'])}});
+}
 </script>
 
 
@@ -164,7 +167,7 @@ defineExpose({
 
     <el-row v-loading="data.loading" class="crate-o">
       <el-col :span="18" class="p-2">
-        <Entity v-if="data.entity" v-model="data.entity"></Entity>
+        <Entity v-if="data.entity" v-model="data.entity" @entityCreated="showEntity"></Entity>
       </el-col>
 
       <el-col :span="6" class="h-screen p-2">

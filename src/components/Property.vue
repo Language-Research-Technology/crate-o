@@ -11,7 +11,7 @@ const props = defineProps({
   components: { type: Array, required: true },
   definition: { type: Object, required: true }
 });
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue', 'entityCreated']);
 
 const label = computed(() => {
   var label = props.definition.label || props.definition.name || props.definition.id;
@@ -57,6 +57,7 @@ function add(type, entity) {
   if (entity) {
     entity = state.crate.getEntity(entity['@id']);
     state.entities.push(entity);
+    emit('entityCreated', entity);
   }
   if (state.isInline(type)) {
     const options = props.definition.values;

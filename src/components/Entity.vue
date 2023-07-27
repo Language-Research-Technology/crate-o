@@ -6,7 +6,7 @@ import None from './None.vue';
 import { ElTabs, ElTabPane } from 'element-plus';
 
 const props = defineProps(['modelValue']);
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue', 'entityCreated']);
 const state = inject($state);
 // watch(props, (val, oldVal) => {
 //   console.log('props changed');
@@ -49,7 +49,7 @@ const layouts = computed(() => {
   if (layouts) {
     // create a multi map for indexing definitions by name
     let defsByName = Object.values(definitions.value).reduce((r, d) => (
-      r.has(d.name) ? r.get(d.name).push(d) : r.set(d.name, [d]), r 
+      r.has(d.name) ? r.get(d.name).push(d) : r.set(d.name, [d]), r
     ), new Map());
     layouts = [{
       name: 'About',
@@ -60,7 +60,7 @@ const layouts = computed(() => {
       const inputs = layout.inputs.reduce((r, name) => {
         let defs = defsByName.get(name);
         if (defs) {
-          r.push(...defs); 
+          r.push(...defs);
           defsByName.delete(name);
         }
         return r;
@@ -106,12 +106,12 @@ function getComponents(def) {
 
 <template>
   <component :is="layouts.length>1?ElTabs:None" tab-position="left" v-model="data.activeLayout">
-    <component :is="layouts.length>1?ElTabPane:None" v-for="(layout, i) in layouts"
-      :label="layout.name" :name="layout.name">
+    <component :is="layouts.length>1?ElTabPane:None" v-for="(layout, i) in layouts" :label="layout.name"
+      :name="layout.name">
       <el-form id="#entityForm" label-width="auto" novalidate v-if="data.activeLayout === layout.name">
-        <Property v-for="def in layout.definitions" :key="def.id"
-          :modelValue="getProperty(def)" :components="getComponents(def)" :definition="def"
-          @update:modelValue="v => updateProperty(def, v)"></Property>
+        <Property v-for="def in layout.definitions" :key="def.id" :modelValue="getProperty(def)"
+          :components="getComponents(def)" :definition="def" @update:modelValue="v => updateProperty(def, v)"
+          @entityCreated="(e) => $emit('entityCreated', e)"></Property>
       </el-form>
     </component>
   </component>

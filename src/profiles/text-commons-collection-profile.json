@@ -251,7 +251,7 @@
           "name": "temporalCoverage",
           "help": "The range of years of creation for items in this collection eg 1900-1945. If there are sub collections with different coverages put this on the sub-collections not the top-level. ",
           "type": [
-            "Text"
+            "DateTime", "Text"
           ],
           "multiple": true
         },

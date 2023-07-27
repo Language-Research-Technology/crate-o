@@ -31,17 +31,18 @@ const vFocus = { mounted: (el, binding, vnode) => el.getElementsByTagName('input
 //var options = [{ value: 1, label: 'a' }, { value: 2, label: 'b' }];
 
 function add(type) {
-  // if (data.selectedType == type) {
-  //   data.selectedType = '';
-  // } else {
-  //   data.selectedType = type;
-  // }
   if (state.isPrimitive(type)) {
-    emit('add', type);
+    const [, , defVal] = state.getInlineComponent(type);
+    emit('add', type, defVal);
   } else {
-    data.selectedType = type;
-    addNewEntity();
-    data.selectedType = '';
+    if (data.selectedType == type) {
+      data.selectedType = '';
+    } else {
+      data.selectedType = type;
+    }
+    //   data.selectedType = type;
+    //   addNewEntity();
+    //   data.selectedType = '';
   }
 }
 
@@ -71,11 +72,12 @@ function addNewEntity() {
 }
 
 function search(query) {
-  // console.log(query);
+  //console.log(query);
   if (!query) {
     data.options[0].options = [];
     data.options[1].options = [];
-    return setTimeout(()=>data.keyword = query, 1);
+    //return;
+    return setTimeout(()=>data.keyword = '', 100);
   }
   data.keyword = query;
   const type = data.selectedType;
@@ -88,12 +90,12 @@ function search(query) {
       localOptions.push(entity);
     }
   }
-  console.log(localOptions);
+  //console.log(localOptions);
   data.options[0].options = markRaw(localOptions);
   // remote search
   data.loading = true;
   state.remoteSearch(type, query).then(result => {
-    console.log(result);
+    //console.log(result);
     data.options[1].options = markRaw(result);
     data.loading = false;
   });
@@ -101,9 +103,6 @@ function search(query) {
 
 function createLabel(entity) {
   return ([].concat(entity.name))[0] || entity['@id'];
-}
-function clearKeyword(val) {
-console.log('blur', val);
 }
 </script>
 
@@ -129,8 +128,8 @@ console.log('blur', val);
     <!-- search input -->
     <template v-if="data.selectedType">
       <el-select v-focus class="ml-2 mr-2 flex-grow" filterable remote clearable 
-        v-model="data.entity" value-key="@id" :loading="data.loading" @blur="clearKeyword"
-        @change="addEntity" :filter-method="v => { }" :remote-method="search" size="small">
+        v-model="data.entity" value-key="@id" :loading="data.loading"
+        @change="addEntity" :filter-method="v => true" :remote-method="search" size="small">
         <template v-for="group in data.options" :key="group.value">
           <el-option-group v-if="group.options.length" :label="group.label">
             <el-option v-for="item in group.options" :key="item['@id']" 
