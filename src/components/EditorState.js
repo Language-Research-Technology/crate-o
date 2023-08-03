@@ -1,4 +1,4 @@
-import { shallowReactive } from 'vue';
+import { reactive, shallowReactive, isReactive } from 'vue';
 import { ROCrate } from 'ro-crate';
 import { ElCheckbox } from 'element-plus';
 import InputDateTime from '../components/InputDateTime.vue';
@@ -11,10 +11,10 @@ import lookupModules from '../lookups/index';
 
 const entityComponent = [LinkEntity, {}];
 const primitiveComponents = {
-  boolean: [ElCheckbox, { border: true }],
-  text: [InputText, { type: 'textarea' }],
-  textarea: [InputText, { type: 'textarea' }],
-  number: [InputText, { type: 'number' }],
+  boolean: [ElCheckbox, { border: true }, false],
+  text: [InputText, { type: 'textarea' }, ''],
+  textarea: [InputText, { type: 'textarea' }, ''],
+  number: [InputText, { type: 'number' }, 0],
   url: [InputText, { type: 'url' }],
   time: [InputDateTime, { type: 'time' }],
   date: [InputDateTime, { type: 'date' }],
@@ -81,6 +81,7 @@ export class EditorState {
   crate;
   /** cache data type info of each actual value of properties */
   meta;
+  /** currently loaded profile */
   profile;
   /** cache of definition indexed by its type  */
   defByType;
@@ -90,7 +91,7 @@ export class EditorState {
   entity;
   async setCrate(rawCrate) {
     const crate = this.crate = new ROCrate(rawCrate, { array: true, link: true });
-    this.meta = {};
+    this.meta = reactive({});
     this.entities = shallowReactive(Array.from(crate.entities({ filter: e => e !== crate.metadataFileEntity })));
     await crate.resolveContext();
     return crate;
@@ -171,13 +172,13 @@ export class EditorState {
       // Add the resolved id to the definitions.
       definitions[id] = { id, name, key: name };
     }
-    //console.log(definitions);
+    console.log(isReactive(definitions));
     return definitions;
   }
 
   resolveComponent(value, definition = {}) {
     // console.log(definition.id);
-    // console.log(value, definition);
+    console.log(value, definition);
     if (definition.component) return [definition.component, definition.props, definition.events];
     const types = [].concat(definition.type||[]).map(t => t.toLowerCase());
     const values = definition.values ?? [];
@@ -229,7 +230,7 @@ export class EditorState {
 
   getComponents(entityId, defId) {
     const e = this.meta[entityId] ??= {};
-    const c = e[defId] ??= [];
+    const c = e[defId] ??= shallowReactive([]);
     return c;
   }
 

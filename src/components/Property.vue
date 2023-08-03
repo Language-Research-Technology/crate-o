@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, computed, toRaw, nextTick, inject } from "vue";
+import { reactive, computed, toRaw, nextTick, inject, isReactive } from "vue";
 import { QuestionFilled, Delete, InfoFilled } from '@element-plus/icons-vue';
 import ControlAdd from "./ControlAdd.vue";
 import { $state } from './keys';
@@ -39,31 +39,30 @@ const values = computed(() => {
   return value ? (Array.isArray(value) ? value : [value]) : [];
 });
 
-function add(type, entity) {
+function add(type, value) {
   //props.modelValue.push();
   var vals = toRaw(props.modelValue);
-  console.log(props.definition)
-  console.log('addValue', type, entity);
+  console.log(props.definition);
+  console.log('addValue', type, value);
   console.log(vals);
-  var len;
+  var c, len;
   //console.log(c);
   if (Array.isArray(vals)) {
-    len = vals.push(entity || '');
+    len = vals.push(value);
   } else {
-    vals = entity || '';
+    vals = value;
     len = 1;
-  }
-  emit('update:modelValue', vals);
-  if (entity) {
-    entity = state.crate.getEntity(entity['@id']);
-    state.entities.push(entity);
-    emit('entityCreated', entity);
   }
   if (state.isInline(type)) {
     const options = props.definition.values;
     const propsOpt = { ...props.definition.props, ...(options && { options }) };
-    props.components[len - 1] = state.getInlineComponent(type, propsOpt);
-    console.log(props.components[len - 1]);
+    const c = props.components[len - 1] = state.getInlineComponent(type, propsOpt);
+  }
+  emit('update:modelValue', vals);
+  if (typeof value === 'object' && value['@id']) {
+    const entity = state.crate.getEntity(value['@id']);
+    state.entities.push(entity);
+    emit('entityCreated', entity);
   }
 }
 

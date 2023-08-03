@@ -47,7 +47,7 @@ function add(type) {
 }
 
 function addEntity(v) {
-  //console.log('addEntity');
+  console.log('addEntity');
   const type = data.selectedType;
   data.keyword = '';
   data.selectedType = '';
@@ -60,7 +60,7 @@ function addNewEntity() {
   const defaultName = state.entity.name + '-' + props.definition.name;
   const id = name && !state.crate.getEntity('#' + name) ? '#' + name :
     state.crate.uniqueId(`#${name || defaultName}-`);
-  //console.log(name);
+  console.log(name);
   const e = {
     "@id": id,
     "@type": type,
@@ -120,8 +120,7 @@ function createLabel(entity) {
         {{ t }}
       </el-option>
     </el-select>
-    <el-button v-else v-for="t of types" size="small" type="primary" 
-      :icon="data.selectedType === t ? Close : Plus"
+    <el-button v-else v-for="t of types" size="small" type="primary" :icon="data.selectedType === t ? Close : Plus"
       :class="{ active: data.selectedType === t }" @click="add(t)">
       {{ t }}
     </el-button>
@@ -132,8 +131,7 @@ function createLabel(entity) {
         @change="addEntity" :filter-method="v => true" :remote-method="search" size="small">
         <template v-for="group in data.options" :key="group.value">
           <el-option-group v-if="group.options.length" :label="group.label">
-            <el-option v-for="item in group.options" :key="item['@id']" 
-              :label="createLabel(item)" :value="item">
+            <el-option v-for="item in group.options" :key="item['@id']" :label="createLabel(item)" :value="item">
               <!-- <span class="italic">[{{ data.selectedType }}]&nbsp;</span> -->
               <span class="font-bold">{{ createLabel(item) }}</span>
             </el-option>
@@ -151,11 +149,11 @@ function createLabel(entity) {
 .el-button.add-new-entity {
   max-width: 30%;
 }
-.el-button.add-new-entity > span {
+
+.el-button.add-new-entity>span {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
   display: inline;
 }
-
 </style>

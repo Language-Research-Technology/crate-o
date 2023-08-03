@@ -2,64 +2,76 @@
   "metadata": {
     "name": "Language Data Commons top level Collection (corpus)",
     "description": "RO-Crate Editor Profile that implements the language data commons RO-Crate Metadata Profile for top level collection described here: https://purl.archive.org/language-data-commons/profile#Collection",
-    "version": "0.1.1"
+    "version": "0.2.0"
   },
   "rootDatasets": {
     "Schema": {
       "type": "Dataset, RepositoryCollection"
     }
   },
-  "layouts": {
-    "Dataset": [
-      {
-        "name": "Main",
-        "description": "",
-        "inputs": [
-          "conformsTo",
-          "description",
-          "author",
-          "datePublished"
-        ]
-      },
-      {
-        "name": "Related items",
-        "description": "",
-        "inputs": [
-          "publisher",
-          "funder",
-          "citation"
-        ]
-      },
-      {
-        "name": "Collection Structure",
-        "description": "How does this collection relate to other collections",
-        "inputs": [
-          "hasMember"
-        ]
-      },
-      {
-        "name": "Space and Time",
-        "description": "",
-        "inputs": [
-          "temporalCoverage",
-          "spatialCoverage"
-        ]
-      },
-      {
-        "name": "Parts",
-        "description": "Files associated to this collection",
-        "inputs": [
-          "hasPart"
-        ]
-      }
-    ]
-  },
+  "inputGroups": [
+    {
+      "name": "About",
+      "description": "",
+      "inputs": ["@id", "@type", "name"]
+    },    
+    {
+      "name": "Main",
+      "description": "",
+      "inputs": [
+        "conformsTo",
+        "description",
+        "author",
+        "datePublished"
+      ]
+    },
+    {
+      "name": "Related items",
+      "description": "",
+      "inputs": [
+        "publisher",
+        "funder",
+        "citation"
+      ]
+    },
+    {
+      "name": "Collection Structure",
+      "description": "How does this collection relate to other collections",
+      "inputs": [
+        "hasMember"
+      ]
+    },
+    {
+      "name": "Space and Time",
+      "description": "",
+      "inputs": [
+        "temporalCoverage",
+        "spatialCoverage"
+      ]
+    },
+    {
+      "name": "Parts",
+      "description": "Files associated to this collection",
+      "inputs": [
+        "hasPart"
+      ]
+    }
+  ],
   "classes": {
     "Dataset": {
       "id": "http://schema.org/Dataset",
       "definition": "override",
       "subClassOf": [],
       "inputs": [
+        {
+          "id": "http://schema.org/isAccessibleForFree",
+          "name": "isAccessibleForFree",
+          "required": false,
+          "multiple": false,
+          "type": [
+            "Boolean"
+          ]
+        },
         {
           "id": "http://schema.org/name",
           "name": "name",
@@ -122,7 +134,8 @@
           "name": "temporalCoverage",
           "help": "The range of years of creation for items in this dataset eg 1900-1945. If there are sub collections with different coverages put this on the sub-collections not the top-level. ",
           "type": [
-            "DateTime","Text"
+            "DateTime",
+            "Text"
           ],
           "multiple": true
         },
@@ -185,7 +198,9 @@
             "Select"
           ],
           "values": [
-            { "@id": "https://purl.archive.org/language-data-commons/profile#Collection" }
+            {
+              "@id": "https://purl.archive.org/language-data-commons/profile#Collection"
+            }
           ],
           "multiple": false
         },
@@ -194,7 +209,9 @@
           "name": "language",
           "label": "Language",
           "help": "The language(s) of the content in this Collection",
-          "type": ["Language"],
+          "type": [
+            "Language"
+          ],
           "required": true,
           "multiple": true
         },
@@ -287,7 +304,9 @@
           "name": "language",
           "label": "Language",
           "help": "Attach a language",
-          "type": ["Language"],
+          "type": [
+            "Language"
+          ],
           "required": true,
           "multiple": true
         }
@@ -489,22 +508,15 @@
           ]
         },
         {
-          "id": "http://schema.org/smokingAllowed",
-          "name": "smokingAllowed",
-          "required": false,
-          "multiple": false,
-          "type": [
-            "Boolean"
-          ]
-        },
-        {
           "id": "http://schema.org/geo",
           "name": "geo",
           "help": "The geo coordinates of the place",
           "required": false,
           "multiple": true,
           "type": [
-            "GeoCoordinates", "GeoShape", "Geometry"
+            "GeoCoordinates",
+            "GeoShape",
+            "Geometry"
           ]
         }
       ]
@@ -612,7 +624,9 @@
           "help": "The WKT serialization of the geometry",
           "required": true,
           "multiple": true,
-          "type": ["Text"]
+          "type": [
+            "Text"
+          ]
         }
       ]
     },
@@ -765,4 +779,4 @@
     "File",
     "Language"
   ]
-}   
+}

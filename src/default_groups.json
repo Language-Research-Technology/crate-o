@@ -1,0 +1,48 @@
+[
+  {
+    "name": "About",
+    "description": "",
+    "inputs": ["@id", "@type", "name"]
+  },    
+  {
+    "name": "Main",
+    "description": "",
+    "inputs": [
+      "conformsTo",
+      "description",
+      "author",
+      "datePublished"
+    ]
+  },
+  {
+    "name": "Related items",
+    "description": "",
+    "inputs": [
+      "publisher",
+      "funder",
+      "citation"
+    ]
+  },
+  {
+    "name": "Collection Structure",
+    "description": "How does this collection relate to other collections",
+    "inputs": [
+      "hasMember"
+    ]
+  },
+  {
+    "name": "Space and Time",
+    "description": "",
+    "inputs": [
+      "temporalCoverage",
+      "spatialCoverage"
+    ]
+  },
+  {
+    "name": "Parts",
+    "description": "Files associated to this collection",
+    "inputs": [
+      "hasPart"
+    ]
+  }
+]

@@ -15,7 +15,7 @@ const data = shallowReactive({
   crate: null,
   entityId: '',
   selectedProfile: 1,
-  profiles: reactive(profiles),
+  profiles: shallowReactive(profiles),
   loading: false,
 });
 window.data = data;
