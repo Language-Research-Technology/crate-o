@@ -2,10 +2,7 @@
 import { shallowReactive, reactive, ref, computed, watch } from 'vue';
 import { profiles } from '@/profiles';
 import Welcome from "@/components/Welcome.vue";
-//import {DataStore} from '../stores/data' ;
 import { HomeFilled, ArrowLeftBold, ArrowDown } from '@element-plus/icons-vue';
-
-//import EntityLinks from "@/components/EntityLinks.vue";
 
 const data = shallowReactive({
   /** @type {?FileSystemDirectoryHandle} */
