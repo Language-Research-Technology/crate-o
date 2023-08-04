@@ -51,7 +51,7 @@ function addEntity(v) {
   const type = data.selectedType;
   data.keyword = '';
   data.selectedType = '';
-  emit('add', type, v);
+  emit('add', type, v, true);
 }
 
 function addNewEntity() {

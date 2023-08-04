@@ -261,7 +261,7 @@ export class EditorState {
     var t = type.toLowerCase();
     if (t in primitiveComponents) {
       if (t in { select: 0, selecturl: 0, selectobject: 0 }) {
-        if (!props.options && props.options.length) props.allowCreate = true;
+        if (!props.options || !props.options.length) props.allowCreate = true;
         return [InputSelect, props];
       } else {
         return primitiveComponents[t];

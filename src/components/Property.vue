@@ -39,18 +39,17 @@ const values = computed(() => {
   return value ? (Array.isArray(value) ? value : [value]) : [];
 });
 
-function add(type, value) {
+function add(type, value, fromLookup) {
   //props.modelValue.push();
   var vals = toRaw(props.modelValue);
   console.log(props.definition);
   console.log('addValue', type, value);
   console.log(vals);
-  var c, len;
-  //console.log(c);
+  var len;
   if (Array.isArray(vals)) {
-    len = vals.push(value);
-  } else {
-    vals = value;
+    len = vals.push(value ?? '');
+} else {
+    vals = value ?? '';
     len = 1;
   }
   if (state.isInline(type)) {
@@ -62,7 +61,7 @@ function add(type, value) {
   if (typeof value === 'object' && value['@id']) {
     const entity = state.crate.getEntity(value['@id']);
     state.entities.push(entity);
-    emit('entityCreated', entity);
+    if (!fromLookup) emit('entityCreated', entity);
   }
 }
 
