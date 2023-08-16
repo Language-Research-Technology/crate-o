@@ -1,12 +1,13 @@
 
 # Crate-O?
 
-Status: PRE ALPHA WORK IN PROGRESS -- planning for an alpha release in May 2023.
+Status: Alpha release -- this should be useable [now in Chrome-based browsers](language-research-technology.github.io/crate-o/), but there will be bugs - please let report bugs using Github issues in this repository.
 
 Crate-O is a  browser-based editor for  Research Object Crates  ([RO-Crate]). RO-Crate is a flexible, developer-friendly approach to linked-data description and packaging . Crate-O is designed to:
 - describe files on a user’s computer and to add contextual information about those files
 - OR, to skip the files and describe abstract contextual entities such as in a Cultural Collection or an encyclopaedia
 - OR to annotate existing resources elsewhere on the web
+- OR (coming very soon) import bulk metadata from an Excel spreadsheet
 
 NOTE: Crate-O is for Google Chrome and related browsers ONLY at this stage as it describes files on the users computer, and saves RO-Crate metadata there. We will be releasing a version that can be deployed as part of a service that accesses online resources directly, which will be compatible with other browsers (see the [Roadmap]).
 
@@ -23,24 +24,27 @@ Crate-O was inspired by and uses parts of a similar  tool known as [Describo].
 Describo was created and funded by the University of Technology Sydney eResearch group in 2019, led by Peter Sefton, in partnership with Marco La Rosa as a development contractor and software architect. That collaboration created two versions:
 
 1. A desktop version, based on Electron. This is [available](https://github.com/describo/desktop) at the Describo organization on github.
-2. An [online version](https://github.com/Arkisto-Platform/describo-online), designed to work with File Sync and Share services such as Dropbox or OwnCloud – this was intended to replace the desktop version, as it had proved hard to deploy on university infrastructure but was never deployed at UTS due to a change in organisational priorities.
+2. [Describo Online](https://github.com/Arkisto-Platform/describo-online), designed to work with File Sync and Share services such as Dropbox or OwnCloud – this was intended to replace the desktop version, as it had proved hard to deploy on university infrastructure but was never deployed at UTS due to a change in organisational priorities. 
 
 Subsequently, funding has come from the European Open Science Cloud and the [Nyingarn] project and Describo has evolved into several different versions for different purposes, with varying levels of support. Main [Describo] development is now hosted in an organization at Github. At present the membership list of the organisation is not public.
+
+As of 2023-08-16 there is now another [online version](https://describo.github.io/web) of Descibo described [here](https://describo.github.io/#/web) as "the online version" -- this is NOT the same thing as Describo Online.
 
 
 ## Why a new tool?
 
-Crate-O is built on a different development philosophy that Describo. Rather than multiple different applications for different contexts  we are working on a single adaptable and embedable browser based editing application, built on a fully featured RO-Crate library, [RO-Crate-js] that can be used in different modes as outlined above (describing files on disk, abstract collections, and eventually as an editor for RO-Crate style JSON-LD fragments). 
+Crate-O is built on a different development philosophy that Describo. Rather than multiple different applications for different contexts  we are working on a single adaptable and embeddable browser based editing application, built on a fully featured RO-Crate library, [RO-Crate-js] that can be used in different modes as outlined above (describing files on disk, abstract collections, and eventually as an editor for RO-Crate style JSON-LD fragments). 
 
 ## Crate-O aims to be a general purpose tool
 
-Crate-O will be a general-purpose RO-Crate editor that will work in a number of contexts with or without a server to store Crates. Because RO-Crate is built on JSON-LD, Crate-O can also be used as a simple general-purpose linked data editor, provided the use case aligns with the constraints imposed by RO-Crate, the main two of which are that (a) entities have to be serialised to JSON-LD in a  particular way, with a flattened @graph array of all entities, and (b) there is a entry-point entity known as the RO-Crate Root Dataset with a small number of required metadata fields that serves to package the JSON-LD @graph.
+Crate-O will be a general-purpose RO-Crate editor that will work in a number of contexts with or without a server to store Crates. Because RO-Crate is built on JSON-LD, Crate-O can also be used as a simple general-purpose linked data editor, provided the use case aligns with the main constraints imposed by RO-Crate; that entities have to be serialized to JSON-LD in a  particular way, with a flattened @graph array of all entities.
 
-Crate-O will reuse:
-- Describo Profiles as an initial starting point.  We also plan to support loading ontologies in other formats. Under consideration  are:
+Crate-O uses [RO-Crate Editor Profiles](https://github.com/Language-Research-Technology/ro-crate-editor-profiles) which were based on Describo Profiles as an initial starting point. These are probably not fully Describo compatible any more as we have simplified the Describo approach see the [page on the differences](https://github.com/Language-Research-Technology/ro-crate-editor-profiles/blob/main/docs/describo-diffs.md).
+
+ We also plan to support loading ontologies in other formats. Under consideration  are:
   - Schema.org style Schemas ([SoSS]s) packaged as JSON-LD.
    -  [OWL] ontologies, SHACL specifications and other RDF approaches.
- We do not yet know if other schemas ontologies will be transformed into Describo-style profiles or if we will support some other schema languages natively.
+
 -  Describo-style [Data Packs] and other name authorities.
 
 # Roadmap / Backlog
@@ -49,21 +53,23 @@ The following is an overview of the major goals / functions for Crate-O over 202
 
 ## Dataset  management (2023-Q2 - 2023-Q4)
 
-Integration with [RO-Crate-Excel], for hybrid Crate-O / Spreadsheet description of datasets such as linguistic corpora or scientific data. In this mode, Crate-O will manage the top-level bibliographic-type metadata for a crate, in tandem with spreadsheets used for repetitive data entry about large numbers of files and their relationships.
+Progress has been made on integration with [RO-Crate-Excel], for hybrid Crate-O / Spreadsheet description of datasets such as linguistic corpora or scientific data. In this mode, Crate-O will manage the top-level bibliographic-type metadata for a crate, in tandem with spreadsheets used for repetitive data entry about large numbers of files and their relationships. 
 
 ## Schemas, Profiles & Ontologies (2023-Q2 - 2023Q4)
 
 There are a number of ways that linked-data groups are using to describe profiles for RO-Crate and similar linked data projects. On our radar at the moment are:
 
--  Schema.org - style “Schemas” which describe linked-data entities; Classes, Properties and DefinedTerms in a simple structural way. As these entities are a packaged in a flat JSON-LD graph, they can be distributed as RO-Crates and edited directly using Crate-O or other RO-Crate tools.
--  Describo “profiles” which describe a Schema for an RO-Crate along with the layout of entry forms and name-authority lookups.
--  JSON (not JSON-LD) schemas as seen in Bioschemas
--  SHACL “shapes” that provide a schema; this has been raised by developers at the Indigenous Data Network [IDN] and is being explored by colleagues in the [RO-Crate] working group. 
+- Done -- see the [RO-Crate Editor Profiles](https://github.com/Language-Research-Technology/ro-crate-editor-profiles/blob/main/docs/soss-profiles.md):
+  -  Use Schema.org - style “Schemas” which describe linked-data entities; Classes, Properties and DefinedTerms in a simple structural way. As these entities are a packaged in a flat JSON-LD graph, they can be distributed as RO-Crates and edited directly using Crate-O or other RO-Crate tools. (This is now implemented an explained here)
+  -  Describo “profiles” which describe a Schema for an RO-Crate along with the layout of entry forms and name-authority lookups.
+  -  Schema.org style schemas (SoSS)s to be maintained in RO-Crate using Crate-O. This is already working for the [Language Data Commons Vocabulary].
+  -  A simple workflow for loading a SoSS into Crate-O to create a basic Profile/
+- In progress:
+  -  JSON (not JSON-LD) schemas as seen in Bioschemas
+-  TODO: 
+    -  SHACL “shapes” that provide a schema; this has been raised by developers at the Indigenous Data Network [IDN] and is being explored by colleagues in the [RO-Crate] working group. 
 
-It will take some time to work with our partners on which of  these approaches Crate-O should support, but In Q3 2023 we aim to support a toolchain which allows:
 
--  Schema.org style schemas (SoSS)s to be maintained in RO-Crate using Crate-O. This is already working for the [Language Data Commons Vocabulary].
--  A simple workflow for loading a SoSS into Crate-O to create a basic Profile/
 
 ## Data deposit (2023-Q3 - 2024-Q2)
 
