@@ -8,6 +8,7 @@
     "name": "Main",
     "description": "",
     "inputs": [
+
       "conformsTo",
       "author",
       "creator",
