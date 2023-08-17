@@ -1,8 +1,11 @@
 <script setup>
-import { shallowReactive, reactive, ref, computed, watch } from 'vue';
-import { profiles } from '@/profiles';
+import {shallowReactive, reactive, ref, computed, watch} from 'vue';
+import {profiles} from '@/profiles';
 import Welcome from "@/components/Welcome.vue";
-import { HomeFilled, ArrowLeftBold, ArrowDown } from '@element-plus/icons-vue';
+import {HomeFilled, ArrowLeftBold, ArrowDown} from '@element-plus/icons-vue';
+import SpreadSheet from "@/components/SpreadSheet.vue";
+
+const emit = defineEmits(['load:spreadsheet']);
 
 const data = shallowReactive({
   /** @type {?FileSystemDirectoryHandle} */
@@ -13,6 +16,7 @@ const data = shallowReactive({
   entityId: '',
   selectedProfile: 1,
   profiles: shallowReactive(profiles),
+  spreadSheetBuffer: null,
   loading: false,
 });
 window.data = data;
@@ -66,20 +70,20 @@ const commands = {
 
   async addFiles() {
     const dirHandle = data.dirHandle;
-    editor.value.rootDataset.hasPart = await collectFiles({ dirHandle, root: '' });
+    editor.value.rootDataset.hasPart = await collectFiles({dirHandle, root: ''});
   },
 
   async save() {
     if (data.dirHandle) {
       // create new crate metadata
-      data.metadataHandle = await data.dirHandle.getFileHandle('ro-crate-metadata.json', { create: true });
+      data.metadataHandle = await data.dirHandle.getFileHandle('ro-crate-metadata.json', {create: true});
     } else {
       try {
         data.metadataHandle = await window.showSaveFilePicker({
           suggestedName: 'ro-crate-metadata.json',
           types: [{
             description: 'RO-Crate Metadata File',
-            accept: { 'application/json': ['.json'] }
+            accept: {'application/json': ['.json']}
           }]
         });
       } catch (error) {
@@ -91,21 +95,35 @@ const commands = {
       await writable.write(content);
       await writable.close();
     }
+  },
+
+  async loadSpreadsheet() {
+
+    const [excelHandle] = await window.showOpenFilePicker({
+      types: [{
+        description: 'Excel File with RO-Crate columns',
+        accept: {'application/vnd.ms-excel': ['.xlsx']}
+      }]
+    });
+    let file = await excelHandle.getFile();
+    const buffer = await file.arrayBuffer();
+    data.crate = editor.value.crate;
+    data.spreadSheetBuffer = buffer;
   }
 };
 
 const excludedFiles = {
-  'ro-crate-metadata.json':'',
-  'node_modules':''
+  'ro-crate-metadata.json': '',
+  'node_modules': ''
 };
 
 /**
- * 
- * @param {object} param0 
+ *
+ * @param {object} param0
  * @param {FileSystemDirectoryHandle} param0.dirHandle
  * @param {string} param0.root
  */
-async function collectFiles({ dirHandle, root }) {
+async function collectFiles({dirHandle, root}) {
   const files = [];
   /** @type {[string, FileSystemFileHandle|FileSystemDirectoryHandle][]} */
   const stack = [[root, dirHandle]];
@@ -119,7 +137,7 @@ async function collectFiles({ dirHandle, root }) {
       for await (const entry of handle.entries()) {
         entries.push(entry);
       }
-      for(var i = entries.length; i--;) {
+      for (var i = entries.length; i--;) {
         const e = entries[i];
         if (!e[0].startsWith('.') && !(e[0] in excludedFiles)) {
           e[0] = name + e[0];
@@ -134,12 +152,13 @@ async function collectFiles({ dirHandle, root }) {
 }
 
 // this is a workaround for el-select to revert the modelValue change to the valid option
-watch(()=>data.selectedProfile, (v, pv) => {
+watch(() => data.selectedProfile, (v, pv) => {
   if (v < 0) {
     data.selectedProfile = pv;
     commands.loadProfile();
   }
 });
+
 </script>
 
 <template>
@@ -148,13 +167,14 @@ watch(()=>data.selectedProfile, (v, pv) => {
       <el-form-item class="">
         <el-dropdown trigger="click" @command="command => commands[command]?.()">
           <el-button type="primary">File &nbsp;<el-icon class="el-icon--right">
-              <ArrowDown />
-            </el-icon></el-button>
+            <ArrowDown/>
+          </el-icon>
+          </el-button>
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item command="open">
                 <el-tooltip effect="dark" placement="right"
-                  content="Open a directory to describe or select an empty directory">
+                            content="Open a directory to describe or select an empty directory">
                   Open Directory
                 </el-tooltip>
               </el-dropdown-item>
@@ -165,8 +185,24 @@ watch(()=>data.selectedProfile, (v, pv) => {
               </el-dropdown-item>
               <el-dropdown-item command="save" :disabled="!data.dirHandle">
                 <el-tooltip effect="dark" placement="right"
-                  content="Save crate metadata to the currently opened directory">
+                            content="Save crate metadata to the currently opened directory">
                   Save Progress
+                </el-tooltip>
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+        <div>&nbsp;</div>
+        <el-dropdown trigger="click" @command="command => commands[command]?.()" v-if="data.dirHandle">
+          <el-button type="primary">Edit &nbsp;<el-icon class="el-icon--right">
+            <ArrowDown/>
+          </el-icon>
+          </el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item command="loadSpreadsheet">
+                <el-tooltip effect="dark" placement="right" content="Add Metadata from Spreadsheet">
+                  Load Spreadsheet
                 </el-tooltip>
               </el-dropdown-item>
             </el-dropdown-menu>
@@ -192,12 +228,15 @@ watch(()=>data.selectedProfile, (v, pv) => {
       </div>
     </el-form>
   </div>
+  <template v-if="data.crate">
+    <CrateEditor ref="editor" v-loading="data.loading" v-model:entityId="data.entityId"
+                 :crate="data.crate" :profile="profile" @ready="data.loading = false">
+    </CrateEditor>
+    <SpreadSheet v-model:crate="data.crate" :buffer="data.spreadSheetBuffer"/>
 
-  <CrateEditor ref="editor" v-loading="data.loading" v-if="data.crate" v-model:entityId="data.entityId"
-    :crate="data.crate" :profile="profile" @ready="data.loading = false">
-  </CrateEditor>
+  </template>
   <div v-else>
-    <welcome />
+    <welcome/>
   </div>
 </template>
 

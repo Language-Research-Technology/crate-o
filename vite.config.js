@@ -16,7 +16,7 @@ export default defineConfig(({mode}) => ({
     Components({resolvers: [ElementPlusResolver()]}),
   ],
   optimizeDeps: {
-    include: ['leaflet', 'leaflet-area-select']
+    include: ['ro-crate-excel','leaflet', 'leaflet-area-select']
   },
   resolve: {
     alias: {
@@ -28,6 +28,9 @@ export default defineConfig(({mode}) => ({
   },
   base: './',
   build: {
-    rollupOptions: {}
+    rollupOptions: {},
+    commonjsOptions: {
+      include: [/ro-crate-excel/, /node_modules/],
+    },
   }
 }));
