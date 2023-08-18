@@ -5,7 +5,7 @@ import * as L from "leaflet";
 import "leaflet.path.drag";
 import "leaflet-editable";
 import { GestureHandling } from "leaflet-gesture-handling";
-import { reactive, computed, ref, onMounted, watch } from "vue";
+import {reactive, computed, ref, onMounted, watch, onUpdated} from "vue";
 
 const mapRef = ref();
 //const tooltipRef = ref();
@@ -62,9 +62,12 @@ const shapes = {
 //   })[layer.kind]?.(data, options);
 // }
 
-onMounted(() => {
+onMounted(async () => {
   console.log('map mounted');
   //console.log(mapRef.value);
+  // wait so that leaflet div has a size because otherwise the tiles won't load
+  await new Promise((resolve) => setTimeout(resolve, 200));
+
   const layerById = {};
   L.Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
   const featuresLayer = L.featureGroup();
@@ -83,8 +86,10 @@ onMounted(() => {
   featuresLayer.addTo(map);
   initControls(map, featuresLayer);
 
+
   watch(() => props.modelValue, (val) => {
     console.log('shapes updated');
+
     featuresLayer.clearLayers();
     if (!val) return;
     for (const shape of val) {
