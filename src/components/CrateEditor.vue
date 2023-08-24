@@ -119,7 +119,7 @@ watch(() => props.crate, async crate => {
   await state.setCrate(crate);
   data.entity = data.rootDataset = state.entity = state.crate.rootDataset;
   data.history = [];
-  historyStart = window.history.state.position + 1;
+  historyStart = window.history.state?.position + 1;
   $router.push({ query: { id: encodeURIComponent(state.crate.rootId) } });
 }, { immediate: true });
 

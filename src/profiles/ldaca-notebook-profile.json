@@ -10,7 +10,23 @@
     }
   },
   "hide": {"Dataset": []},
-
+  "lookup": {
+    "Language": {
+      "module": "datapack",
+      "fields": [
+        "@id",
+        "name",
+        "alternateName",
+        "iso639-3",
+        "austlangCode",
+        "glottologCode",
+        "languageCode"
+      ]
+    },
+    "Organization": {
+      "module": "ror"
+    }
+  },
   "classes": {
     "Dataset": {
       "definition": "override",

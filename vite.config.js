@@ -29,5 +29,12 @@ export default defineConfig(({mode}) => ({
   base: './',
   build: {
     rollupOptions: {}
+  },
+  test:{
+    globals: true,
+    environment: 'jsdom',
+    deps:{
+      inline: ['element-plus']
+    }
   }
 }));
