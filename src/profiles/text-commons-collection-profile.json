@@ -9,7 +9,38 @@
       "type": "Dataset, RepositoryCollection"
     }
   },
- 
+  "lookup": {
+    "Language": {
+      "module": "datapack",
+      "fields": [
+        "@id",
+        "name",
+        "alternateName",
+        "iso639-3",
+        "austlangCode",
+        "glottologCode",
+        "languageCode"
+      ]
+    },
+    "Organization": {
+      "module": "ror"
+    }
+  },
+  "enabledClasses": [
+    "Dataset",
+    "Person",
+    "Place",
+    "GeoCoordinates",
+    "GeoShape",
+    "Organization",
+    "Book",
+    "ScholarlyArticle",
+    "RepositoryCollection",
+    "CreativeWork",
+    "CollectionProtocol",
+    "File",
+    "Language"
+  ],
   "classes": {
     "Dataset": {
       "id": "http://schema.org/Dataset",
@@ -699,37 +730,5 @@
     "Language": {
       "definition": "override"
     }
-  },
-  "lookup": {
-    "Language": {
-      "module": "datapack",
-      "fields": [
-        "@id",
-        "name",
-        "alternateName",
-        "iso639-3",
-        "austlangCode",
-        "glottologCode",
-        "languageCode"
-      ]
-    },
-    "Organization": {
-      "module": "ror"
-    }
-  },
-  "enabledClasses": [
-    "Dataset",
-    "Person",
-    "Place",
-    "GeoCoordinates",
-    "GeoShape",
-    "Organization",
-    "Book",
-    "ScholarlyArticle",
-    "RepositoryCollection",
-    "CreativeWork",
-    "CollectionProtocol",
-    "File",
-    "Language"
-  ]
+  }
 }
