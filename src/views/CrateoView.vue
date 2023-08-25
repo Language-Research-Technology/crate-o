@@ -183,6 +183,13 @@ watch(() => data.selectedProfile, (v, pv) => {
                   Load Files
                 </el-tooltip>
               </el-dropdown-item>
+              <el-dropdown-menu>
+                <el-dropdown-item command="loadSpreadsheet" :disabled="!data.dirHandle">
+                  <el-tooltip effect="dark" placement="right" content="Add Metadata from Spreadsheet">
+                    Load Spreadsheet
+                  </el-tooltip>
+                </el-dropdown-item>
+              </el-dropdown-menu>
               <el-dropdown-item command="save" :disabled="!data.dirHandle">
                 <el-tooltip effect="dark" placement="right"
                             content="Save crate metadata to the currently opened directory">
@@ -193,21 +200,6 @@ watch(() => data.selectedProfile, (v, pv) => {
           </template>
         </el-dropdown>
         <div>&nbsp;</div>
-        <el-dropdown trigger="click" @command="command => commands[command]?.()" v-if="data.dirHandle">
-          <el-button type="primary">Edit &nbsp;<el-icon class="el-icon--right">
-            <ArrowDown/>
-          </el-icon>
-          </el-button>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item command="loadSpreadsheet">
-                <el-tooltip effect="dark" placement="right" content="Add Metadata from Spreadsheet">
-                  Load Spreadsheet
-                </el-tooltip>
-              </el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
       </el-form-item>
 
       <el-form-item label="Profile:" class="w-9/12">

@@ -31,6 +31,7 @@ export default defineConfig(({mode}) => ({
     rollupOptions: {},
     commonjsOptions: {
       include: [/ro-crate-excel/, /node_modules/],
+      transformMixedEsModules: true
     },
   }
 }));

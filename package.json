@@ -20,6 +20,7 @@
     "leaflet-gesture-handling": "^1.2.2",
     "leaflet.path.drag": "^0.0.6",
     "ro-crate": "^3.3.2",
+    "ro-crate-excel": "^1.0.12",
     "uuid": "^9.0.0",
     "vue": "^3.2.45",
     "vue-router": "^4.1.6"
