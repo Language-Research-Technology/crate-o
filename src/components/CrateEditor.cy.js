@@ -1,3 +1,5 @@
+/// <reference types="Cypress" />
+
 import CrateEditor from './CrateEditor.vue';
 import language from "@/profiles/text-commons-collection-profile.json";
 import base from "@/profiles/base-profile.json";

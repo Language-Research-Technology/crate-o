@@ -2,7 +2,10 @@
 import { reactive, computed } from "vue";
 
 const props = defineProps({
-  modelValue: { type: Array }
+  modelValue: { 
+    /** @type import('vue').PropType<any[]> */
+    type: Array 
+  }
 });
 const emit = defineEmits(['update:modelValue']);
 
@@ -25,7 +28,8 @@ const filteredIndexes = computed(() => {
     const values = props.modelValue;
     filtered = filtered.filter(i => {
       const val = values[i];
-      for (const text of (val['@id'] ? [val.name?.[0], val['@id']] : [val])) {
+      const fields = val['@id'] ? (val.name??[]).concat(val['@id'], val['@type']) : [val];
+      for (const text of fields) {
         return text && text.match(re);
       }
     });
@@ -58,7 +62,7 @@ function filterValues() {
       layout="prev, pager, next, total" :total="filteredIndexes.length" :pager-count="5"/>
   </div>
 
-  <div v-for="i of pagedIndexes" class="flex flex-row flex-nowrap mb-3" :key="i">
+  <div v-for="i of pagedIndexes" class="flex flex-row flex-nowrap grow mb-3" :key="i">
     <slot :index="i" :value="modelValue[i]"></slot>
   </div>
 </template>

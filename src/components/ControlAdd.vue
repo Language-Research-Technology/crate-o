@@ -31,8 +31,11 @@ const vFocus = { mounted: (el, binding, vnode) => el.getElementsByTagName('input
 //var options = [{ value: 1, label: 'a' }, { value: 2, label: 'b' }];
 
 function add(type) {
-  if (state.isPrimitive(type)) {
-    const [, , defVal] = state.getInlineComponent(type);
+  if (state.isInline(type)) {
+    let defVal;
+    if (!state.isPrimitive(type)) {
+      defVal = createEntity(type);
+    }
     emit('add', type, defVal);
   } else {
     if (data.selectedType == type) {
@@ -46,6 +49,18 @@ function add(type) {
   }
 }
 
+function createEntity(type, name) {
+  const defaultName = state.entity.name + '-' + props.definition.name;
+  const id = name && !state.crate.getEntity('#' + name) ? '#' + name :
+    state.crate.uniqueId(`#${name || defaultName}-`);
+  //console.log(name);
+  return {
+    "@id": id,
+    "@type": type,
+    name: name || id.slice(1)
+  };
+}
+
 function addEntity(v) {
   console.log('addEntity');
   const type = data.selectedType;
@@ -56,16 +71,7 @@ function addEntity(v) {
 
 function addNewEntity() {
   const type = data.selectedType;
-  const name = data.keyword;
-  const defaultName = state.entity.name + '-' + props.definition.name;
-  const id = name && !state.crate.getEntity('#' + name) ? '#' + name :
-    state.crate.uniqueId(`#${name || defaultName}-`);
-  console.log(name);
-  const e = {
-    "@id": id,
-    "@type": type,
-    name
-  };
+  const e = createEntity(type, data.keyword);
   data.keyword = '';
   data.selectedType = '';
   emit('add', type, e);
@@ -80,21 +86,21 @@ function search(query) {
     return setTimeout(()=>data.keyword = '', 100);
   }
   data.keyword = query;
-  const type = data.selectedType;
+  const type = [].concat(data.selectedType);
   // local search
   const qRegex = new RegExp(query, 'i');
-  const localOptions = [];
-  for (const entity of state.crate.entities({ filter: { '@type': new RegExp(type, 'i') } })) {
-    const vals = (entity.name ?? []).concat(entity['@id']);
-    if (vals.reduce(((r, v) => r || qRegex.test(v)), false)) {
-      localOptions.push(entity);
-    }
-  }
+  //filter: { '@type': new RegExp(type, 'i') }
+  const it = state.crate.entities({filter: e =>
+    e['@id'] !== state.metadataFileEntityId &&
+    type.every(t => e['@type'].includes(t)) &&
+    (e.name ?? []).concat(e['@id']).some(v => qRegex.test(v))
+  });
+  const localOptions = Array.from(it);
   //console.log(localOptions);
   data.options[0].options = markRaw(localOptions);
   // remote search
   data.loading = true;
-  state.remoteSearch(type, query).then(result => {
+  state.remoteSearch(type[0], query).then(result => {
     //console.log(result);
     data.options[1].options = markRaw(result);
     data.loading = false;
@@ -103,6 +109,10 @@ function search(query) {
 
 function createLabel(entity) {
   return ([].concat(entity.name))[0] || entity['@id'];
+}
+
+function typeLabel(type) {
+  return Array.isArray(type) ? type.join('+') : type;
 }
 </script>
 
@@ -116,19 +126,20 @@ function createLabel(entity) {
           <Plus />
         </el-icon>
       </template>
-      <el-option v-for="t of types" :label="t" :value="t" @click="add(t)">
-        {{ t }}
+      <el-option v-for="t of types" :label="typeLabel(t)" :value="t" @click="add(t)">
+        {{ typeLabel(t) }}
       </el-option>
     </el-select>
     <el-button v-else v-for="t of types" size="small" type="primary" :icon="data.selectedType === t ? Close : Plus"
       :class="{ active: data.selectedType === t }" @click="add(t)">
-      {{ t }}
+      {{ typeLabel(t) }}
     </el-button>
     <!-- search input -->
     <template v-if="data.selectedType">
-      <el-select v-focus class="ml-2 mr-2 flex-grow" filterable remote clearable 
+      <el-select v-focus class="flex-grow min-w-[100px]" filterable remote clearable 
         v-model="data.entity" value-key="@id" :loading="data.loading"
-        @change="addEntity" :filter-method="v => true" :remote-method="search" size="small">
+        @change="addEntity" :filter-method="v => true" :remote-method="search" size="small"
+        @keyup.enter="addNewEntity">
         <template v-for="group in data.options" :key="group.value">
           <el-option-group v-if="group.options.length" :label="group.label">
             <el-option v-for="item in group.options" :key="item['@id']" :label="createLabel(item)" :value="item">
@@ -139,7 +150,7 @@ function createLabel(entity) {
         </template>
       </el-select>
       <el-button class="add-new-entity" size="small" type="success" @click="addNewEntity">
-        Create new {{ data.selectedType }}<span v-if="data.keyword">:&nbsp;</span>
+        Create new {{ typeLabel(data.selectedType) }}<span v-if="data.keyword">:&nbsp;</span>
         {{ data.keyword }}</el-button>
     </template>
   </div>
@@ -147,7 +158,9 @@ function createLabel(entity) {
 
 <style>
 .el-button.add-new-entity {
-  max-width: 30%;
+  @media (min-width: 768px) {
+    max-width: 35%;
+  }  
 }
 
 .el-button.add-new-entity>span {

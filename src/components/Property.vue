@@ -7,7 +7,10 @@ const state = inject($state);
 const pageSize = 10; //Later do in conf the page size
 
 const props = defineProps({
-  modelValue: {},
+  modelValue: { 
+    /** @type import('vue').PropType<any[]|string> */
+    type: undefined 
+  },
   components: { type: Array, required: true },
   definition: { type: Object, required: true }
 });
@@ -35,33 +38,32 @@ const label = computed(() => {
 });
 
 const values = computed(() => {
-  const value = /** @type {string|object[]} */(props.modelValue);
-  return value ? (Array.isArray(value) ? value : [value]) : [];
+  const value = props.modelValue;
+  //return value ? (Array.isArray(value) ? value : [value]) : [];
+  return Array.isArray(value) ? value : (value == null ? [] : [value]);
 });
 
 function add(type, value, fromLookup) {
-  //props.modelValue.push();
-  var vals = toRaw(props.modelValue);
-  console.log(props.definition);
-  console.log('addValue', type, value);
-  console.log(vals);
-  var len;
-  if (Array.isArray(vals)) {
-    len = vals.push(value ?? '');
-} else {
-    vals = value ?? '';
-    len = 1;
-  }
-  if (state.isInline(type)) {
+  //console.log(props.definition);
+  //console.log('addValue', type, value);
+  //console.log(vals.length);
+  var vals = values.value;
+  var val = value;
+  var isInline = state.isInline(type);
+  if (isInline) {
     const options = props.definition.values;
     const propsOpt = { ...props.definition.props, ...(options && { options }) };
-    const c = props.components[len - 1] = state.getInlineComponent(type, propsOpt);
+    const c = props.components[vals.length] = state.getInlineComponent(type, propsOpt);
+    val ??= c[2];
   }
+  vals.push(val ?? '');
+  console.log(val);
+  
   emit('update:modelValue', vals);
   if (typeof value === 'object' && value['@id']) {
     const entity = state.crate.getEntity(value['@id']);
     state.entities.push(entity);
-    if (!fromLookup) emit('entityCreated', entity);
+    if (!fromLookup && !isInline) emit('entityCreated', entity);
   }
 }
 
@@ -99,7 +101,8 @@ function removeValue(i, value) {
 </script>
 
 <template>
-  <el-form-item class="hover:bg-violet-100 px-2 p-2">
+  <!-- <el-form-item class="hover:bg-violet-100 px-2 p-2"> -->
+  <el-form-item class="px-2 p-2">
     <template #label>
       <span class="mr-1" :title="definition.id">{{ label }} </span>
       <el-icon :title="definition.help">
@@ -122,7 +125,7 @@ function removeValue(i, value) {
         </div>
       </FilteredPaged>
 
-      <ControlAdd :modelValue="values" :definition="definition" class="flex flex-row flex-nowrap" @add="add">
+      <ControlAdd :modelValue="values" :definition="definition" class="flex flex-col md:flex-row gap-1 flex-nowrap" @add="add">
       </ControlAdd>
     </div>
   </el-form-item>

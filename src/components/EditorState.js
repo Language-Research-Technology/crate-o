@@ -38,9 +38,10 @@ const stringTypesPriorities = {
   textarea: 8
 };
 const objectComponents = {
-  Geo: [InputGeo, {}],
-  GeoCoordinates: [InputGeo, {}],
-  GeoShape: [InputGeo, {}]
+  geometry: [InputGeo, {}],
+  geocoordinates: [InputGeo, {}],
+  geoshape: [InputGeo, {}],
+  geocoordinates$geoshape: [InputGeo, {}]
 };
 
 const jsonldKeywords = {
@@ -89,10 +90,12 @@ export class EditorState {
   /** cache array of entities */
   entities;
   entity;
+  metadataFileEntityId;
   async setCrate(rawCrate) {
     const crate = this.crate = new ROCrate(rawCrate, { array: true, link: true });
+    var mid = this.metadataFileEntityId = crate.metadataFileEntity['@id'];
     this.meta = reactive({});
-    this.entities = shallowReactive(Array.from(crate.entities({ filter: e => e !== crate.metadataFileEntity })));
+    this.entities = shallowReactive(Array.from(crate.entities({ filter: e => e['@id'] !== mid })));
     await crate.resolveContext();
     return crate;
   }
@@ -180,7 +183,7 @@ export class EditorState {
     // console.log(definition.id);
     console.log(value, definition);
     if (definition.component) return [definition.component, definition.props, definition.events];
-    const types = [].concat(definition.type||[]).map(t => t.toLowerCase());
+    const types = [].concat(definition.type||[]).map(t => t.toString().toLowerCase());
     const values = definition.values ?? [];
     const valueType = typeof value;
     switch (valueType) {
@@ -192,9 +195,8 @@ export class EditorState {
         } else if (Object.prototype.toString.call(value) === '[object Date]' && !isNaN(value)) {
           return primitiveComponents.datetime;
         } else if (value['@type']) {
-          for (let i = value['@type'].length; i--; ) {
-            if (objectComponents[value['@type'][i]]) return objectComponents[value['@type'][i]];
-          }
+          const c = objectComponents[value['@type'].join('$').toLowerCase()];
+          if (c) return c;
         }
         return entityComponent;
       case 'number': case 'bigint':
@@ -242,23 +244,21 @@ export class EditorState {
   }
 
   isPrimitive(type) {
-    const t = type.toLowerCase();
-    //console.log(t);
-    return (t in primitiveComponents);// || (type in objectComponents);
+    return Array.isArray(type) ? false : type.toLowerCase() in primitiveComponents
   }
 
   isInline(type) {
-    const t = type.toLowerCase();
-    return (t in primitiveComponents) || (type in objectComponents);
+    const t = (Array.isArray(type) ? type.join('$') : type).toLowerCase();
+    return (t in primitiveComponents) || (t in objectComponents);
   }
 
   /**
    * Get a component tuple [component, props, events] for a specific primitive type only
-   * @param {string} type 
+   * @param {Array|string} type 
    * @param {object} props 
    */
   getInlineComponent(type, props = {}) {
-    var t = type.toLowerCase();
+    var t = (Array.isArray(type) ? type.join('$') : type).toLowerCase();
     if (t in primitiveComponents) {
       if (t in { select: 0, selecturl: 0, selectobject: 0 }) {
         if (!props.options || !props.options.length) props.allowCreate = true;
@@ -266,8 +266,8 @@ export class EditorState {
       } else {
         return primitiveComponents[t];
       }
-    } else if (type in objectComponents) {
-      return objectComponents[type];
+    } else if (t in objectComponents) {
+      return objectComponents[t];
     } else {
       return primitiveComponents.text;
     }

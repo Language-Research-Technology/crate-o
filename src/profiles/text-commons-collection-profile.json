@@ -497,11 +497,7 @@
           "help": "The geo coordinates of the place",
           "required": false,
           "multiple": true,
-          "type": [
-            "GeoCoordinates",
-            "GeoShape",
-            "Geometry"
-          ]
+          "type": [ "Geometry" ]
         }
       ]
     },
