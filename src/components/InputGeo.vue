@@ -9,13 +9,6 @@ const props = defineProps({
   modelValue: null
 });
 const emit = defineEmits(['update:modelValue']);
-const test = reactive({
-  name: ['a']
-});
-window.test = test;
-watch(test, (v) => {
-  console.log(v.name);
-});
 //onMounted(() => console.log(props));
 // const entity = computed({
 //   get() { return props.modelValue; },

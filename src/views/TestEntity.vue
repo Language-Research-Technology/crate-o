@@ -26,8 +26,10 @@ onMounted(async function () {
     smokingAllowed: true,
     geo: {
       '@id': '#TestPlace-geo-1',
-      '@type': 'GeoShape',
+      '@type': ['GeoCoordinates','GeoShape'],
       name: 'TestPlace geo-1',
+      latitude: -27,
+      longitude: 149,
       box: ['-26 150 -25.5 150.5', '-27 150 -26.5 150.5'],
       circle: '-27 153 100000'
     } 

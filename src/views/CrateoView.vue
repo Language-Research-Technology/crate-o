@@ -15,7 +15,7 @@ const data = shallowReactive({
   profiles: shallowReactive(profiles),
   loading: false,
 });
-window.data = data;
+//window.data = data;
 const profile = computed(() => data.profiles[data.selectedProfile]);
 
 const editor = ref();

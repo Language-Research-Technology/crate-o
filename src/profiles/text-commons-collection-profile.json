@@ -4,11 +4,7 @@
     "description": "RO-Crate Editor Profile that implements the language data commons RO-Crate Metadata Profile for top level collection described here: https://purl.archive.org/language-data-commons/profile#Collection",
     "version": "0.2.0"
   },
-  "rootDatasets": {
-    "Schema": {
-      "type": "Dataset, RepositoryCollection"
-    }
-  },
+  "rootDatasetType": ["Dataset", "RepositoryCollection"],
   "lookup": {
     "Language": {
       "module": "datapack",
