@@ -118,7 +118,7 @@ export class EditorState {
 
   /**
    * Get property definitions based on type as defined in profile 
-   * @param {string[]} types 
+   * @param {string[]} types One or more (combined) types associated with an entity
    */
   getProfileDefinitions(types = []) {
     const profile = this.profile;
@@ -175,13 +175,13 @@ export class EditorState {
       // Add the resolved id to the definitions.
       definitions[id] = { id, name, key: name };
     }
-    console.log(isReactive(definitions));
+    //console.log(isReactive(definitions));
     return definitions;
   }
 
   resolveComponent(value, definition = {}) {
     // console.log(definition.id);
-    console.log(value, definition);
+    //console.log(value, definition);
     if (definition.component) return [definition.component, definition.props, definition.events];
     const types = [].concat(definition.type||[]).map(t => t.toString().toLowerCase());
     const values = definition.values ?? [];
@@ -274,5 +274,33 @@ export class EditorState {
     //return entityComponent;
   }
 
+  /**
+   * Ensure that the term and its definition of the specified entity types exists in the jsonld context
+   * @param {string[]} types 
+   */
+  ensureContext(types) {
+    if (types && Array.isArray(types)) {
+      const context = {};
+      for (const type of types) {
+        const c = this.profile.classes[type];
+        if (c) {
+          console.log(this.crate.getTerm(c.id))
+          if (c.id && !this.crate.getTerm(c.id)) {
+            context[type] = c.id;
+          }
+          for (const prop of c.inputs) {
+            if (prop.id && !this.crate.getTerm(prop.id)) {
+              context[prop.name] = prop.id;
+            }
+          }
+        }
+      }
+      console.log(context);
+      if (Object.keys(context).length) {
+        console.log('added');
+        this.crate.addContext(context);
+      }
+    }
+  }
 }
 

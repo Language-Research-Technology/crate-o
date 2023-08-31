@@ -2,19 +2,18 @@
   {
     "name": "About",
     "description": "",
-    "inputs": ["@id", "@type", "name", "description"]
-  },    
-  {
-    "name": "Main",
-    "description": "",
     "inputs": [
-
+      "@id", 
+      "@type", 
+      "name", 
+      "description",
       "conformsTo",
       "author",
       "creator",
-      "datePublished"
+      "datePublished",
+      "license"
     ]
-  },
+  },    
   {
     "name": "Related items",
     "description": "",

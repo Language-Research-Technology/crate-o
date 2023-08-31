@@ -46,7 +46,7 @@ const data = reactive({
 });
 
 const state = shallowReactive(new EditorState());
-//window.data.push(sharedData);
+window.editorState = state;
 provide($state, state);
 
 var historyStart = window.history.length;

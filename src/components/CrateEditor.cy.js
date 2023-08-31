@@ -28,7 +28,7 @@ describe('<CrateEditor />', async () => {
                 },
                 ref: 'editor'
             });
-            cy.get('#tab-Main').click();
+            cy.get('#tab-About').click();
             cy.get('#tab-Related\\ items').click();
             cy.get('.el-form-item').find('button').contains('Organization').click();
             cy.get('.el-input').type(MY_ORG);
@@ -50,7 +50,7 @@ describe('<CrateEditor />', async () => {
             },
             ref: 'editor'
         });
-        cy.get('#tab-Main').click();
+        cy.get('#tab-About').click();
         cy.get('#tab-Related\\ items').click();
         cy.get('.el-form-item:first').find('.el-input:first').click();
         cy.get('.el-popper').find('li:first').contains('Organization').click();
@@ -74,7 +74,7 @@ describe('<CrateEditor />', async () => {
             },
             ref: 'editor'
         });
-        cy.get('#tab-Main').click();
+        cy.get('#tab-About').click();
         cy.get('#tab-Related\\ items').click();
         cy.get('.el-form-item').find('button').contains('Organization').click();
         cy.get('.el-input').type(`${ORG_NOT_IN_ROR}`);
@@ -94,7 +94,7 @@ describe('<CrateEditor />', async () => {
             },
             ref: 'editor'
         });
-        cy.get('#tab-Main').click();
+        cy.get('#tab-About').click();
         cy.get('#tab-Related\\ items').click();
         cy.get('.el-form-item').find('button').contains('Organization').click();
         cy.get('button').contains('Create new Organization').click();
