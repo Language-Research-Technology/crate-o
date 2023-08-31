@@ -62,7 +62,7 @@ function add(type, value, fromLookup) {
   emit('update:modelValue', vals);
   if (typeof value === 'object' && value['@id']) {
     const entity = state.crate.getEntity(value['@id']);
-    //state.ensureContext(entity);
+    state.ensureContext(entity['@type']);
     state.entities.push(entity);
     if (!fromLookup && !isInline) emit('entityCreated', entity);
   }
