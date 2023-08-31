@@ -1,5 +1,7 @@
 <script setup>
 import { reactive, computed } from 'vue';
+import { Delete } from '@element-plus/icons-vue';
+
 import InputDateTime from '../components/InputDateTime.vue';
 import InputGeo from '../components/InputGeo.vue';
 import InputText from '../components/InputText.vue';
@@ -37,7 +39,7 @@ const inputs = [
   { label: 'time', component: InputDateTime, props: { type: 'time' } },
   { label: 'date', component: InputDateTime, props: { type: 'date' } },
   { label: 'datetime', component: InputDateTime, props: { type: 'datetime' } },
-  { label: 'geo', component: InputGeo, props: { type: '' } },
+  //{ label: 'geo', component: InputGeo, props: { type: '' } },
   { label: 'number', component: InputText, props: { type: 'number' } },
   { label: 'text', component: InputText, props: { type: 'text' } },
   { label: 'textarea', component: InputText, props: { type: 'textarea' } },
@@ -86,14 +88,14 @@ function alert(s) {
             <component class="flex-grow" :is="input.component" v-model="data.values[input.label]" v-bind="input.props">
             </component>
             <div class="pl-2 flex flex-nowrap">
-              <el-button @click="deleteProperty" type="danger" plain> <i class="fas fa-trash"></i> </el-button>
+              <el-button @click="deleteProperty" type="danger" plain :icon="Delete"></el-button>
               <el-button> Test </el-button>
             </div>
           </el-form-item>
           <el-form-item><input type="text" v-model="data.values[input.label]" /></el-form-item>
         </template>
       </el-form>
-      <InputGeo v-model="data.test" @update:model-value="test1"></InputGeo>
+      <!-- <InputGeo v-model="data.test" @update:model-value="test1"></InputGeo> -->
       <div v-for="i in 10">{{ i }}</div>
       <el-select v-model="data.select" value-key="name" @change="test1">
         <el-option v-for="item in data.options" :key="item.name" :value="item" :label="item.name">

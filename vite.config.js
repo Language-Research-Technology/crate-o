@@ -1,5 +1,6 @@
 import { fileURLToPath, URL } from 'node:url'
 
+/// <reference types="vitest" />
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { createHtmlPlugin } from 'vite-plugin-html'
@@ -16,7 +17,7 @@ export default defineConfig(({mode}) => ({
     Components({resolvers: [ElementPlusResolver()]}),
   ],
   optimizeDeps: {
-    include: ['ro-crate-excel','leaflet', 'leaflet-area-select']
+    include: ['ro-crate-excel','leaflet']
   },
   resolve: {
     alias: {
@@ -32,6 +33,13 @@ export default defineConfig(({mode}) => ({
     commonjsOptions: {
       include: [/ro-crate-excel/, /node_modules/],
       transformMixedEsModules: true
-    },
+    }
+  },
+  test:{
+    globals: true,
+    environment: 'jsdom',
+    deps:{
+      inline: ['element-plus']
+    }
   }
 }));

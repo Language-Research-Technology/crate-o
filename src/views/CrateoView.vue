@@ -14,7 +14,7 @@ const data = shallowReactive({
   metadataHandle: null,
   crate: null,
   entityId: '',
-  selectedProfile: 1,
+  selectedProfile: 0,
   profiles: shallowReactive(profiles),
   spreadSheetBuffer: null,
   loading: false,

@@ -1,39 +1,38 @@
 <script setup>
-import { reactive, onMounted, watchEffect, computed, isReactive } from "vue";
+import { reactive, onMounted, watchEffect, computed, isReactive, isProxy, watch } from "vue";
+import InputText from '../components/InputText.vue';
 import LeafletMap from '../components/LeafletMap.vue';
-import { fromEntity, updateEntity } from './geo';
+//import { fromEntity, updateEntity } from './geo';
+import transformer from './geo';
 
 const props = defineProps({
   modelValue: null
 });
 const emit = defineEmits(['update:modelValue']);
-
-onMounted(() => console.log(props));
-
-const data = reactive({
-  entity: null
+const test = reactive({
+  name: ['a']
 });
-
-watchEffect(() => {
-  console.log(props.modelValue);
-  data.entity = props.modelValue.toJSON();
+window.test = test;
+watch(test, (v) => {
+  console.log(v.name);
 });
+//onMounted(() => console.log(props));
+// const entity = computed({
+//   get() { return props.modelValue; },
+//   set(vals) { emit('update:modelValue', vals); }
+// });
 
-const shapes = computed({
-  get() { return fromEntity(props.modelValue); },
-  set(vals) {
-    //const entity = props.modelValue.toJSON();
-    const e = updateEntity(props.modelValue, vals);
-    console.log(e);
-    emit('update:modelValue', e);
-    data.entity = props.modelValue.toJSON();
+function updateValue(v, k, i) {
+  console.log(v, k, i);
+  if (i == null) {
+    props.modelValue[k] = v;
+  } else {
+    props.modelValue[k][i] = v;
+    props.modelValue[k] = props.modelValue[k];
   }
-});
-
-function onChange(k) {
-  props.modelValue[k] = data.entity[k];
-  emit('update:modelValue', data.entity);
+  emit('update:modelValue', props.modelValue);
 }
+
 
 const help = {
   point: 'Latitude and Longitude separated by space',
@@ -46,21 +45,32 @@ const help = {
 </script>
 
 <template>
-  <LeafletMap v-model="shapes"></LeafletMap>
-  <!-- <el-form-item v-if="data.current >= 0" :label="data.shapes[data.current][0]">
-    <el-input v-model="data.shapes[data.current][1]" placeholder="Coordinates" />
-  </el-form-item> -->
-  <div class="flex flex-col w-80">
-    <el-form-item v-for="(vals, k) in data.entity" :label="k">
-      <el-input v-if="Array.isArray(vals)" v-for="(v,i) of vals" v-model="vals[i]" @change="v => onChange(k)"/>
-      <el-input v-else v-model="data.entity[k]" @change="v => onChange(k)"/>
-    </el-form-item>
-    <!-- <el-form-item v-for="(vals, k) in modelValue" :label="k">
-      <el-input v-if="Array.isArray(vals)" v-for="(v,i) of vals" v-model="vals[i]" class="test"/>
-      <el-input v-else v-model="modelValue[k]" />
-    </el-form-item> -->
-    <!-- <el-form-item v-for="(v, k) in modelValue" :label="k">
-      <el-input v-model="modelValue[k]" />
-    </el-form-item> -->
-  </div>
+  <el-row :gutter="10" class="grow">
+    <el-col :xs="24" :sm="24" :md="14" :lg="14" :xl="14">
+      <LeafletMap class="h-72 flex grow min-w-[200px] mr-4" :modelValue="modelValue"
+        @update:modelValue="(v) => $emit('update:modelValue', v)" :transformer="transformer"></LeafletMap>
+    </el-col>
+    <el-col :xs="24" :sm="24" :md="10" :lg="10" :xl="10">
+      <el-form label-width="auto">
+        <el-form-item label="@id">
+          <InputText :modelValue="modelValue['@id']" @change="v => updateValue(v, '@id')" />
+        </el-form-item>
+        <el-form-item label="@type">
+          <InputText v-for="v of modelValue['@type']" :modelValue="v" class="flex-row flex-nowrap" disabled />
+        </el-form-item>
+        <template v-for="(vals, k) in modelValue">
+          <el-form-item v-if="!(k in { '@id': 0, '@type': 0 })" :label="k">
+            <InputText v-for="(v, i) of vals" :modelValue="vals[i]" @change="v => updateValue(v, k, i)"
+              class="flex-row flex-nowrap" />
+          </el-form-item>
+        </template>
+      </el-form>
+    </el-col>
+  </el-row>
 </template>
+
+<style>
+.el-form-item .el-form-item {
+  margin-bottom: 0.5rem;
+}
+</style>

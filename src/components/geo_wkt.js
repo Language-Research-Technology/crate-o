@@ -1,72 +1,43 @@
-import * as L from "leaflet";
 
-const reRoot = /^(\w+)\s*\((.+)\)$/s;
+const reRoot = /^(<.+>\s+)?(\w+)\s*(\(.+\))$/s;
 const reBrackets = /a/;
 
 /**
+ * Read a WKT formatted string and return a leaflet layer object
+ * @param {Object} L 
  * @param {string} wkt 
  */
-export function read(wkt) {
+function read(L, wkt) {
   const m = wkt.trim().match(reRoot);
-  const [, type = '', data] = m ?? []; 
+  const [, srs, type = '', data] = m ?? [];
+  if (!type || !data) return;
+  const points = parsePoints(data);
   switch (type.toUpperCase()) {
     case 'POINT':
-      return L.marker(parsePoints(data)[0], { kind: 'point' });
+      return L.marker(points[0], { kind: 'point' });
     case 'LINESTRING':
-      m = data.match(/\(\s*([,\d\s]+)\s*\)/);
-      if (m) {
-        const line = m[1].split(',').map(s => s.trim().split(/\s+/));
-        return ['line', line];
-      }
-      break;
+      return L.polyline(points, { kind: 'line' });
     case 'POLYGON':
-      m = data.match(/\(\s*\(\s*([,\d\s]+)\s*\)\s*\)/);
-      if (m) {
-        const polygon = m[1].split(',').map(s => s.trim().split(/\s+/));
-        const box = polygonToBox(polygon);
-        if (box) {
-          return ['box', box];
-        } else {
-          return ['polygon', polygon];
-        }
+      const box = polygonToBox(points);
+      if (box) {
+        return L.rectangle(box, { kind: 'box' });
+      } else {
+        return L.polygon(points, { kind: 'polygon' });
       }
-      break;
     case 'CIRCLE':
-      m = data.match(/\(\s*(\d+\.?\d*)\s+(\d+\.?\d*)\s*\)\s*,\s*(\d+\.?\d*)/);
-      if (m) {
-        const [, lng, lat, radius] = m;
-        return ['circle', [lat, lng], { radius }];
-      }
-      break;
+      const [[latlng], radius] = points;
+      return L.circle(latlng, { kind: 'circle', radius });
     default:
       break;
   }
-
-
-}
-
-export function write(layer) {
-
-
 }
 
 /**
- * Default SRS is WGS 84 longitude-latitude.
- * @param {string} text 
- * @return {L.LatLngTuple[]}
- */
-function parsePoints(text) {
-  const points = text.split(',');
-  return points.map(lnglat => {
-    const [lng, lat] = text.trim().split(/\s+/);
-    return [+lat, +lng];
-  });
-
-}
-/**
+ * Parse points to a nested arrays of [latitude,longitude]
+ * Default order of the input coordinates follows WGS 84 which is longitude-latitude.
  * @param {string} text - nested list of points grouped by brackets, eg: (35 10, 45 45, 15 40, 10 20, 35 10),(20 30, 35 35, 30 20, 20 30)
  */
-function parsePointsGroups(text) {
+function parsePoints(text, latlng) {
   var parents = [];
   var current, prev;
   var ptext = '';
@@ -80,8 +51,15 @@ function parsePointsGroups(text) {
       case ')':
       case ',':
         if (ptext) {
-          const [lng, lat] = ptext.trim().split(/\s+/);
-          if (lng && lat) current.push([+lat, +lng]);
+          const point = ptext.trim().split(/\s+/);
+          if (point.length > 1) {
+            var lat, lng;
+            if (latlng) [lat, lng] = point;
+            else[lng, lat] = point;
+            if (lng && lat) current.push([+lat, +lng]);
+          } else {
+            current.push(+point[0]);
+          }
           ptext = '';
         } else if (prev) {
           current.push(prev);
@@ -99,3 +77,98 @@ function parsePointsGroups(text) {
   }
   return current;
 }
+
+/**
+ * Check if a polygon is a rectangle and return the bottom left and top right corner coordinates
+ * @param {Array} polygons 
+ * @return {L.LatLngTuple[]}
+ */
+function polygonToBox(polygons) {
+  if (polygons.length !== 1) return;
+  const polygon = polygons[0];
+  if (polygon.length === 5) {
+    const lats = [], lngs = [];
+    for (let i = 0; i < 4; ++i) {
+      if (polygon[i][0] === polygon[i + 1][0]) lats.push(polygon[i][0]);
+      else if (polygon[i][1] === polygon[i + 1][1]) lngs.push(polygon[i][1]);
+    }
+    if (lats.length === 2 && lngs.length === 2) {
+      const [bottom, top] = lats.sort();
+      const [left, right] = lngs.sort();
+      return [[+bottom, +left], [+top, +right]];
+    }
+  }
+}
+
+/**
+ * Build WKT string with WGS 84 longitude-latitude as default SRS
+ */
+function writer(L) {
+  const writers = [
+    [L.Marker, l => {
+      const p = l.getLatLng();
+      return `POINT (${p.lng} ${p.lat})`;
+    }],
+    [L.Rectangle, l => {
+      const bounds = l.getBounds();
+      if (bounds.isValid()) {
+        const n = bounds.getNorth();
+        const e = bounds.getEast();
+        const s = bounds.getSouth();
+        const w = bounds.getWest();
+        const points = [[w, s], [w, n], [e, n], [e, s], [w, s]].map(p => p.join(' ')).join(', ');
+        return `POLYGON ((${points}))`;
+      }
+    }],
+    [L.Polygon, l => {
+      const points = l.getLatLngs().map(p => (p.push(p[0]), p)).
+        map(p => '(' + p.map(c => `${c.lng} ${c.lat}`).join(', ') + ')').join(', ');
+      return `POLYGON (${points})`;
+    }],
+    [L.Polyline, l => {
+      const points = l.getLatLngs().map(c => `${c.lng} ${c.lat}`).join(', ');
+      return `LINESTRING (${points})`;
+    }],
+    [L.Circle, l => {
+      const p = l.getLatLng();
+      const r = l.getRadius();
+      return `CIRCLE ((${p.lng} ${p.lat}), ${r})`;
+    }]
+  ];
+  return function(layer) {
+    for (const [c, fn] of writers) {
+      if (layer instanceof c) {
+        return fn(layer);
+      }
+    }
+  }
+}
+
+
+export function Geometry(L) {
+  /**
+   * Build WKT string with WGS 84 longitude-latitude as default SRS
+   */
+  const write = writer(L);
+
+  return {
+    //shapes: ['point', 'line', 'box', 'circle', 'polygon'],
+    shapes: ['point', 'box', 'polygon'],
+    from(entity) {
+      const wkt = entity['http://www.opengis.net/ont/geosparql#asWKT'] || entity['asWKT'] || entity['geo:asWKT'] || [];
+      return wkt.map(data => read(L, data));
+    },
+    to(shapes, entity = {}) {
+      entity.asWKT = shapes.map(s => write(s));
+      return entity;
+    }
+
+  };
+}
+
+export const _private = {
+  parsePoints,
+  polygonToBox,
+  read,
+  writer
+};

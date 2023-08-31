@@ -2,15 +2,16 @@
   {
     "name": "About",
     "description": "",
-    "inputs": ["@id", "@type", "name"]
+    "inputs": ["@id", "@type", "name", "description"]
   },    
   {
     "name": "Main",
     "description": "",
     "inputs": [
+
       "conformsTo",
-      "description",
       "author",
+      "creator",
       "datePublished"
     ]
   },
@@ -20,14 +21,32 @@
     "inputs": [
       "publisher",
       "funder",
-      "citation"
+      "citation",
+      "affiliation"
     ]
   },
   {
-    "name": "Collection Structure",
-    "description": "How does this collection relate to other collections",
+    "name": "Structure",
+    "description": "",
     "inputs": [
-      "hasMember"
+      "memberOf",
+      "hasMember",
+      "isPartOf",
+      "hasPart",
+      "fileOf",
+      "hasFile"
+    ]
+  },
+  {
+    "name": "Provenance",
+    "description": "",
+    "inputs": [
+      "agent",
+      "object",
+      "instrument",
+      "result",
+      "participant",
+      "target"
     ]
   },
   {
@@ -36,13 +55,6 @@
     "inputs": [
       "temporalCoverage",
       "spatialCoverage"
-    ]
-  },
-  {
-    "name": "Parts",
-    "description": "Files associated to this collection",
-    "inputs": [
-      "hasPart"
     ]
   }
 ]
