@@ -9,14 +9,22 @@ const emit = defineEmits(['update:crate']);
 
 const data = reactive({
   dialogVisible: false,
-  log: [],
+  log: {
+    info: [],
+    warning: [],
+    error: []
+  },
   wb: {},
   crate: null
 })
 
 watch(() => props.buffer, (buffer) => {
   console.log('watch profile');
-  data.log = [];
+  data.log = {
+    info: [],
+    warning: [],
+    error: []
+  };
   data.crate = null;
   loadSheet(buffer);
 }, {immediate: true});
@@ -29,14 +37,13 @@ async function loadSheet(buffer) {
       const wb = new Workbook({crate});
       await wb.loadExcelFromBuffer(buffer, true);
       data.dialogVisible = true;
-      data.log.push('Log:');
-      data.log = data.log.concat(wb.log);
+      data.log.info = wb.log.info;
+      data.log.warning = wb.log.warning;
       data.crate = wb.crate.toJSON();
       console.log(data.crate)
     } catch (e) {
       data.dialogVisible = true;
-      data.log.push('ERROR:');
-      data.log.push(e);
+      data.log.error.push(e);
     }
   }
 }
@@ -55,9 +62,24 @@ function updateCrate() {
       :before-close="data.handleClose"
   >
     <div class="overflow-x-scroll h-96">
-      <el-row v-for="log of data.log">
-        <p class="w-full">{{ log }}</p>
-      </el-row>
+      <p class="p-2">This metadata will be added to your crate, click 'Confirm' to continue</p>
+      <el-collapse accordion>
+        <el-collapse-item v-if="data.log.error.length > 0" title="Errors" name="1">
+          <el-row v-for="log of data.log.error">
+            <p class="w-full">{{ log }}</p>
+          </el-row>
+        </el-collapse-item>
+        <el-collapse-item title="Warnings" name="2">
+          <el-row v-for="log of data.log.warning">
+            <p class="w-full">{{ log }}</p>
+          </el-row>
+        </el-collapse-item>
+        <el-collapse-item title="Info" name="3">
+          <el-row v-for="log of data.log.info">
+            <p class="w-full">{{ log }}</p>
+          </el-row>
+        </el-collapse-item>
+      </el-collapse>
     </div>
     <template #footer>
       <span class="dialog-footer">

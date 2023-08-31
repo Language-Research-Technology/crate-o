@@ -4,10 +4,11 @@
     "description": "RO-Crate Editor Profile that implements the language data commons RO-Crate Metadata Profile for top level collection described here: https://purl.archive.org/language-data-commons/profile#Collection",
     "version": "0.2.0"
   },
-  "rootDatasets": {
-    "Schema": {
-      "type": "Dataset, RepositoryCollection"
-    }
+ "conformsToUri": [
+   "https://purl.archive.org/language-data-commons/profile#Collection"
+ ],
+  "rootDataset": {
+    "type": ["Dataset", "RepositoryCollection"]
   },
   "lookup": {
     "Language": {
@@ -252,7 +253,8 @@
           "name": "temporalCoverage",
           "help": "The range of years of creation for items in this collection eg 1900-1945. If there are sub collections with different coverages put this on the sub-collections not the top-level. ",
           "type": [
-            "DateTime", "Text"
+            "DateTime",
+            "Text"
           ],
           "multiple": true
         },
@@ -497,7 +499,9 @@
           "help": "The geo coordinates of the place",
           "required": false,
           "multiple": true,
-          "type": [ "Geometry" ]
+          "type": [
+            "Geometry"
+          ]
         }
       ]
     },
