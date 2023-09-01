@@ -111,7 +111,6 @@ describe('<CrateEditor />', async () => {
             },
             ref: 'editor'
         });
-        cy.wait(1000);
         cy.get('.el-tabs__item').contains('All Entities').click();
         cy.get('button').contains('Dataset').click();
         cy.get('#tab-Others').click();

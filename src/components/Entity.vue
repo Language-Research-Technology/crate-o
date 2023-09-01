@@ -1,8 +1,8 @@
 <script setup>
-import { ref, computed, watch, onMounted, onUpdated, inject } from "vue";
-import { $state } from './keys';
+import {ref, computed, watch, onMounted, onUpdated, inject} from "vue";
+import {$state} from './keys';
 import Property from './Property.vue';
-import { ElTabs, ElTabPane } from 'element-plus';
+import {ElTabs, ElTabPane} from 'element-plus';
 import defaultGroups from '../default_groups.json';
 
 const props = defineProps(['modelValue']);
@@ -42,17 +42,17 @@ const definitions = computed(() => state.getDefinitions(props.modelValue));
 // ));
 
 const layouts = computed(() => {
-  console.log(definitions.value);
+  // console.log('layouts:', definitions.value);
   /** @type {string[]} */
   const types = props.modelValue['@type'] || [];
   const layoutsByType = state.profile?.layouts || {};
   // handle the case of multiple types
   // pick the last type that has layout defined
   let layouts = types.reduce((l, t) => layoutsByType[t] || l, null) ||
-    state.profile?.inputGroups || defaultGroups;
-  const others = { name: 'Others', description: '', definitions: [] };
+      state.profile?.inputGroups || defaultGroups;
+  const others = {name: 'Others', description: '', definitions: []};
   layouts = layouts.concat(others);
-  
+
   const inputMap = layouts.reduce((r, l, i) => {
     l.definitions = [];
     for (const input of (l.inputs ?? [])) r.set(input, i);
@@ -65,9 +65,11 @@ const layouts = computed(() => {
     const defs = (i == null) ? others.definitions : layouts[i].definitions;
     defs.push(d);
   }
-
-  console.log(layouts);
-  return layouts.filter(layout => layout.definitions.length);
+  // console.log(layouts);
+  return layouts.map((layout) => {
+    layout.disabled = !layout.definitions.length;
+    return layout;
+  });
 });
 
 function updateProperty(def, value) {
@@ -96,11 +98,28 @@ function getComponents(def) {
 
 <template>
   <ElTabs tab-position="left" v-model="activeGroup">
-    <ElTabPane v-for="(layout, i) in layouts" :label="layout.name" :name="layout.name">
+    <ElTabPane v-for="(layout, i) in layouts" :label="layout.name" :name="layout.name"
+               :disabled="layout.disabled">
+      <template #label>
+        <el-popover v-if="layout.disabled"
+                    placement="right-end"
+                    :title="layout.name"
+                    :width="300"
+                    trigger="hover"
+                    content="There are no properties available in the profile for this type"
+        >
+          <template #reference>
+            {{ layout.name }}
+          </template>
+        </el-popover>
+        <span v-else>
+          {{ layout.name }}
+        </span>
+      </template>
       <el-form id="#entityForm" label-width="auto" novalidate v-if="activeGroup === layout.name">
         <Property v-for="def in layout.definitions" :key="def.id" :modelValue="getProperty(def)"
-          :components="getComponents(def)" :definition="def" @update:modelValue="v => updateProperty(def, v)"
-          @entityCreated="(e) => $emit('entityCreated', e)"></Property>
+                  :components="getComponents(def)" :definition="def" @update:modelValue="v => updateProperty(def, v)"
+                  @entityCreated="(e) => $emit('entityCreated', e)"></Property>
       </el-form>
     </ElTabPane>
   </ElTabs>
