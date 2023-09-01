@@ -233,7 +233,7 @@ watch(() => data.selectedProfile, (v, pv) => {
           </el-option>
         </el-select>
       </el-form-item>
-      <div v-if="data.dirHandle" class="text-large">Selected Directory:
+      <div v-if="data.dirHandle" class="text-large pt-3 pb-1">Selected Directory:
         <span class="font-bold">{{ data.dirHandle.name }}</span>
       </div>
     </el-form>

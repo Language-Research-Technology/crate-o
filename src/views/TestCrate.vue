@@ -4,9 +4,10 @@ import CrateEditor from '../components/CrateEditor.vue';
 import testData2 from '../../test-data/cooee/ro-crate-metadata.json' ;
 import testData from '../../test-data/sydney/ro-crate-metadata.json' ;
 import langProfile from '../profiles/text-commons-collection-profile.json';
+import baseProfile from '../profiles/base-profile.json';
 const data = reactive({
   crate: testData,
-  profile: langProfile,
+  profile: baseProfile,
   entityId: ''
 });
 //window.data = [];

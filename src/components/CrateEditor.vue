@@ -1,23 +1,24 @@
 <script setup>
 
-import { ref, shallowReactive, reactive, watch, computed, provide, onUpdated } from "vue";
-import { $state } from './keys';
-import { EditorState } from './EditorState';
-import { HomeFilled, ArrowLeftBold } from '@element-plus/icons-vue';
+import {ref, shallowReactive, reactive, watch, computed, provide, onUpdated} from "vue";
+import {$state} from './keys';
+import {EditorState} from './EditorState';
+import {HomeFilled, ArrowLeftBold} from '@element-plus/icons-vue';
 import FilteredPaged from '../components/FilteredPaged.vue';
 import LinkEntity from '../components/LinkEntity.vue';
 import Entity from '../components/Entity.vue';
-import { useRouter, useRoute, onBeforeRouteUpdate } from 'vue-router';
+import {useRouter, useRoute, onBeforeRouteUpdate} from 'vue-router';
+import {v4 as uuidv4} from 'uuid';
 
 
 const props = defineProps({
   //  modelValue: { type: ROCrate },
   /** RO Crate data in form of plain JSON object. */
-  crate: { type: Object, default: {} },
+  crate: {type: Object, default: {}},
   /** RO Crate editor profile. */
-  profile: { type: Object, default: {} },
+  profile: {type: Object, default: {}},
   /** Identifier of the currently displayed entity. Default to the root dataset */
-  entityId: { type: String }
+  entityId: {type: String}
 });
 
 const emit = defineEmits({
@@ -42,7 +43,9 @@ const data = reactive({
   rootDataset: null,
   loading: false,
   history: [],
-  activeTab: 'reverse'
+  activeTab: 'reverse',
+  newEntityType: null,
+  newEntityTypes: []
 });
 
 const state = shallowReactive(new EditorState());
@@ -111,7 +114,7 @@ watch(() => $route.query.id, (eid, oldId) => {
       }
     }
   }
-}, { immediate: true });
+}, {immediate: true});
 
 watch(() => props.crate, async crate => {
   console.log('watch crate');
@@ -120,20 +123,24 @@ watch(() => props.crate, async crate => {
   data.entity = data.rootDataset = state.entity = state.crate.rootDataset;
   data.history = [];
   historyStart = window.history.state?.position + 1;
-  $router.push({ query: { id: encodeURIComponent(state.crate.rootId) } });
-}, { immediate: true });
+  $router.push({query: {id: encodeURIComponent(state.crate.rootId)}});
+}, {immediate: true});
 
 watch(() => props.profile, (profile) => {
   console.log('watch profile');
   state.setProfile(profile);
-}, { immediate: true });
+  newEntityUpdate();
+}, {immediate: true});
 
-const reverseEntities = computed(() => Object.values(data.entity?.['@reverse'] || {}).
-  reduce((a, e) => a.concat(e), []).filter(e => e !== state.crate.metadataFileEntity));
+const reverseEntities = computed(() => Object.values(data.entity?.['@reverse'] || {}).reduce((a, e) => a.concat(e), []).filter(e => e !== state.crate.metadataFileEntity));
 const forceKey = ref(0);
 defineExpose({
-  get rootDataset() { return data.rootDataset; },
-  get crate() { return state.crate.toJSON(); },
+  get rootDataset() {
+    return data.rootDataset;
+  },
+  get crate() {
+    return state.crate.toJSON();
+  },
   updateCrate(cb) {
     cb(state.crate);
     forceKey.value++;
@@ -143,26 +150,57 @@ defineExpose({
 function showEntity(e) {
   $router.push({query: {id: encodeURIComponent(e['@id'])}});
 }
+
+// const value = computed(() => data.newEntityType);
+// const values = computed(() => {
+//   return data.newEntityTypes;
+// });
+
+function newEntityUpdate() {
+  const entities = [];
+  for (let key of Object.keys(state.profile.classes)) {
+    entities.push({value: key, label: key});
+  }
+  data.newEntityTypes = entities
+}
+
+function onSelectNewEntity(entity) {
+  const id = `#${uuidv4()}`;
+  const item = {
+    "@id": id,
+    "@type": [entity]
+  };
+  state.crate.addValues(data.entity['@id'], entity, item);
+  showEntity(item);
+}
+
 </script>
 
 
 <template>
   <div :key="forceKey">
     <el-row class="bg-slate-300 p-2" v-if="data.rootDataset">
-      <el-breadcrumb separator="/">
-        <el-breadcrumb-item>
-          <el-link :disabled="!data.history.length" :icon="HomeFilled"
-            :href="`#/?id=${encodeURIComponent(data.rootDataset['@id'])}`">
-            {{ data.rootDataset.name?.[0] || 'Root Dataset' }}
-          </el-link>
-        </el-breadcrumb-item>
-        <el-breadcrumb-item v-for="e, i in data.history">
-          <!-- <router-link to="/">Go to Home</router-link> -->
-          <el-link :disabled="i === data.history.length - 1" :href="`#/?id=${encodeURIComponent(e['@id'])}`">
-            {{ e.name?.[0] || e['@id'] }}
-          </el-link>
-        </el-breadcrumb-item>
-      </el-breadcrumb>
+      <el-col :span="19" class="p-2">
+        <el-breadcrumb separator="/">
+          <el-breadcrumb-item>
+            <el-link :disabled="!data.history.length" :icon="HomeFilled"
+                     :href="`#/?id=${encodeURIComponent(data.rootDataset['@id'])}`">
+              {{ data.rootDataset.name?.[0] || 'Root Dataset' }}
+            </el-link>
+          </el-breadcrumb-item>
+          <el-breadcrumb-item v-for="e, i in data.history">
+            <!-- <router-link to="/">Go to Home</router-link> -->
+            <el-link :disabled="i === data.history.length - 1" :href="`#/?id=${encodeURIComponent(e['@id'])}`">
+              {{ e.name?.[0] || e['@id'] }}
+            </el-link>
+          </el-breadcrumb-item>
+        </el-breadcrumb>
+      </el-col>
+      <el-col :span="5" class="pt-1 pr-3">
+        <el-select-v2 placeholder="Create New Entity" class="flex-grow" filterable :allow-create="false"
+                      :model-value="data.newEntityType" :options="data.newEntityTypes"
+                      @change="onSelectNewEntity"></el-select-v2>
+      </el-col>
     </el-row>
 
     <el-row v-loading="data.loading" class="crate-o">
@@ -188,7 +226,6 @@ function showEntity(e) {
             </FilteredPaged>
           </el-tab-pane>
         </el-tabs>
-
       </el-col>
     </el-row>
   </div>
