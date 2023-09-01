@@ -2,7 +2,7 @@
 
 import {Workbook} from 'ro-crate-excel';
 import {ROCrate} from "ro-crate";
-import {reactive, watch, inject} from "vue";
+import {reactive, watch, ref} from "vue";
 
 const props = defineProps(['buffer', 'crate']);
 const emit = defineEmits(['update:crate']);
@@ -31,7 +31,6 @@ watch(() => props.buffer, (buffer) => {
 
 async function loadSheet(buffer) {
   if (buffer) {
-
     const crate = new ROCrate(props.crate, {array: true, link: true});
     try {
       const wb = new Workbook({crate});
@@ -40,17 +39,37 @@ async function loadSheet(buffer) {
       data.log.info = wb.log.info;
       data.log.warning = wb.log.warning;
       data.crate = wb.crate.toJSON();
-      console.log(data.crate)
+      scrollTopDialog();
     } catch (e) {
       data.dialogVisible = true;
       data.log.error.push(e);
+      scrollTopDialog();
     }
   }
+}
+
+function scrollTopDialog() {
+  setTimeout(function () {
+    document.getElementById('spreadsheetDialogTop').scrollIntoView({behavior: 'smooth'});
+  }, 100);
 }
 
 function updateCrate() {
   emit('update:crate', data.crate);
   data.dialogVisible = false;
+}
+
+const activeLog = ref(['1', '2']);
+const changeActiveLog = (val) => {
+  activeLog.value = val;
+}
+
+function toggleElements() {
+  if (activeLog.value.length) {
+    activeLog.value = [];
+  } else {
+    activeLog.value = ['1', '2', '3'];
+  }
 }
 
 </script>
@@ -62,19 +81,22 @@ function updateCrate() {
       :before-close="data.handleClose"
   >
     <div class="overflow-x-scroll h-96">
-      <p class="p-2">This metadata will be added to your crate, click 'Confirm' to continue</p>
-      <el-collapse accordion>
+      <span id="spreadsheetDialogTop"></span>
+      <p class="p-2" v-if="data.log.info.length > 0">These metadata fields will be added to your crate, click 'Confirm'
+        to continue</p>
+      <p class="p-2" v-else>No metadata could be added, please check your spreadsheet</p>
+      <el-collapse v-model="activeLog" @change="changeActiveLog">
         <el-collapse-item v-if="data.log.error.length > 0" title="Errors" name="1">
           <el-row v-for="log of data.log.error">
             <p class="w-full">{{ log }}</p>
           </el-row>
         </el-collapse-item>
-        <el-collapse-item title="Warnings" name="2">
+        <el-collapse-item v-if="data.log.warning.length > 0" title="Warnings" name="2">
           <el-row v-for="log of data.log.warning">
             <p class="w-full">{{ log }}</p>
           </el-row>
         </el-collapse-item>
-        <el-collapse-item title="Info" name="3">
+        <el-collapse-item v-if="data.log.info.length > 0" title="Info" name="3">
           <el-row v-for="log of data.log.info">
             <p class="w-full">{{ log }}</p>
           </el-row>

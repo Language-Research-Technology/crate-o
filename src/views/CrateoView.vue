@@ -6,6 +6,7 @@ import {HomeFilled, ArrowLeftBold, ArrowDown} from '@element-plus/icons-vue';
 import SpreadSheet from "@/components/SpreadSheet.vue";
 
 const emit = defineEmits(['load:spreadsheet']);
+const defaultProfile = 0;
 
 const data = shallowReactive({
   /** @type {?FileSystemDirectoryHandle} */
@@ -14,7 +15,7 @@ const data = shallowReactive({
   metadataHandle: null,
   crate: null,
   entityId: '',
-  selectedProfile: 0,
+  selectedProfile: defaultProfile,
   profiles: shallowReactive(profiles),
   spreadSheetBuffer: null,
   loading: false,
@@ -95,6 +96,17 @@ const commands = {
       await writable.write(content);
       await writable.close();
     }
+  },
+
+  close() {
+    data.dirHandle = null;
+    data.metadataHandle = null;
+    data.crate = null;
+    data.entityId = '';
+    data.selectedProfile = defaultProfile;
+    data.profiles = shallowReactive(profiles);
+    data.spreadSheetBuffer = null;
+    data.loading = false;
   },
 
   async loadSpreadsheet() {
@@ -194,6 +206,12 @@ watch(() => data.selectedProfile, (v, pv) => {
                 <el-tooltip effect="dark" placement="right"
                             content="Save crate metadata to the currently opened directory">
                   Save Progress
+                </el-tooltip>
+              </el-dropdown-item>
+              <el-dropdown-item command="close" :disabled="!data.dirHandle">
+                <el-tooltip effect="dark" placement="right"
+                            content="Closes without saving">
+                  Close
                 </el-tooltip>
               </el-dropdown-item>
             </el-dropdown-menu>

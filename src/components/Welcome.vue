@@ -10,18 +10,26 @@
       <div class="grid gap-6">
         <h2 class="mb-3 text-lg text-gray-500 md:text-xl dark:text-gray-400"># What is Crate-O?</h2>
         <p class="text-gray-500 dark:text-gray-400">
-          Crate-O is a browser-based editor for Research Object Crates ([RO-Crate]). RO-Crate is a flexible,
+          Crate-O is a browser-based editor for <a class="text-blue-600 dark:text-blue-500 hover:underline"
+                                                   href="https://www.researchobject.org/ro-crate" target="_blank"
+                                                   rel="noopener noreferrer">Research Object Crates [RO-Crate]</a>.
+          RO-Crate is a flexible,
           developer-friendly approach to linked-data description and packaging . Crate-O is designed to:
           describe files on a user’s computer and to add contextual information about those files
           OR, to skip the files and describe abstract contextual entities such as in a Cultural Collection or an
-          encyclopaedia
-          OR to annotate existing resources elsewhere on the web
+          encyclopaedia OR to annotate existing resources elsewhere on the web
         </p>
         <p class="text-gray-500 dark:text-gray-400">
-          NOTE: Crate-O is for Google Chrome and related browsers ONLY at this stage as it describes files on the users
+          Crate-O works with <a class="text-blue-600 dark:text-blue-500 hover:underline"
+                                href="https://google.com/chrome" target="_blank" rel="noopener noreferrer">Google
+          Chrome</a> and <a class="text-blue-600 dark:text-blue-500 hover:underline" href="https://microsoft.com/edge"
+                            target="_blank" rel="noopener noreferrer">Microsoft Edge</a> ONLY at this stage as it
+          describes files on the users
           computer, and saves RO-Crate metadata there. We will be releasing versions that work with online resources
-          directly
-          which will be compatible with other browsers (see the Roadmap).
+          directly which will be compatible with other browsers (see the
+          <a class="text-blue-600 dark:text-blue-500 hover:underline"
+             href="https://github.com/Language-Research-Technology/crate-o#roadmap--backlog"
+             target="_blank" rel="noopener noreferrer">Roadmap</a>).
         </p>
         <p class="text-gray-500 dark:text-gray-400">
           While the current version of Crate-O is designed for editing self-contained RO-Crates (and works fine with
@@ -31,10 +39,54 @@
           and integration with Arkisto repositories such as the [Oni] repository, data API & search portal.
         </p>
         <p class="text-gray-500 dark:text-gray-400">
-          Crate-O is currently developed by the Language Data Commons of Australia ([LDaCA]), under the guidance of
-          Peter
-          Sefton as technical lead. If the tool is adopted in other contexts (we are in talks with a few groups about
-          this) then we aim to establish a steering committee / reference group to help guide development.
+          Crate-O is currently developed by the <a class="text-blue-600 dark:text-blue-500 hover:underline"
+                                                   href="https://www.ldaca.edu.au/" target="_blank"
+                                                   rel="noopener noreferrer">Language Data Commons of Australia
+          [LDaCA]</a>, under the guidance of
+          Peter Sefton as technical lead. If the tool is adopted in other contexts (we are in talks with a few groups
+          about this) then we aim to establish a steering committee / reference group to help guide development.
+        </p>
+      </div>
+      <div class="grid gap-6">&nbsp;</div>
+      <div class="grid gap-6">
+        <h2 class="mb-3 text-lg text-gray-500 md:text-xl dark:text-gray-400"># How to use this tool?</h2>
+        <h4 class="text-gray-500 dark:text-gray-400">
+          File | Open Directory
+        </h4>
+        <p class="text-gray-500 dark:text-gray-400">
+          Select a directory/folder to describe your research
+        </p>
+        <h4 class="text-gray-500 dark:text-gray-400">
+          File | Load Files
+        </h4>
+        <p class="text-gray-500 dark:text-gray-400">
+          Loads files from the selected directory into this crate
+        </p>
+        <h4 class="text-gray-500 dark:text-gray-400">
+          File | Load Spreadsheet
+        </h4>
+        <p class="text-gray-500 dark:text-gray-400">
+          Select a spreadsheet from a different directory to assist you with metadata description. This will append to
+          your existing crate if there is already one created.
+        </p>
+        <h4 class="text-gray-500 dark:text-gray-400">
+          File | Save Progress
+        </h4>
+        <p class="text-gray-500 dark:text-gray-400">
+          Save the state of this page into your crate. This will create an ro-crate-metadata.json or append data into an
+          existing ro-crate-metadata.json
+        </p>
+        <h4 class="text-gray-500 dark:text-gray-400">
+          File | Close
+        </h4>
+        <p class="text-gray-500 dark:text-gray-400">
+          Closes without saving
+        </p>
+        <h4 class="text-gray-500 dark:text-gray-400">
+          Profile
+        </h4>
+        <p class="text-gray-500 dark:text-gray-400">
+          Select a predefined profile or load one from your computer
         </p>
       </div>
     </el-col>
