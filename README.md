@@ -5,9 +5,9 @@ Status: Alpha release -- this should be useable [now in Chrome-based browsers](l
 
 Crate-O is a  browser-based editor for  Research Object Crates  ([RO-Crate]). RO-Crate is a flexible, developer-friendly approach to linked-data description and packaging . Crate-O is designed to:
 - describe files on a user’s computer and to add contextual information about those files
-- OR, to skip the files and describe abstract contextual entities such as in a Cultural Collection or an encyclopaedia
-- OR to annotate existing resources elsewhere on the web
-- OR (coming very soon) import bulk metadata from an Excel spreadsheet
+- optionally skip the files and describe abstract contextual entities such as in a Cultural Collection or an encyclopaedia
+- annotate existing resources elsewhere on the web
+- import bulk metadata from an Excel spreadsheet
 
 NOTE: Crate-O is for Google Chrome and related browsers ONLY at this stage as it describes files on the users computer, and saves RO-Crate metadata there. We will be releasing a version that can be deployed as part of a service that accesses online resources directly, which will be compatible with other browsers (see the [Roadmap]).
 
