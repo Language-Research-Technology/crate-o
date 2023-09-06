@@ -1,6 +1,6 @@
 <script setup>
 
-import {ref, shallowReactive, reactive, watch, computed, provide, onUpdated} from "vue";
+import {ref, shallowReactive, reactive, watch, computed, provide, onUpdated, nextTick} from "vue";
 import {$state} from './keys';
 import {EditorState} from './EditorState';
 import {HomeFilled, ArrowLeftBold} from '@element-plus/icons-vue';
@@ -8,7 +8,6 @@ import FilteredPaged from '../components/FilteredPaged.vue';
 import LinkEntity from '../components/LinkEntity.vue';
 import Entity from '../components/Entity.vue';
 import {useRouter, useRoute, onBeforeRouteUpdate} from 'vue-router';
-import {v4 as uuidv4} from 'uuid';
 
 
 const props = defineProps({
@@ -124,6 +123,7 @@ watch(() => props.crate, async crate => {
   data.history = [];
   historyStart = window.history.state?.position + 1;
   $router.push({query: {id: encodeURIComponent(state.crate.rootId)}});
+  console.log(data.entity['@id']);
 }, {immediate: true});
 
 watch(() => props.profile, (profile) => {
@@ -165,12 +165,18 @@ function newEntityUpdate() {
 }
 
 function onSelectNewEntity(entity) {
-  const id = `#${uuidv4()}`;
+  const definition = state.profile.classes[entity];
+  const defaultName = definition.name ? state.entity.name + '-' + definition.name : state.entity.name;
+  const name = definition.name ?? entity.toLowerCase();
+  const id = name && !state.crate.getEntity('#' + name) ? '#' + name : state.crate.uniqueId(`#${name || defaultName}-`);
   const item = {
-    "@id": id,
-    "@type": [entity]
+    "@id": id.replace(/ /g, "_"),
+    "@type": [entity],
+    "name": [name]
   };
-  state.crate.addValues(data.entity['@id'], entity, item);
+  state.crate.addEntity(item, {replace: true, recurse: true});
+  state.ensureContext(entity);
+  state.entities.push(item);
   showEntity(item);
 }
 

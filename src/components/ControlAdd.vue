@@ -2,6 +2,7 @@
 import { reactive, computed, markRaw, inject, nextTick } from "vue";
 import { Plus, Close } from '@element-plus/icons-vue';
 import { $state } from './keys';
+import {sortedUniq, sortBy} from 'lodash';
 
 const props = defineProps({
   /** The full property values */
@@ -12,7 +13,19 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'add']);
 
 const state = inject($state);
-const types = computed(() => props.definition.type ?? ['Text', 'Number', 'Entity']);
+const types = computed(() => {
+  if(props.definition?.type) {
+    let types = [];
+    for(let classType of props.definition.type || []) {
+      if(state.profile.classes[classType]) {
+        // console.log(state.profile.classes[classType]?.['hasSubclass'])
+        types = types.concat(state.profile.classes[classType]?.['hasSubclass'] || [])
+      }
+    }
+    return props.definition.type.concat(sortedUniq(sortBy(types)));
+  }
+  return ['Text', 'Number', 'Entity'];
+});
 
 const data = reactive({
   selectedType: '',
@@ -50,12 +63,12 @@ function add(type) {
 }
 
 function createEntity(type, name) {
-  const defaultName = state.entity.name + '-' + props.definition.name;
+  const defaultName = props.definition.name ? state.entity.name + '-' + props.definition.name : state.entity.name;
   const id = name && !state.crate.getEntity('#' + name) ? '#' + name :
     state.crate.uniqueId(`#${name || defaultName}-`);
   //console.log(name);
   return {
-    "@id": id,
+    "@id": id.replace(/ /g,"_"),
     "@type": type,
     name: name || id.slice(1)
   };
@@ -120,7 +133,7 @@ function typeLabel(type) {
   <div v-if="!definition.max || !modelValue.length || definition.max > 1">
     <!-- Add buttons -->
     <el-select v-if="types.length > 1" :modelValue="data.selectedType" @clear="data.selectedType = ''" placeholder="..."
-      size="small" clearable>
+      size="small" clearable filterable>
       <template #prefix>
         <el-icon>
           <Plus />
