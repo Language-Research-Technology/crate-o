@@ -63,14 +63,18 @@ function add(type) {
 }
 
 function createEntity(type, name) {
-  const defaultName = props.definition.name ? state.entity.name + '-' + props.definition.name : state.entity.name;
-  const id = name && !state.crate.getEntity('#' + name) ? '#' + name :
-    state.crate.uniqueId(`#${name || defaultName}-`);
-  //console.log(name);
+  console.log('createEntity');
+  let id = '';
+  let cleanName = '';
+  if(!name) {
+    name = type;
+  }
+  cleanName = name.replace(/\W/g,"_");
+  id = state.crate.uniqueId(`#${cleanName}-`);
   return {
-    "@id": id.replace(/ /g,"_"),
+    "@id": id,
     "@type": type,
-    name: name || id.slice(1)
+    name: name
   };
 }
 

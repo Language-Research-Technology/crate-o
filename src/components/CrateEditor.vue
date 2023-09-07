@@ -9,7 +9,6 @@ import LinkEntity from '../components/LinkEntity.vue';
 import Entity from '../components/Entity.vue';
 import {useRouter, useRoute, onBeforeRouteUpdate} from 'vue-router';
 
-
 const props = defineProps({
   //  modelValue: { type: ROCrate },
   /** RO Crate data in form of plain JSON object. */
@@ -132,7 +131,9 @@ watch(() => props.profile, (profile) => {
   newEntityUpdate();
 }, {immediate: true});
 
+const unlinkedEntities = computed(() => state.entities.filter(e => e['@reverse'] === undefined));
 const reverseEntities = computed(() => Object.values(data.entity?.['@reverse'] || {}).reduce((a, e) => a.concat(e), []).filter(e => e !== state.crate.metadataFileEntity));
+
 const forceKey = ref(0);
 defineExpose({
   get rootDataset() {
@@ -164,18 +165,16 @@ function newEntityUpdate() {
   data.newEntityTypes = entities
 }
 
-function onSelectNewEntity(entity) {
-  const definition = state.profile.classes[entity];
-  const defaultName = definition.name ? state.entity.name + '-' + definition.name : state.entity.name;
-  const name = definition.name ?? entity.toLowerCase();
-  const id = name && !state.crate.getEntity('#' + name) ? '#' + name : state.crate.uniqueId(`#${name || defaultName}-`);
+function onSelectNewEntity(type) {
+  let cleanName = type.replace(/\W/g, "_");
+  let id = state.crate.uniqueId(`#${cleanName}-`);
   const item = {
-    "@id": id.replace(/ /g, "_"),
-    "@type": [entity],
-    "name": [name]
+    "@id": id,
+    "@type": [type],
+    "name": [cleanName]
   };
   state.crate.addEntity(item, {replace: true, recurse: true});
-  state.ensureContext(entity);
+  state.ensureContext(type);
   state.entities.push(item);
   showEntity(item);
 }
@@ -228,6 +227,11 @@ function onSelectNewEntity(entity) {
           </el-tab-pane>
           <el-tab-pane label="All Entities" name="all" lazy>
             <FilteredPaged :modelValue="state.entities" v-slot="{ value, index }">
+              <LinkEntity :modelValue="value"></LinkEntity>
+            </FilteredPaged>
+          </el-tab-pane>
+          <el-tab-pane label="Unlinked Entities" name="unlinked" lazy>
+            <FilteredPaged :modelValue="unlinkedEntities" v-slot="{ value, index }">
               <LinkEntity :modelValue="value"></LinkEntity>
             </FilteredPaged>
           </el-tab-pane>
