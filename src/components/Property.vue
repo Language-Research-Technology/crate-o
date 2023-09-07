@@ -106,9 +106,15 @@ function removeValue(i, value) {
   <el-form-item class="px-2 p-2">
     <template #label>
       <span class="mr-1" :title="definition.id">{{ label }} </span>
-      <el-icon :title="definition.help">
-        <InfoFilled />
-      </el-icon>
+      <el-tooltip v-if="definition.help"
+          :content="definition.help"
+          placement="bottom-start"
+          effect="light"
+      >
+        <el-icon>
+          <InfoFilled/>
+        </el-icon>
+      </el-tooltip>
     </template>
     <div class="flex flex-col flex-grow">
       <FilteredPaged :modelValue="values" v-slot="{ value, index }">
