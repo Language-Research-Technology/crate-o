@@ -176,6 +176,7 @@ export class EditorState {
       definitions[id] = { id, name, key: name };
     }
     //console.log(isReactive(definitions));
+    //sort here
     return definitions;
   }
 

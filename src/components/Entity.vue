@@ -3,7 +3,7 @@ import {ref, computed, watch, onMounted, onUpdated, inject} from "vue";
 import {$state} from './keys';
 import Property from './Property.vue';
 import {ElTabs, ElTabPane} from 'element-plus';
-import defaultGroups from '../default_groups.json';
+import defaultLayout from '../default_layout.json';
 
 const props = defineProps(['modelValue']);
 const emit = defineEmits(['update:modelValue', 'entityCreated']);
@@ -49,7 +49,7 @@ const layouts = computed(() => {
   // handle the case of multiple types
   // pick the last type that has layout defined
   let layouts = types.reduce((l, t) => layoutsByType[t] || l, null) ||
-      state.profile?.inputGroups || defaultGroups;
+      state.profile?.inputGroups || defaultLayout;
   const others = {name: 'Others', description: '', definitions: []};
   layouts = layouts.concat(others);
 

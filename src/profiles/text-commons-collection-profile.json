@@ -45,7 +45,6 @@
   "classes": {
     "Dataset": {
       "id": "http://schema.org/Dataset",
-      "definition": "override",
       "subClassOf": [],
       "inputs": [
         {
@@ -172,7 +171,6 @@
       ]
     },
     "RepositoryCollection": {
-      "definition": "override",
       "subClassOf": [],
       "inputs": [
         {
@@ -299,12 +297,10 @@
       ]
     },
     "RepositoryObject": {
-      "definition": "override",
       "subClassOf": [],
       "inputs": []
     },
     "CreativeWork": {
-      "definition": "override",
       "subClassOf": [],
       "inputs": [
         {
@@ -378,7 +374,6 @@
       ]
     },
     "CollectionProtocol": {
-      "definition": "override",
       "subClassOf": [],
       "inputs": [
         {
@@ -461,7 +456,6 @@
       ]
     },
     "Place": {
-      "definition": "override",
       "subClassOf": [],
       "inputs": [
         {
@@ -506,7 +500,6 @@
       ]
     },
     "GeoCoordinates": {
-      "definition": "override",
       "subClassOf": [],
       "inputs": [
         {
@@ -542,7 +535,6 @@
       ]
     },
     "GeoShape": {
-      "definition": "override",
       "subClassOf": [],
       "inputs": [
         {
@@ -599,7 +591,6 @@
     },
     "Geometry": {
       "id": "http://www.opengis.net/ont/geosparql#Geometry",
-      "definition": "override",
       "subClassOf": [],
       "inputs": [
         {
@@ -615,7 +606,6 @@
       ]
     },
     "Person": {
-      "definition": "override",
       "subClassOf": [],
       "inputs": [
         {
@@ -663,7 +653,6 @@
       ]
     },
     "Organization": {
-      "definition": "override",
       "subClassOf": [],
       "inputs": [
         {
@@ -698,7 +687,6 @@
       ]
     },
     "File": {
-      "definition": "override",
       "subClassOf": [],
       "inputs": [
         {
