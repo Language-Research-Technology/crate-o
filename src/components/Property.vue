@@ -57,7 +57,7 @@ function add(type, value, fromLookup) {
     val ??= c[2];
   }
   vals.push(val ?? '');
-  console.log(val);
+  console.log('add val:',val);
   
   emit('update:modelValue', vals);
   if (typeof value === 'object' && value['@id']) {

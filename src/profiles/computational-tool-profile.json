@@ -1,0 +1,938 @@
+{
+	"metadata": {
+		"name": "ComputationalTool",
+		"description": "The Life Science Tools specification provides a way to describe bioscience tools and software on the World Wide Web. It defines a set of metadata and vocabularies, built on top of existing technologies and standards, that can be used to represent such tools in Web pages and applications. The goal of the specification is to make it easier to discover. Version 1.1-DRAFT. Summary of Changes Changes since the 1.0-RELEASEadded sameAs property as recommended.",
+		"version": "0.0.0"
+	},
+	"rootDatasets": {
+		"Schema": {
+			"type": [
+				"Dataset",
+				"ComputationalTool"
+			]
+		}
+	},
+	"inputGroups": [
+		{
+			"name": "About",
+			"description": "",
+			"inputs": [
+				"@id",
+				"@type",
+				"http://schema.org/name",
+				"http://schema.org/description"
+			]
+		},
+		{
+			"name": "Main",
+			"description": "",
+			"inputs": [
+				"http://schema.org/conformsTo",
+				"http://schema.org/author",
+				"http://schema.org/creator",
+				"http://schema.org/datePublished"
+			]
+		},
+		{
+			"name": "Related items",
+			"description": "",
+			"inputs": [
+				"http://schema.org/publisher",
+				"http://schema.org/funder",
+				"http://schema.org/citation",
+				"http://schema.org/affiliation"
+			]
+		},
+		{
+			"name": "Structure",
+			"description": "",
+			"inputs": [
+				"http://schema.org/memberOf",
+				"http://schema.org/hasMember",
+				"http://schema.org/isPartOf",
+				"http://schema.org/hasPart",
+				"http://schema.org/fileOf",
+				"http://schema.org/hasFile"
+			]
+		},
+		{
+			"name": "Provenance",
+			"description": "",
+			"inputs": [
+				"http://schema.org/agent",
+				"http://schema.org/object",
+				"http://schema.org/instrument",
+				"http://schema.org/result",
+				"http://schema.org/participant",
+				"http://schema.org/target"
+			]
+		},
+		{
+			"name": "Space and Time",
+			"description": "",
+			"inputs": [
+				"http://schema.org/temporalCoverage",
+				"http://schema.org/spatialCoverage"
+			]
+		},
+		{
+			"name": "Software Details",
+			"description": "",
+			"inputs": [
+				"https://discovery.biothings.io/view/bioschemas/codeRepository",
+				"https://discovery.biothings.io/view/bioschemas/input",
+				"https://discovery.biothings.io/view/bioschemas/output",
+				"http://schema.org/downloadUrl",
+				"https://discovery.biothings.io/view/bioschemas/applicationSubCategory",
+				"https://discovery.biothings.io/view/bioschemas/applicationCategory",
+				"http://schema.org/softwareVersion",
+				"http://schema.org/featureList",
+				"http://schema.org/applicationSuite",
+				"http://schema.org/softwareHelp",
+				"http://schema.org/softwareAddOn"
+			]
+		},
+		{
+			"name": "Execution Environment",
+			"description": "Details of the language requirements and hardware needed to execute this tool",
+			"inputs": [
+				"http://schema.org/softwareRequirements",
+				"http://schema.org/programmingLanguage",
+				"http://schema.org/operatingSystem"
+			]
+		}
+	],
+	"enabledClasses": [
+		"ComputationalTool",
+		"Dataset",
+		"Person",
+		"Organization",
+		"Book",
+		"ScholarlyArticle",
+		"RepositoryCollection",
+		"CreativeWork",
+		"CollectionProtocol"
+	],
+	"classes": {
+		"Dataset": {
+			"definition": "override",
+			"subClassOf": [],
+			"inputs": [
+				{
+					"id": "http://schema.org/mentions",
+					"name": "mentions",
+					"help": "The Classes, Properties etc",
+					"type": [
+						"rdfs:Class",
+						"rdf:Property",
+						"definedTerm",
+						"definedTermSet"
+					],
+					"multiple": true
+				},
+				{
+					"id": "http://schema.org/name",
+					"name": "name",
+					"label": "Name",
+					"help": "The name of this ontology",
+					"required": true,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/author",
+					"name": "author",
+					"help": "The person or organization responsible for creating this collection of data",
+					"type": [
+						"Person",
+						"Organization"
+					],
+					"multiple": true
+				},
+				{
+					"id": "http://schema.org/publisher",
+					"name": "publisher",
+					"help": "The organization responsible for releasing this collection of data",
+					"type": [
+						"Organization"
+					],
+					"multiple": true
+				},
+				{
+					"id": "http://schema.org/description",
+					"name": "description",
+					"help": "An abstract of the collection. Include as much detail as possible about the motivation and use of the collection, including things that we do not yet have properties for",
+					"type": [
+						"TextArea"
+					],
+					"multiple": false
+				}
+			]
+		},
+		"ComputationalTool": {
+			"definition": "override",
+			"subClassOf": [
+				"http://schema.org/SoftwareApplication"
+			],
+			"inputs": [
+				{
+					"id": "https://discovery.biothings.io/view/bioschemas/codeRepository",
+					"name": "codeRepository",
+					"label": "Code Repository",
+					"help": "Link to the source code repository of the tool.",
+					"required": false,
+					"multiple": true,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "https://discovery.biothings.io/view/bioschemas/input",
+					"name": "input",
+					"label": "Input",
+					"help": "",
+					"required": false,
+					"multiple": true,
+					"type": [
+						"FormalParameter"
+					]
+				},
+				{
+					"id": "https://discovery.biothings.io/view/bioschemas/output",
+					"name": "output",
+					"label": "Output",
+					"help": "",
+					"required": false,
+					"multiple": true,
+					"type": [
+						"FormalParameter"
+					]
+				},
+				{
+					"id": "http://schema.org/programmingLanguage",
+					"name": "programmingLanguage",
+					"label": "Programming Language",
+					"help": "The main programming language(s) used to build or execute the tool. Please use terms from the \u2018Programming language\u2019 table in the Bio.Tools documentation",
+					"required": false,
+					"multiple": true,
+					"type": [
+						"ComputerLanguage",
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/downloadUrl",
+					"name": "downloadUrl",
+					"label": "Download Url",
+					"help": "Link(s) to the downloadable(s).",
+					"required": false,
+					"multiple": true,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/applicationSubCategory",
+					"name": "applicationSubCategory",
+					"label": "Application Sub Category",
+					"help": "",
+					"required": false,
+					"multiple": true,
+					"type": [
+						"EdamTopic"
+					]
+				},
+				{
+					"id": "http://schema.org/applicationCategory",
+					"name": "applicationCategory",
+					"label": "Application Category",
+					"help": "Type of software application, e.g. 'Game, Multimedia'. Please use terms from the 'Tool type' table in the biotools documentation.",
+					"required": false,
+					"multiple": true,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/softwareVersion",
+					"name": "softwareVersion",
+					"label": "Software Version",
+					"help": "Version(s) of the tool, which this information is valid for. Can also be a comma-delimited list and include hyphen-separated ranges of versions.",
+					"required": false,
+					"multiple": true,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/featureList",
+					"name": "featureList",
+					"label": "Feature List",
+					"help": "Features or modules provided by this application (and possibly required by other applications). Functionality provided by the tool. Note: Bioschemas have removed Text from the Expected Types.",
+					"required": false,
+					"multiple": true,
+					"type": [
+						"EdamOperation",
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/applicationSuite",
+					"name": "applicationSuite",
+					"label": "Application Suite",
+					"help": "A suite of tools, to which the tool belongs. The name of the application suite to which the application belongs (e.g. Excel belongs to Office).",
+					"required": false,
+					"multiple": true,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/softwareHelp",
+					"name": "softwareHelp",
+					"label": "Software Help",
+					"help": "",
+					"required": false,
+					"multiple": true,
+					"type": [
+						"CreativeWork"
+					]
+				},
+				{
+					"id": "http://schema.org/softwareAddOn",
+					"name": "softwareAddOn",
+					"label": "Software Add On",
+					"help": "",
+					"required": false,
+					"multiple": true,
+					"type": [
+						"SoftwareApplication"
+					]
+				},
+				{
+					"id": "http://schema.org/operatingSystem",
+					"name": "operatingSystem",
+					"label": "Operating System",
+					"help": "Operating systems on which the tool can be used (without additional wrapping). Operating systems supported (Windows 7, OSX 10.6, Android 1.6). Please use terms from the \u2018Operating systems\u2019 table in the biotools documentation",
+					"required": false,
+					"multiple": true,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/description",
+					"name": "description",
+					"label": "Description",
+					"help": "A short description of the tool.",
+					"required": true,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/name",
+					"name": "name",
+					"label": "Name",
+					"help": "The name of the item.",
+					"required": true,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/url",
+					"name": "url",
+					"label": "Url",
+					"help": "Homepage of the tool. URL of the item.",
+					"required": true,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/author",
+					"name": "author",
+					"label": "Author",
+					"help": "",
+					"required": false,
+					"multiple": true,
+					"type": [
+						"Organization",
+						"Person"
+					]
+				},
+				{
+					"id": "http://schema.org/citation",
+					"name": "citation",
+					"label": "Citation",
+					"help": "",
+					"required": false,
+					"multiple": true,
+					"type": [
+						"Citation"
+					]
+				},
+				{
+					"id": "http://schema.org/contributor",
+					"name": "contributor",
+					"label": "Contributor",
+					"help": "",
+					"required": false,
+					"multiple": true,
+					"type": [
+						"Organization",
+						"Person"
+					]
+				},
+				{
+					"id": "http://schema.org/discussionUrl",
+					"name": "discussionUrl",
+					"label": "Discussion Url",
+					"help": "A link to the page containing the comments of the CreativeWork.",
+					"required": false,
+					"multiple": true,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/funder",
+					"name": "funder",
+					"label": "Funder",
+					"help": "",
+					"required": false,
+					"multiple": true,
+					"type": [
+						"Organization",
+						"Person"
+					]
+				},
+				{
+					"id": "http://schema.org/hasPart",
+					"name": "hasPart",
+					"label": "Has Part",
+					"help": "",
+					"required": false,
+					"multiple": true,
+					"type": [
+						"CreativeWork"
+					]
+				},
+				{
+					"id": "http://schema.org/isAccessibleForFree",
+					"name": "isAccessibleForFree",
+					"label": "Is Accessible For Free",
+					"help": "A flag to signal that the tool or the service are available to be used for free.",
+					"required": false,
+					"multiple": false,
+					"type": [
+						"Boolean"
+					]
+				},
+				{
+					"id": "http://schema.org/isBasedOn",
+					"name": "isBasedOn",
+					"label": "Is Based On",
+					"help": "A tool or another work which this tool is based on, or is an extension, distribution, or deployment of.  A resource from which this work is derived or from which it is a modification or adaption.",
+					"required": false,
+					"multiple": true,
+					"type": [
+						"CreativeWork",
+						"Product",
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/isPartOf",
+					"name": "isPartOf",
+					"label": "Is Part Of",
+					"help": "",
+					"required": false,
+					"multiple": true,
+					"type": [
+						"CreativeWork"
+					]
+				},
+				{
+					"id": "http://schema.org/keywords",
+					"name": "keywords",
+					"label": "Keywords",
+					"help": "Additional keywords or tags important for this tool. Multiple entries are delimited by commas. Keywords or tags used to describe this content. Multiple entries in a keywords list are typically delimited by commas.",
+					"required": false,
+					"multiple": true,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/license",
+					"name": "license",
+					"label": "License",
+					"help": "The license of a software, curated dataset, etc. A license document that applies to this content, typically indicated by URL. Use SPDX list of licenses in form https://spdx.org/licenses/",
+					"required": false,
+					"multiple": true,
+					"type": [
+						"CreativeWork",
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/provider",
+					"name": "provider",
+					"label": "Provider",
+					"help": "",
+					"required": false,
+					"multiple": true,
+					"type": [
+						"Organization"
+					]
+				},
+				{
+					"id": "http://schema.org/thumbnailUrl",
+					"name": "thumbnailUrl",
+					"label": "Thumbnail Url",
+					"help": "A small image representing the tool, such as an icon. A thumbnail image relevant to the Thing.",
+					"required": false,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/sameAs",
+					"name": "sameAs",
+					"label": "Same As",
+					"help": "URL of a reference Web page that unambiguously indicates the item's identity. E.g. the URL of the item's Wikipedia page, Wikidata entry, or official website.",
+					"required": false,
+					"multiple": true,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#executionUrl",
+					"name": "executionUrl",
+					"label": "Execution Url",
+					"help": "A link to known page(s) for executing the ComputationalTool.",
+					"required": false,
+					"multiple": true,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/softwareRequirements",
+					"name": "softwareRequirements",
+					"label": "Software Requirements",
+					"help": "Component dependency requirements for application. ",
+					"required": false,
+					"multiple": true,
+					"type": [
+						"Text"
+					]
+				}
+			]
+		},
+		"FormalParameter": {
+			"definition": "override",
+			"subClassOf": [],
+			"inputs": [
+				{
+					"id": "http://schema.org/name",
+					"name": "name",
+					"label": "Name",
+					"help": "",
+					"required": false,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/url",
+					"name": "url",
+					"label": "Url",
+					"help": "uri",
+					"required": false,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				}
+			]
+		},
+		"Schema": {
+			"definition": "override",
+			"subClassOf": [],
+			"inputs": [
+				{
+					"id": "http://schema.org/url",
+					"name": "url",
+					"label": "Url",
+					"help": "uri",
+					"required": false,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/name",
+					"name": "name",
+					"label": "Name",
+					"help": "",
+					"required": false,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				}
+			]
+		},
+		"EdamTopic": {
+			"definition": "override",
+			"subClassOf": [
+				"http://edamontology.org/topic_0003"
+			],
+			"inputs": [
+				{
+					"id": "http://schema.org/name",
+					"name": "name",
+					"label": "Name",
+					"help": "",
+					"required": false,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/url",
+					"name": "url",
+					"label": "Url",
+					"help": "uri",
+					"required": false,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				}
+			]
+		},
+		"EdamOperation": {
+			"definition": "override",
+			"subClassOf": [
+				"http://edamontology.org/operation_0004"
+			],
+			"inputs": [
+				{
+					"id": "http://schema.org/name",
+					"name": "name",
+					"label": "Name",
+					"help": "",
+					"required": false,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/url",
+					"name": "url",
+					"label": "Url",
+					"help": "uri",
+					"required": false,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				}
+			]
+		},
+		"CreativeWork": {
+			"definition": "override",
+			"subClassOf": [],
+			"inputs": [
+				{
+					"id": "http://schema.org/name",
+					"name": "name",
+					"label": "Name",
+					"help": "",
+					"required": false,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/url",
+					"name": "url",
+					"label": "Url",
+					"help": "uri",
+					"required": false,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				}
+			]
+		},
+		"SoftwareApplication": {
+			"definition": "override",
+			"subClassOf": [],
+			"inputs": [
+				{
+					"id": "http://schema.org/name",
+					"name": "name",
+					"label": "Name",
+					"help": "",
+					"required": false,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/url",
+					"name": "url",
+					"label": "Url",
+					"help": "uri",
+					"required": false,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				}
+			]
+		},
+		"PropertyValue": {
+			"definition": "override",
+			"subClassOf": [],
+			"inputs": [
+				{
+					"id": "http://schema.org/name",
+					"name": "name",
+					"label": "Name",
+					"help": "",
+					"required": false,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/value",
+					"name": "value",
+					"label": "Value",
+					"help": "",
+					"required": false,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				}
+			]
+		},
+		"Person": {
+			"definition": "override",
+			"subClassOf": [],
+			"inputs": [
+				{
+					"id": "http://schema.org/name",
+					"name": "name",
+					"label": "Name",
+					"help": "",
+					"required": false,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/alternateName",
+					"name": "alternateName",
+					"label": "Alternate Name",
+					"help": "",
+					"required": false,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/givenName",
+					"name": "givenName",
+					"label": "Given Name",
+					"help": "",
+					"required": false,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/familyName",
+					"name": "familyName",
+					"label": "Family Name",
+					"help": "",
+					"required": false,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/affiliation",
+					"name": "affiliation",
+					"label": "Affiliation",
+					"help": "",
+					"required": false,
+					"multiple": true,
+					"type": [
+						"Organization"
+					]
+				}
+			]
+		},
+		"Organization": {
+			"definition": "override",
+			"subClassOf": [],
+			"inputs": [
+				{
+					"id": "http://schema.org/name",
+					"name": "name",
+					"label": "Name",
+					"help": "",
+					"required": false,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/alternateName",
+					"name": "alternateName",
+					"label": "Alternate Name",
+					"help": "",
+					"required": false,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				}
+			]
+		},
+		"Citation": {
+			"definition": "override",
+			"subClassOf": [],
+			"inputs": [
+				{
+					"id": "http://schema.org/name",
+					"name": "name",
+					"label": "Name",
+					"help": "Name of or title of the citation",
+					"required": false,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#pmid",
+					"name": "pmid",
+					"label": "Pmid",
+					"help": "A pubmed identifier if available",
+					"required": false,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#doi",
+					"name": "doi",
+					"label": "Doi",
+					"help": "A doi if available",
+					"required": false,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/url",
+					"name": "url",
+					"label": "Url",
+					"help": "The url of the resource cited",
+					"required": false,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#citeText",
+					"name": "citeText",
+					"label": "Cite Text",
+					"help": "The bibliographic citation for the referenced resource as is provided",
+					"required": false,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				}
+			]
+		},
+		"Product": {
+			"definition": "override",
+			"subClassOf": [],
+			"inputs": [
+				{
+					"id": "http://schema.org/name",
+					"name": "name",
+					"label": "Name",
+					"help": "",
+					"required": false,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				},
+				{
+					"id": "http://schema.org/url",
+					"name": "url",
+					"label": "Url",
+					"help": "uri",
+					"required": false,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				}
+			]
+		},
+		"ComputerLanguage": {
+			"definition": "override",
+			"subClassOf": [],
+			"inputs": [
+				{
+					"id": "http://schema.org/name",
+					"name": "name",
+					"label": "Name",
+					"help": "",
+					"required": false,
+					"multiple": false,
+					"type": [
+						"Text"
+					]
+				}
+			]
+		}
+	}
+}

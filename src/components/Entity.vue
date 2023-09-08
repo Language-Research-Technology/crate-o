@@ -62,18 +62,20 @@ const layouts = computed(() => {
 
   for (const key in definitions.value) {
     const d = definitions.value[key];
-    const i = inputMap.get(d.name);
+    const i = inputMap.get(d.id);
     const defs = (i == null) ? others.definitions : layouts[i].definitions;
     defs.push(d);
   }
+
   // sort layouts inputs by the defaultLayout
   layouts = layouts.map((layout) => {
     const layoutName = layout.name
     const inputs = find(defaultLayout, {name: layoutName})?.inputs;
+    console.log(layout.definitions);
     if (inputs?.length > 0) {
       layout.definitions.sort((a, b) => {
-        const indexA = inputs.indexOf(a.name);
-        const indexB = inputs.indexOf(b.name);
+        const indexA = inputs.indexOf(a.id);
+        const indexB = inputs.indexOf(b.id);
         if (indexA === -1) return 1; // If a's name is not in the defaultLayout, place it at the end.
         if (indexB === -1) return -1; // If b's name is not in the defaultLayout, place it at the beginning.
         return indexA - indexB;
@@ -89,6 +91,7 @@ const layouts = computed(() => {
 });
 
 function updateProperty(def, value) {
+  state.ensurePropertyContext(def);
   const entity = props.modelValue;
   const key = def.key || def.name;
   if (entity[key] !== value) entity[key] = value;

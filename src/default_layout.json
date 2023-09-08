@@ -3,57 +3,57 @@
     "name": "About",
     "description": "",
     "inputs": [
-      "@id", 
-      "@type", 
-      "name", 
-      "description",
-      "conformsTo",
-      "author",
-      "creator",
-      "datePublished",
-      "license"
+      "@id",
+      "@type",
+      "http://schema.org/name",
+      "http://schema.org/description",
+      "http://schema.org/conformsTo",
+      "http://schema.org/author",
+      "http://schema.org/creator",
+      "http://schema.org/datePublished",
+      "http://schema.org/license"
     ]
   },    
   {
     "name": "Related items",
     "description": "",
     "inputs": [
-      "publisher",
-      "funder",
-      "citation",
-      "affiliation"
+      "http://schema.org/publisher",
+      "http://schema.org/funder",
+      "http://schema.org/citation",
+      "http://schema.org/affiliation"
     ]
   },
   {
     "name": "Structure",
     "description": "",
     "inputs": [
-      "memberOf",
-      "hasMember",
-      "isPartOf",
-      "hasPart",
-      "fileOf",
-      "hasFile"
+      "http://schema.org/memberOf",
+      "http://schema.org/hasMember",
+      "http://schema.org/isPartOf",
+      "http://schema.org/hasPart",
+      "http://schema.org/fileOf",
+      "http://schema.org/hasFile"
     ]
   },
   {
     "name": "Provenance",
     "description": "",
     "inputs": [
-      "agent",
-      "object",
-      "instrument",
-      "result",
-      "participant",
-      "target"
+      "http://schema.org/agent",
+      "http://schema.org/object",
+      "http://schema.org/instrument",
+      "http://schema.org/result",
+      "http://schema.org/participant",
+      "http://schema.org/target"
     ]
   },
   {
     "name": "Space and Time",
     "description": "",
     "inputs": [
-      "temporalCoverage",
-      "spatialCoverage"
+      "http://schema.org/temporalCoverage",
+      "http://schema.org/spatialCoverage"
     ]
   }
 ]
