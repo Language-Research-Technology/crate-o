@@ -74,7 +74,7 @@ function createEntity(type, name) {
   return {
     "@id": id,
     "@type": type,
-    name: name
+    name: id.substring(1)
   };
 }
 

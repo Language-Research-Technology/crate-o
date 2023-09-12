@@ -1,23 +1,26 @@
 [
   {
     "name": "About",
-    "description": "",
+    "help": "The core metadata for this RO-Crate and what it is about",
     "inputs": [
       "@id",
       "@type",
       "http://schema.org/name",
       "http://schema.org/description",
       "http://schema.org/conformsTo",
-      "http://schema.org/author",
-      "http://schema.org/creator",
+
       "http://schema.org/datePublished",
-      "http://schema.org/license"
+      "http://schema.org/license",
+      "http://schema.org/about",
+      "http://schema.org/mainEntity"
     ]
   },    
   {
-    "name": "Related items",
-    "description": "",
+    "name": "Related Entities",
+    "description": "Context for the creation of this RO-Crate, who made it, funded it etc",
     "inputs": [
+      "http://schema.org/author",
+      "http://schema.org/creator",
       "http://schema.org/publisher",
       "http://schema.org/funder",
       "http://schema.org/citation",
@@ -26,7 +29,7 @@
   },
   {
     "name": "Structure",
-    "description": "",
+    "description": "How the parts of this Crate relate such as collection and object relationships",
     "inputs": [
       "http://schema.org/memberOf",
       "http://schema.org/hasMember",
@@ -38,7 +41,7 @@
   },
   {
     "name": "Provenance",
-    "description": "",
+    "description": "Detailed description of how entites were created, by whom and with which tools",
     "inputs": [
       "http://schema.org/agent",
       "http://schema.org/object",
