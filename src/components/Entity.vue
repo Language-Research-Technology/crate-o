@@ -3,6 +3,7 @@ import {computed, inject, onMounted, onUpdated} from "vue";
 import {$state} from './keys';
 import Property from './Property.vue';
 import {ElTabPane, ElTabs} from 'element-plus';
+import {InfoFilled} from '@element-plus/icons-vue';
 import defaultLayout from '../default_layout.json';
 import {find} from "lodash";
 
@@ -133,6 +134,14 @@ function getComponents(def) {
         </el-popover>
         <span v-else>
           {{ layout.name }}
+          <el-tooltip v-if="layout.help"
+                      :content="layout.help"
+                      placement="bottom-start"
+                      effect="light">
+            <el-icon>
+              <InfoFilled/>
+            </el-icon>
+          </el-tooltip>
         </span>
       </template>
       <el-form id="#entityForm" label-width="auto" novalidate v-if="activeGroup === layout.name">

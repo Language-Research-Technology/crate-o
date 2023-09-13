@@ -8,7 +8,6 @@
       "http://schema.org/name",
       "http://schema.org/description",
       "http://schema.org/conformsTo",
-
       "http://schema.org/datePublished",
       "http://schema.org/license",
       "http://schema.org/about",
@@ -16,8 +15,8 @@
     ]
   },    
   {
-    "name": "Related Entities",
-    "description": "Context for the creation of this RO-Crate, who made it, funded it etc",
+    "name": "People and Orgs",
+    "help": "Context for the creation of this RO-Crate, who made it, funded it etc",
     "inputs": [
       "http://schema.org/author",
       "http://schema.org/creator",
@@ -29,7 +28,7 @@
   },
   {
     "name": "Structure",
-    "description": "How the parts of this Crate relate such as collection and object relationships",
+    "help": "How the parts of this Crate relate such as collection and object relationships",
     "inputs": [
       "http://schema.org/memberOf",
       "http://schema.org/hasMember",
@@ -41,7 +40,7 @@
   },
   {
     "name": "Provenance",
-    "description": "Detailed description of how entites were created, by whom and with which tools",
+    "help": "Detailed description of how entites were created, by whom and with which tools",
     "inputs": [
       "http://schema.org/agent",
       "http://schema.org/object",
@@ -53,7 +52,7 @@
   },
   {
     "name": "Space and Time",
-    "description": "",
+    "help": "",
     "inputs": [
       "http://schema.org/temporalCoverage",
       "http://schema.org/spatialCoverage"
