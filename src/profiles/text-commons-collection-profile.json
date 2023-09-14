@@ -2,7 +2,7 @@
   "metadata": {
     "name": "Language Data Commons top level Collection (corpus)",
     "description": "RO-Crate Editor Profile that implements the language data commons RO-Crate Metadata Profile for top level collection described here: https://purl.archive.org/language-data-commons/profile#Collection",
-    "version": "0.2.0"
+    "version": "0.3.0"
   },
  "conformsToUri": [
    "https://purl.archive.org/language-data-commons/profile#Collection"

@@ -1,59 +1,89 @@
 [
   {
     "name": "About",
-    "description": "",
+    "help": "The core metadata for this RO-Crate and is subject matter",
     "inputs": [
-      "@id", 
-      "@type", 
-      "name", 
-      "description",
-      "conformsTo",
-      "author",
-      "creator",
-      "datePublished",
-      "license"
+      "@id",
+      "@type",
+      "http://purl.org/dc/terms/conformsTo",
+      "http://schema.org/name",
+      "http://schema.org/description",
+      "http://schema.org/conformsTo",
+      "http://schema.org/datePublished",
+      "http://schema.org/license",
+      "http://schema.org/usageInfo",
+      "http://schema.org/about",
+      "http://schema.org/mainEntity"
     ]
-  },    
+  },
   {
-    "name": "Related items",
-    "description": "",
+    "name": "Related People, Orgs & Works",
+    "help": "Context for the creation of this RO-Crate, who made it, funded it etc",
     "inputs": [
-      "publisher",
-      "funder",
-      "citation",
-      "affiliation"
+      "http://schema.org/author",
+      "http://schema.org/creator",
+      "http://schema.org/publisher",
+      "http://schema.org/funder",
+      "http://schema.org/affiliation",
+      "http://schema.org/citation"
+
     ]
   },
   {
     "name": "Structure",
-    "description": "",
+    "help": "How the parts of this Crate relate such as collection and object relationships",
     "inputs": [
-      "memberOf",
-      "hasMember",
-      "isPartOf",
-      "hasPart",
-      "fileOf",
-      "hasFile"
+      "http://schema.org/memberOf",
+      "http://schema.org/hasMember",
+      "http://schema.org/isPartOf",
+      "http://schema.org/hasPart",
+      "http://schema.org/fileOf",
+      "http://schema.org/hasFile"
     ]
   },
   {
     "name": "Provenance",
-    "description": "",
+    "help": "Detailed description of how entites were created, by whom and with which tools",
+    "help": "Detailed description of how entites were created, by whom and with which tools",
     "inputs": [
-      "agent",
-      "object",
-      "instrument",
-      "result",
-      "participant",
-      "target"
+      "http://schema.org/agent",
+      "http://schema.org/object",
+      "http://schema.org/instrument",
+      "http://schema.org/result",
+      "http://schema.org/participant",
+      "http://schema.org/target"
     ]
   },
   {
-    "name": "Space and Time",
-    "description": "",
+    "name": "Space & Time",
+    "help": "Where and when the data was collected / the times and places it mentions or describes",
     "inputs": [
-      "temporalCoverage",
-      "spatialCoverage"
+      "http://schema.org/temporalCoverage",
+      "http://schema.org/spatialCoverage",
+      "http://schema.org/contentLocation",
+      "http://schema.org/locationCreated"
+
+    ]
+  },
+  {
+    "name": "Software & Hardware",
+    "help": "For computer programs and execution environments, that could be used to create data, have created data, or are being packaged and described",
+      "inputs": [
+      "http://schema.org/downloadUrl",
+      "http://schema.org/installUrl",
+      "http://schema.org/memoryRequirements",
+      "http://schema.org/operatingSystem",
+      "http://schema.org/processorRequirements",
+      "http://schema.org/programmingLanguage",
+      "http://schema.org/releaseNotes",
+      "http://schema.org/runtimePlatform",
+      "http://schema.org/screenshot",
+      "http://schema.org/softwareAddOn",
+      "http://schema.org/softwareHelp",
+      "http://schema.org/softwareRequirements",
+      "http://schema.org/softwareVersion",
+      "http://schema.org/storageRequirements",
+      "http://schema.org/supportingData"
     ]
   }
 ]

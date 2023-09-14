@@ -3,6 +3,7 @@ import {computed, inject, onMounted, onUpdated} from "vue";
 import {$state} from './keys';
 import Property from './Property.vue';
 import {ElTabPane, ElTabs} from 'element-plus';
+import {InfoFilled} from '@element-plus/icons-vue';
 import defaultLayout from '../default_layout.json';
 import {find} from "lodash";
 
@@ -62,18 +63,20 @@ const layouts = computed(() => {
 
   for (const key in definitions.value) {
     const d = definitions.value[key];
-    const i = inputMap.get(d.name);
+    const i = inputMap.get(d.id);
     const defs = (i == null) ? others.definitions : layouts[i].definitions;
     defs.push(d);
   }
+
   // sort layouts inputs by the defaultLayout
   layouts = layouts.map((layout) => {
     const layoutName = layout.name
     const inputs = find(defaultLayout, {name: layoutName})?.inputs;
+    console.log(layout.definitions);
     if (inputs?.length > 0) {
       layout.definitions.sort((a, b) => {
-        const indexA = inputs.indexOf(a.name);
-        const indexB = inputs.indexOf(b.name);
+        const indexA = inputs.indexOf(a.id);
+        const indexB = inputs.indexOf(b.id);
         if (indexA === -1) return 1; // If a's name is not in the defaultLayout, place it at the end.
         if (indexB === -1) return -1; // If b's name is not in the defaultLayout, place it at the beginning.
         return indexA - indexB;
@@ -89,6 +92,7 @@ const layouts = computed(() => {
 });
 
 function updateProperty(def, value) {
+  state.ensurePropertyContext(def);
   const entity = props.modelValue;
   const key = def.key || def.name;
   if (entity[key] !== value) entity[key] = value;
@@ -110,6 +114,28 @@ function getComponents(def) {
   return state.getComponents(entity['@id'], def.id);
 }
 
+function checkRootTypes() {
+  const specialTypesExpected = state.profile?.rootDataset?.type
+  const extraTypesNeeded = []
+
+  if (specialTypesExpected) {
+    for (let pType of specialTypesExpected) {
+      if (!state.crate.rootDataset["@type"].includes(pType)) {
+        extraTypesNeeded.push(pType);
+      }
+    }
+  }
+  return extraTypesNeeded;
+}
+
+
+function addRootTypes(rTypes) {
+  console.log("Adding ", rTypes);
+  const entity = props.modelValue;
+  entity["@type"] = entity["@type"].concat(rTypes);
+  console.log("Added ", entity["@type"]);
+  emit('update:modelValue', entity);
+}
 </script>
 
 <template>
@@ -130,9 +156,26 @@ function getComponents(def) {
         </el-popover>
         <span v-else>
           {{ layout.name }}
+          <el-tooltip v-if="layout.help"
+                      :content="layout.help"
+                      placement="bottom-start"
+                      effect="light">
+            <el-icon>
+              <InfoFilled/>
+            </el-icon>
+          </el-tooltip>
         </span>
       </template>
+      <el-form id="#entityForm" label-width="auto" novalidate v-if="state.crate.rootDataset['@id'] === state.entity['@id'] && checkRootTypes().length > 0">
+        This dataset does not have all the types required in profile:  <el-button size="small" type="primary" :icon="Plus" @click="addRootTypes(checkRootTypes())">
+          Add the missing type(s): {{  checkRootTypes().join(", ") }}
+    </el-button>
+      </el-form>
+
       <el-form id="#entityForm" label-width="auto" novalidate v-if="activeGroup === layout.name">
+     
+
+
         <Property v-for="def in layout.definitions" :key="def.id" :modelValue="getProperty(def)"
                   :components="getComponents(def)" :definition="def" @update:modelValue="v => updateProperty(def, v)"
                   @entityCreated="(e) => $emit('entityCreated', e)"></Property>

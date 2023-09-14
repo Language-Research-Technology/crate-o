@@ -117,7 +117,7 @@ export class EditorState {
   }
 
   /**
-   * Get property definitions based on type as defined in profile 
+   * Get property definitions based on type as defined in profile
    * @param {string[]} types One or more (combined) types associated with an entity
    */
   getProfileDefinitions(types = []) {
@@ -147,7 +147,7 @@ export class EditorState {
 
   /**
    * Get property definitions based on actual entity data
-   * @param {Object} entity 
+   * @param {Object} entity
    */
   getDefinitions(entity = {}) {
     const types = entity['@type'];
@@ -255,8 +255,8 @@ export class EditorState {
 
   /**
    * Get a component tuple [component, props, events] for a specific primitive type only
-   * @param {Array|string} type 
-   * @param {object} props 
+   * @param {Array|string} type
+   * @param {object} props
    */
   getInlineComponent(type, props = {}) {
     var t = (Array.isArray(type) ? type.join('$') : type).toLowerCase();
@@ -277,7 +277,7 @@ export class EditorState {
 
   /**
    * Ensure that the term and its definition of the specified entity types exists in the jsonld context
-   * @param {string[]} types 
+   * @param {string[]} types
    */
   ensureContext(types) {
     if (types && Array.isArray(types)) {
@@ -301,6 +301,13 @@ export class EditorState {
         console.log('added');
         this.crate.addContext(context);
       }
+    }
+  }
+  ensurePropertyContext(def) {
+    if (def.id && !this.crate.getTerm(def.id)) {
+      const newDef = {};
+      newDef[def.name] = def.id;
+      this.crate.addContext(newDef);
     }
   }
 }
