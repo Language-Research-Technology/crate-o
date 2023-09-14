@@ -5,7 +5,7 @@ import testData2 from '../../test-data/cooee/ro-crate-metadata.json' ;
 import testData from '../../test-data/sydney/ro-crate-metadata.json' ;
 import langProfile from '../profiles/text-commons-collection-profile.json';
 import baseProfile from '../profiles/base-profile.json';
-import computationalToolProfile from '../profiles/computational-tool-profile.json';
+import computationalToolProfile from '../profiles/software-profile.json';
 
 const data = reactive({
   crate: testData,
