@@ -5,10 +5,7 @@
 import base from './base-profile.json'
 import schema from './schema.json'
 import language from './text-commons-collection-profile.json'
-import computationalTool from './computational-tool-profile.json'
-//Not ready yet
-//import notebook from './ldaca-notebook-profile.json'
+import software from './software-profile.json'
 
 
-
-export const profiles = [base, schema, language, computationalTool];
+export const profiles = [base, schema, language, software];

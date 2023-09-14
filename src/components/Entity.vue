@@ -114,6 +114,28 @@ function getComponents(def) {
   return state.getComponents(entity['@id'], def.id);
 }
 
+function checkRootTypes() {
+  const specialTypesExpected = state.profile?.rootDataset?.type
+  const extraTypesNeeded = []
+
+  if (specialTypesExpected) {
+    for (let pType of specialTypesExpected) {
+      if (!state.crate.rootDataset["@type"].includes(pType)) {
+        extraTypesNeeded.push(pType);
+      }
+    }
+  }
+  return extraTypesNeeded;
+}
+
+
+function addRootTypes(rTypes) {
+  console.log("Adding ", rTypes);
+  const entity = props.modelValue;
+  entity["@type"] = entity["@type"].concat(rTypes);
+  console.log("Added ", entity["@type"]);
+  emit('update:modelValue', entity);
+}
 </script>
 
 <template>
@@ -144,7 +166,16 @@ function getComponents(def) {
           </el-tooltip>
         </span>
       </template>
+      <el-form id="#entityForm" label-width="auto" novalidate v-if="state.crate.rootDataset['@id'] === state.entity['@id'] && checkRootTypes().length > 0">
+        This dataset does not have all the types required in profile:  <el-button size="small" type="primary" :icon="Plus" @click="addRootTypes(checkRootTypes())">
+          Add the missing type(s): {{  checkRootTypes().join(", ") }}
+    </el-button>
+      </el-form>
+
       <el-form id="#entityForm" label-width="auto" novalidate v-if="activeGroup === layout.name">
+     
+
+
         <Property v-for="def in layout.definitions" :key="def.id" :modelValue="getProperty(def)"
                   :components="getComponents(def)" :definition="def" @update:modelValue="v => updateProperty(def, v)"
                   @entityCreated="(e) => $emit('entityCreated', e)"></Property>

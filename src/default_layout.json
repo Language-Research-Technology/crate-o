@@ -1,29 +1,32 @@
 [
   {
     "name": "About",
-    "help": "The core metadata for this RO-Crate and what it is about",
+    "help": "The core metadata for this RO-Crate and is subject matter",
     "inputs": [
       "@id",
       "@type",
+      "http://purl.org/dc/terms/conformsTo",
       "http://schema.org/name",
       "http://schema.org/description",
       "http://schema.org/conformsTo",
       "http://schema.org/datePublished",
       "http://schema.org/license",
+      "http://schema.org/usageInfo",
       "http://schema.org/about",
       "http://schema.org/mainEntity"
     ]
-  },    
+  },
   {
-    "name": "People and Orgs",
+    "name": "Related People, Orgs & Works",
     "help": "Context for the creation of this RO-Crate, who made it, funded it etc",
     "inputs": [
       "http://schema.org/author",
       "http://schema.org/creator",
       "http://schema.org/publisher",
       "http://schema.org/funder",
-      "http://schema.org/citation",
-      "http://schema.org/affiliation"
+      "http://schema.org/affiliation",
+      "http://schema.org/citation"
+
     ]
   },
   {
@@ -41,6 +44,7 @@
   {
     "name": "Provenance",
     "help": "Detailed description of how entites were created, by whom and with which tools",
+    "help": "Detailed description of how entites were created, by whom and with which tools",
     "inputs": [
       "http://schema.org/agent",
       "http://schema.org/object",
@@ -51,11 +55,35 @@
     ]
   },
   {
-    "name": "Space and Time",
-    "help": "",
+    "name": "Space & Time",
+    "help": "Where and when the data was collected / the times and places it mentions or describes",
     "inputs": [
       "http://schema.org/temporalCoverage",
-      "http://schema.org/spatialCoverage"
+      "http://schema.org/spatialCoverage",
+      "http://schema.org/contentLocation",
+      "http://schema.org/locationCreated"
+
+    ]
+  },
+  {
+    "name": "Software & Hardware",
+    "help": "For computer programs and execution environments, that could be used to create data, have created data, or are being packaged and described",
+      "inputs": [
+      "http://schema.org/downloadUrl",
+      "http://schema.org/installUrl",
+      "http://schema.org/memoryRequirements",
+      "http://schema.org/operatingSystem",
+      "http://schema.org/processorRequirements",
+      "http://schema.org/programmingLanguage",
+      "http://schema.org/releaseNotes",
+      "http://schema.org/runtimePlatform",
+      "http://schema.org/screenshot",
+      "http://schema.org/softwareAddOn",
+      "http://schema.org/softwareHelp",
+      "http://schema.org/softwareRequirements",
+      "http://schema.org/softwareVersion",
+      "http://schema.org/storageRequirements",
+      "http://schema.org/supportingData"
     ]
   }
 ]
