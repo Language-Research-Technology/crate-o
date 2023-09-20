@@ -1,7 +1,6 @@
 /// <reference types="Cypress" />
 
 import SpreadSheet from './SpreadSheet.vue';
-
 const spreadsheetFile = './test-data/spreadsheet/additional-ro-crate-metadata.xlsx';
 let excelBuffer;
 import * as toArrayBuffer from 'to-arraybuffer';

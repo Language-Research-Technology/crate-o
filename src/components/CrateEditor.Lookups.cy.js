@@ -1,9 +1,9 @@
 /// <reference types="Cypress" />
 
 import CrateEditor from './CrateEditor.vue';
-import language from "@/profiles/text-commons-collection-profile.json";
-import base from "@/profiles/base-profile.json";
-import schema from "@/profiles/schema.json";
+import base from 'ro-crate-editor-profiles/profiles/base-profile.json'
+import language_collection from 'ro-crate-editor-profiles/profiles/language-data-commons-collection-profile.json'
+
 
 const MY_ORG = 'Australian National University';
 const MY_ORG_ID = 'https://ror.org/019wvm592';
@@ -16,7 +16,7 @@ describe('<CrateEditor /> Lookups', async () => {
     });
 
     //We could loop all profiles, but we cannot because each profile might have a different UI
-    for (let profile of [language, schema]) {
+    for (let profile of [language_collection, schema]) {
         it(`Finds an ROR using profile: ${profile.metadata.name}`, () => {
             // see: https://on.cypress.io/mounting-vue
             cy.mount(CrateEditor, {
@@ -68,7 +68,7 @@ describe('<CrateEditor /> Lookups', async () => {
         cy.mount(CrateEditor, {
             props: {
                 crate: {},
-                profile: language,
+                profile: language_collection,
                 entityId: './'
             },
             ref: 'editor'

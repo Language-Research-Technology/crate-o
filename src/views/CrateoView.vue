@@ -4,6 +4,7 @@ import {profiles} from '@/profiles';
 import Welcome from "@/components/Welcome.vue";
 import {HomeFilled, ArrowLeftBold, ArrowDown} from '@element-plus/icons-vue';
 import SpreadSheet from "@/components/SpreadSheet.vue";
+import {Validator} from "@/utils/profileValidator.js";
 
 const emit = defineEmits(['load:spreadsheet']);
 const defaultProfile = 0;
@@ -19,6 +20,8 @@ const data = shallowReactive({
   profiles: shallowReactive(profiles),
   spreadSheetBuffer: null,
   loading: false,
+  profileError: [],
+  profileErrorDialog: false
 });
 //window.data = data;
 const profile = computed(() => data.profiles[data.selectedProfile]);
@@ -32,8 +35,19 @@ const commands = {
       const [profileHandle] = await window.showOpenFilePicker();
       let file = await profileHandle.getFile();
       const content = await file.text();
-      const profile = JSON.parse(content);
-      data.selectedProfile = data.profiles.push(profile) - 1;
+      const validator = new Validator();
+      validator.errors = [];
+      validator.loadAndCheck(content);
+      data.profileError = null;
+      data.profileErrorDialog = false;
+      if (validator.errors.length > 0) {
+        data.profileError = validator.errors;
+        data.profileErrorDialog = true;
+      } else {
+        const profile = validator.profile;
+        //TODO: put it profiles removing it when fixing it
+        data.selectedProfile = profile; //data.profiles.push(profile) - 1;
+      }
     } catch (error) {
       console.error(error);
       window.alert(error);
@@ -248,6 +262,30 @@ watch(() => data.selectedProfile, (v, pv) => {
   <div v-else>
     <welcome/>
   </div>
+  <el-dialog v-if="data.profileErrorDialog"
+             v-model="data.profileError"
+             :title="'Error when loading Profile'"
+             width="50%"
+  >
+    <div class="overflow-x-scroll h-96">
+      {{data.selectedProfile?.metadata}}
+      <el-divider/>
+      <div class="p-2" v-for="error of data.profileError">
+        <p>
+          {{ error.instancePath }}
+        </p>
+        <p>
+          {{ error.message }}
+        </p>
+        <el-divider/>
+      </div>
+    </div>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button type="primary" @click="data.profileErrorDialog = false">Ok</el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <style>

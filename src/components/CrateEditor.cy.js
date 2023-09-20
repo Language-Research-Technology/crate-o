@@ -1,8 +1,8 @@
 /// <reference types="Cypress" />
 
 import CrateEditor from './CrateEditor.vue';
-import language from "@/profiles/text-commons-collection-profile.json";
-import software from "@/profiles/software-profile.json";
+import software from 'ro-crate-editor-profiles/profiles/software-profile.json'
+import language_collection from 'ro-crate-editor-profiles/profiles/language-data-commons-collection-profile.json'
 
 describe('<CrateEditor />', async () => {
 
@@ -15,7 +15,7 @@ describe('<CrateEditor />', async () => {
         cy.mount(CrateEditor, {
             props: {
                 crate: {},
-                profile: language,
+                profile: language_collection,
                 entityId: './'
             },
             ref: 'editor'
@@ -32,7 +32,7 @@ describe('<CrateEditor />', async () => {
         cy.mount(CrateEditor, {
             props: {
                 crate: {},
-                profile: language,
+                profile: language_collection,
                 entityId: './'
             },
             ref: 'editor'
@@ -49,7 +49,7 @@ describe('<CrateEditor />', async () => {
         cy.mount(CrateEditor, {
             props: {
                 crate: {},
-                profile: language,
+                profile: language_collection,
                 entityId: './'
             },
             ref: 'editor'
