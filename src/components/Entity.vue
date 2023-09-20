@@ -3,7 +3,7 @@ import {computed, inject, onMounted, onUpdated} from "vue";
 import {$state} from './keys';
 import Property from './Property.vue';
 import {ElTabPane, ElTabs} from 'element-plus';
-import {InfoFilled} from '@element-plus/icons-vue';
+import {InfoFilled, Plus} from '@element-plus/icons-vue';
 import defaultLayout from '../default_layout.json';
 import {find} from "lodash";
 
@@ -72,7 +72,7 @@ const layouts = computed(() => {
   layouts = layouts.map((layout) => {
     const layoutName = layout.name
     const inputs = find(defaultLayout, {name: layoutName})?.inputs;
-    console.log(layout.definitions);
+    // console.log(layout.definitions);
     if (inputs?.length > 0) {
       layout.definitions.sort((a, b) => {
         const indexA = inputs.indexOf(a.id);
