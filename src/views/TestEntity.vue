@@ -6,10 +6,10 @@ import testData from '../../test-data/sydney/ro-crate-metadata.json';
 import { $state } from '../components/keys';
 
 import { EditorState } from '../components/EditorState';
-import langProfile from '../profiles/text-commons-collection-profile.json';
+import language_collection from 'ro-crate-editor-profiles/profiles/language-data-commons-collection-profile.json';
 const data = reactive({
   entity: null,
-  profile: langProfile
+  profile: language_collection
 });
 
 const state = shallowReactive(new EditorState());
@@ -18,7 +18,7 @@ provide($state, state);
 
 onMounted(async function () {
   await state.setCrate(testData);
-  state.setProfile(langProfile);
+  state.setProfile(language_collection);
   state.crate.addEntity({
     '@id': '#TestPlace',
     '@type': 'Place',

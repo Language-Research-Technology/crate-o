@@ -3,9 +3,7 @@ import { reactive, computed, ref } from 'vue';
 import CrateEditor from '../components/CrateEditor.vue';
 import testData2 from '../../test-data/cooee/ro-crate-metadata.json' ;
 import testData from '../../test-data/sydney/ro-crate-metadata.json' ;
-import langProfile from '../profiles/text-commons-collection-profile.json';
-import baseProfile from '../profiles/base-profile.json';
-import computationalToolProfile from '../profiles/software-profile.json';
+import computationalToolProfile from 'ro-crate-editor-profiles/profiles/software-profile.json';
 
 const data = reactive({
   crate: testData,
