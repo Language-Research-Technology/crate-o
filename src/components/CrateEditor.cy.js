@@ -2,6 +2,7 @@
 
 import CrateEditor from './CrateEditor.vue';
 import language from "@/profiles/text-commons-collection-profile.json";
+import software from "@/profiles/software-profile.json";
 
 describe('<CrateEditor />', async () => {
 
@@ -20,7 +21,7 @@ describe('<CrateEditor />', async () => {
             ref: 'editor'
         });
         cy.get('#tab-About').click();
-        cy.get('#tab-Related\\ items').click();
+        cy.get('[id^=tab-Related]').click();
         cy.get('.el-form-item').find('button').contains('Organization').click();
         cy.get('button').contains('Create new Organization').click();
         cy.get('.el-form-item').find('.el-input:first').type('{selectall}').type('ORG_ID{enter}').invoke('blur');
@@ -63,6 +64,22 @@ describe('<CrateEditor />', async () => {
             cy.log(`value found: ${val}`)
             assert(val === `#${selector}-1`)
         });
+    });
+
+    it('cannot delete Version type of a required type', () => {
+        // see: https://on.cypress.io/mounting-vue
+        cy.mount(CrateEditor, {
+            props: {
+                crate: {},
+                profile: software,
+                entityId: './'
+            },
+            ref: 'editor'
+        });
+        cy.get('#tab-Others').click();
+        cy.get('.el-form-item > *').contains('Version').parent().siblings().find('.el-input__inner:first').click();
+        cy.get('.el-select-dropdown__item').contains('Number').click();
+        cy.get('.el-form-item > *').contains('Version').parent().siblings().find(':button').should('be.disabled')
     });
 
 });

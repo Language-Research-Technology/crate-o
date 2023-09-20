@@ -126,9 +126,15 @@ function removeValue(i, value) {
         </template>
         <div class="pl-2 flex flex-nowrap">
           <!-- Delete Button -->
-          <el-button :disabled="definition.min >= values.length" @click="removeValue(index, value)" type="danger" plain
-            :icon="Delete" :class="{ invisible: definition.min >= values.length }" size="small"></el-button>
-          <!-- <el-button size="small" :icon="QuestionFilled" type="info" plain></el-button> -->
+          <el-tooltip v-if="definition?.min >= values.length"
+                      content="This property is required and cannot be deleted"
+                      placement="bottom-start"
+                      effect="light">
+            <el-button :disabled="true" @click="removeValue(index, value)" type="default" plain
+            :icon="Delete" size="small"></el-button>
+          </el-tooltip>
+          <el-button v-else @click="removeValue(index, value)" type="danger" plain
+                     :icon="Delete" size="small"></el-button>
         </div>
       </FilteredPaged>
 

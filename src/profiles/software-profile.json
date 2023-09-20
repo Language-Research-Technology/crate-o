@@ -173,6 +173,18 @@
           ]
         },
         {
+          "id": "http://schema.org/version",
+          "name": "version",
+          "label": "Version",
+          "help": "The version of the CreativeWork embodied by a specified resource.",
+          "required": true,
+          "multiple": false,
+          "type": [
+            "Text",
+            "Number"
+          ]
+        },
+        {
           "id": "http://schema.org/softwareRequirements",
           "name": "softwareRequirements",
           "help": "...",
