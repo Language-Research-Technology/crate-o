@@ -13,7 +13,9 @@
       "http://schema.org/license",
       "http://schema.org/usageInfo",
       "http://schema.org/about",
-      "http://schema.org/mainEntity"
+      "http://schema.org/mentions",
+      "http://schema.org/mainEntity",
+      "http://schema.org/sameAs"
     ]
   },
   {
@@ -38,7 +40,10 @@
       "http://schema.org/isPartOf",
       "http://schema.org/hasPart",
       "http://schema.org/fileOf",
-      "http://schema.org/hasFile"
+      "http://schema.org/hasFile",
+      "http://schema.org/inDefinedTermSet",
+      "http://schema.org/hasDefinedTerm"
+
     ]
   },
   {
