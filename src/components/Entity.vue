@@ -116,7 +116,7 @@ function getComponents(def) {
 
 function checkRootTypes() {
   const specialTypesExpected = state.profile?.rootDataset?.type
-  const extraTypesNeeded = []
+  const extraTypesNeeded = [];
 
   if (specialTypesExpected) {
     for (let pType of specialTypesExpected) {
@@ -130,10 +130,34 @@ function checkRootTypes() {
 
 
 function addRootTypes(rTypes) {
-  console.log("Adding ", rTypes);
   const entity = props.modelValue;
   entity["@type"] = entity["@type"].concat(rTypes);
-  console.log("Added ", entity["@type"]);
+  emit('update:modelValue', entity);
+}
+
+function checkConformsTo() {
+  const specialConformsToExpected = state.profile?.conformsToUri || [];
+  const extraConformsToNeeded = [];
+
+  if (specialConformsToExpected) {
+    const cT = []
+    for(let c of state.crate.rootDataset["conformsTo"]){
+      if(c && c['@id']){
+        cT.push(c['@id']);
+      }
+    }
+    for (let conformsTo of specialConformsToExpected) {
+      if (!cT.includes(conformsTo)) {
+        extraConformsToNeeded.push({"@id": conformsTo});
+      }
+    }
+  }
+  return extraConformsToNeeded;
+}
+
+function addConformTos(rTypes) {
+  const entity = props.modelValue;
+  entity["conformsTo"] = entity["conformsTo"].concat(rTypes);
   emit('update:modelValue', entity);
 }
 </script>
@@ -166,16 +190,23 @@ function addRootTypes(rTypes) {
           </el-tooltip>
         </span>
       </template>
-      <el-form id="#entityForm" label-width="auto" novalidate v-if="state.crate.rootDataset['@id'] === state.entity['@id'] && checkRootTypes().length > 0">
-        This dataset does not have all the types required in profile:  <el-button size="small" type="primary" :icon="Plus" @click="addRootTypes(checkRootTypes())">
-          Add the missing type(s): {{  checkRootTypes().join(", ") }}
-    </el-button>
-      </el-form>
-
       <el-form id="#entityForm" label-width="auto" novalidate v-if="activeGroup === layout.name">
-     
-
-
+        <div v-if="state.crate.rootDataset['@id'] === state.entity['@id']">
+          <el-row v-if="checkRootTypes().length > 0"
+                  class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4">
+            This dataset does not have all the types required in profile:
+            <el-button size="small" type="primary" :icon="Plus" @click="addRootTypes(checkRootTypes())">
+              Add the missing type(s): {{ checkRootTypes().join(", ") }}
+            </el-button>
+          </el-row>
+          <el-row v-if="checkConformsTo().length > 0"
+                  class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4">
+            This dataset does not have all the conformsTos required in profile:&nbsp;
+            <el-button size="small" type="primary" :icon="Plus" @click="addConformTos(checkConformsTo())">
+              Add the missing conformsTos(s):&nbsp;<span v-for="c of checkConformsTo()">{{ c?.['@id'] }}</span>
+            </el-button>
+          </el-row>
+        </div>
         <Property v-for="def in layout.definitions" :key="def.id" :modelValue="getProperty(def)"
                   :components="getComponents(def)" :definition="def" @update:modelValue="v => updateProperty(def, v)"
                   @entityCreated="(e) => $emit('entityCreated', e)"></Property>
