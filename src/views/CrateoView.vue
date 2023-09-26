@@ -30,7 +30,7 @@ const editor = ref();
 
 const commands = {
   async loadProfile() {
-    console.log('click');
+    console.log('loading profile');
     try {
       const [profileHandle] = await window.showOpenFilePicker();
       let file = await profileHandle.getFile();
@@ -44,9 +44,12 @@ const commands = {
         data.profileError = validator.errors;
         data.profileErrorDialog = true;
       } else {
-        const profile = validator.profile;
+        //const profile = validator.profile;
         //TODO: put it profiles removing it when fixing it
-        data.selectedProfile = profile; //data.profiles.push(profile) - 1;
+        const newProfile = validator.profile;
+        data.profiles.unshift(newProfile);
+        data.selectedProfile = 0;
+        //profile = newProfile;
       }
     } catch (error) {
       console.error(error);

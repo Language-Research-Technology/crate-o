@@ -74,6 +74,7 @@
     "name": "Software & Hardware",
     "help": "For computer programs and execution environments, that could be used to create data, have created data, or are being packaged and described",
       "inputs": [
+      "http://schema.org/availableOnDevice",
       "http://schema.org/downloadUrl",
       "http://schema.org/installUrl",
       "http://schema.org/memoryRequirements",
@@ -82,6 +83,7 @@
       "http://schema.org/programmingLanguage",
       "http://schema.org/releaseNotes",
       "http://schema.org/runtimePlatform",
+      "http://schema.org/runtime",
       "http://schema.org/screenshot",
       "http://schema.org/softwareAddOn",
       "http://schema.org/softwareHelp",
