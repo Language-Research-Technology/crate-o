@@ -140,9 +140,9 @@ function checkConformsTo() {
   const extraConformsToNeeded = [];
 
   if (specialConformsToExpected) {
-    const cT = []
-    for(let c of state.crate.rootDataset["conformsTo"]){
-      if(c && c['@id']){
+    const cT = [];
+    for (let c of state.crate.rootDataset["conformsTo"] || []) {
+      if (c && c['@id']) {
         cT.push(c['@id']);
       }
     }
@@ -157,6 +157,9 @@ function checkConformsTo() {
 
 function addConformTos(rTypes) {
   const entity = props.modelValue;
+  if (!entity["conformsTo"]?.length) {
+    entity["conformsTo"] = [];
+  }
   entity["conformsTo"] = entity["conformsTo"].concat(rTypes);
   emit('update:modelValue', entity);
 }
