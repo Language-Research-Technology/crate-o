@@ -126,7 +126,7 @@ watch(() => props.crate, async crate => {
 }, {immediate: true});
 
 watch(() => props.profile, (profile) => {
-  console.log('watch profile');
+  console.log('watch profile', profile);
   state.setProfile(profile);
   newEntityUpdate();
 }, {immediate: true});
@@ -159,6 +159,7 @@ function showEntity(e) {
 
 function newEntityUpdate() {
   const entities = [];
+  console.log("Profile", state.profile);
   for (let key of Object.keys(state.profile.classes)) {
     entities.push({value: key, label: key});
   }
