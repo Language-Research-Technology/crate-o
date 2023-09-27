@@ -1,18 +1,19 @@
 <script setup>
-import { reactive, computed, toRaw, nextTick, inject, isReactive } from "vue";
-import { QuestionFilled, Delete, InfoFilled } from '@element-plus/icons-vue';
+import {reactive, computed, toRaw, nextTick, inject, isReactive} from "vue";
+import {QuestionFilled, Delete, InfoFilled} from '@element-plus/icons-vue';
 import ControlAdd from "./ControlAdd.vue";
-import { $state } from './keys';
+import {$state} from './keys';
+
 const state = inject($state);
 const pageSize = 10; //Later do in conf the page size
 
 const props = defineProps({
-  modelValue: { 
+  modelValue: {
     /** @type import('vue').PropType<any[]|string> */
-    type: undefined 
+    type: undefined
   },
-  components: { type: Array, required: true },
-  definition: { type: Object, required: true }
+  components: {type: Array, required: true},
+  definition: {type: Object, required: true}
 });
 const emit = defineEmits(['update:modelValue', 'entityCreated']);
 
@@ -52,13 +53,13 @@ function add(type, value, fromLookup) {
   var isInline = state.isInline(type);
   if (isInline) {
     const options = props.definition.values;
-    const propsOpt = { ...props.definition.props, ...(options && { options }) };
+    const propsOpt = {...props.definition.props, ...(options && {options})};
     const c = props.components[vals.length] = state.getInlineComponent(type, propsOpt);
     val ??= c[2];
   }
   vals.push(val ?? '');
-  console.log('add val:',val);
-  
+  console.log('add val:', val);
+
   emit('update:modelValue', vals);
   if (typeof value === 'object' && value['@id']) {
     const entity = state.crate.getEntity(value['@id']);
@@ -85,7 +86,12 @@ function removeValue(i, value) {
     props.components.splice(i, 1);
     if (typeof value === 'object' && value['@id']) {
       // count all reverse links
-      var linksCount = Object.values(value['@reverse']).reduce((count, refs) => count + refs.length, 0);
+      let linksCount;
+      const rawValue = toRaw(value); //converting it to raw to check the links count because it errors if reverses where empty
+      //Uncaught TypeError: 'get' on proxy: property '@reverse' is a read-only and non-configurable data property on the proxy target but the proxy did not return its actual value
+      if (rawValue['@reverse']) {
+        linksCount = Object.values(rawValue['@reverse']).reduce((count, refs) => count + refs.length, 0);
+      }
       if (!linksCount) {
         //todo: confirm to delete entity
         const i = state.entities.findIndex(e => e['@id'] === value['@id']);
@@ -107,9 +113,9 @@ function removeValue(i, value) {
     <template #label>
       <span class="mr-1" :title="definition.id">{{ label }} </span>
       <el-tooltip v-if="definition.help"
-          :content="definition.help"
-          placement="bottom-start"
-          effect="light"
+                  :content="definition.help"
+                  placement="bottom-start"
+                  effect="light"
       >
         <el-icon>
           <InfoFilled/>
@@ -119,9 +125,9 @@ function removeValue(i, value) {
     <div class="flex flex-col flex-grow">
       <FilteredPaged :modelValue="values" v-slot="{ value, index }">
         <template
-          v-for="[component, componentProps] of [(components[index] ??= state.resolveComponent(value, definition))]">
+            v-for="[component, componentProps] of [(components[index] ??= state.resolveComponent(value, definition))]">
           <component :is="component" v-bind="componentProps" :modelValue="value"
-            @update:modelValue="value => updateValue(index, value)">
+                     @update:modelValue="value => updateValue(index, value)">
           </component>
         </template>
         <div class="pl-2 flex flex-nowrap">
@@ -131,14 +137,15 @@ function removeValue(i, value) {
                       placement="bottom-start"
                       effect="light">
             <el-button :disabled="true" @click="removeValue(index, value)" type="default" plain
-            :icon="Delete" size="small"></el-button>
+                       :icon="Delete" size="small"></el-button>
           </el-tooltip>
           <el-button v-else @click="removeValue(index, value)" type="danger" plain
                      :icon="Delete" size="small"></el-button>
         </div>
       </FilteredPaged>
 
-      <ControlAdd :modelValue="values" :definition="definition" class="flex flex-col md:flex-row gap-1 flex-nowrap" @add="add">
+      <ControlAdd :modelValue="values" :definition="definition" class="flex flex-col md:flex-row gap-1 flex-nowrap"
+                  @add="add">
       </ControlAdd>
     </div>
   </el-form-item>
