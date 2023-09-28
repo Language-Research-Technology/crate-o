@@ -121,15 +121,16 @@ function removeValue(i, value) {
         </el-icon>
       </el-tooltip>
       <span class="mx-1" :title="definition.id">{{ label }} </span>
-      <el-tooltip v-if="definition.help"
-                  :content="definition.help"
-                  placement="bottom-start"
-                  effect="light"
-      >
-        <el-icon>
-          <InfoFilled/>
-        </el-icon>
-      </el-tooltip>
+      <!--Tooltip Commented out for issue https://github.com/Language-Research-Technology/crate-o/issues/78 -->
+      <!--      <el-tooltip v-if="definition.help"-->
+      <!--                  :content="definition.help"-->
+      <!--                  placement="bottom-start"-->
+      <!--                  effect="light"-->
+      <!--      >-->
+      <!--        <el-icon>-->
+      <!--          <InfoFilled/>-->
+      <!--        </el-icon>-->
+      <!--      </el-tooltip>-->
     </template>
     <div class="flex flex-col flex-grow">
       <FilteredPaged :modelValue="values" v-slot="{ value, index }">
@@ -156,11 +157,18 @@ function removeValue(i, value) {
       <ControlAdd :modelValue="values" :definition="definition" class="flex flex-col md:flex-row gap-1 flex-nowrap"
                   @add="add">
       </ControlAdd>
+      <div v-if="definition.help" class="flex items-center bg-indigo-100 text-sm text-indigo-500 px-4 py-3 mt-2"
+           role="alert">
+        <el-icon>
+          <InfoFilled/>
+        </el-icon>&nbsp;<p>{{ definition.help }}</p>
+      </div>
     </div>
   </el-form-item>
+
 </template>
 
-<style>
+<style scoped>
 .el-form-item {
   margin-bottom: 0px;
 }
