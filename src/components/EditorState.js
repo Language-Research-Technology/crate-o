@@ -130,7 +130,9 @@ export class EditorState {
     if (!defByType[typesId]) {
       let definitions = common;
       definitions['@id'].required = true;
+      definitions['@id'].help = 'Unique ID.';
       definitions['@type'].required = true;
+      definitions['@type'].help = 'The type of the entity.';
       const classes = types.map(t => profile.classes[t]).filter(e => e);
       for (const c of classes) {
         for (const input of (c.inputs || [])) {
