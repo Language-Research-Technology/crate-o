@@ -84,6 +84,7 @@ const commands = {
         let file = await data.metadataHandle.getFile();
         const content = await file.text();
         data.crate = JSON.parse(content);
+        $router.push({});
       } else {
         data.crate = {};
       }
@@ -134,6 +135,7 @@ const commands = {
     data.selectedProfile = defaultProfile;
     data.profiles = shallowReactive(profiles);
     data.spreadSheetBuffer = null;
+    $router.push({});
     data.loading = false;
   },
 
@@ -203,16 +205,12 @@ watch(() => data.selectedProfile, (v, pv) => {
   }
 });
 
-const menuSelect = (key, keyPath) => {
-  console.log(key, keyPath);
-  commands[key]();
-}
-
 const validate = function (json, profile) {
   const crate = new ROCrate(json, {array: true, link: true});
   let validationResult = {};
   for (let entity of crate.entities()) {
     if (entity["@id"] !== 'ro-crate-metadata.json') {
+      const entityName = crate.getEntity(entity['@id'])?.name;
       for (let entityType of entity['@type']) {
         const classDefinition = profile.classes[entityType];
         if (classDefinition) {
@@ -220,7 +218,7 @@ const validate = function (json, profile) {
             if (input.required && (isUndefined(entity[input.name]) || entity[input.name] === '')) {
               //TODO: check that the input value is valid
               validationResult[entity['@id']] = validationResult[entity['@id']] || {};
-              validationResult[entity['@id']] = {name: input.name, type: 'Required'};
+              validationResult[entity['@id']] = {entityName, id: input.id, name: input.name, type: 'Required'};
             }
           }
         }
@@ -230,9 +228,13 @@ const validate = function (json, profile) {
   return validationResult;
 }
 
-const goTo = function (id) {
+const goTo = function ({id, prop}) {
   data.validationResultDialog = false;
-  $router.push({query: {id: encodeURIComponent(id)}});
+  const query = {id};
+  if (prop) {
+    query.prop = prop;
+  }
+  $router.push({query});
 }
 </script>
 
@@ -244,7 +246,7 @@ const goTo = function (id) {
         background-color="#ecf5ff"
         text-color="#000"
         mode="horizontal"
-        @select="menuSelect"
+        @select="(key)=>commands[key]()"
     >
       <el-menu-item index="open">
         📂 Open Directory
@@ -328,10 +330,14 @@ const goTo = function (id) {
       <div class="p-2" v-for="id of Object.keys(data.validationResult)">
         <p>
           Entity:
-          <el-button @click=goTo(id)> {{ id }}</el-button>
+          <el-button type="primary" @click=goTo({id})> {{ data.validationResult[id]?.entityName || id }}</el-button>
           has the following warnings:
         </p>
-        <div> Property : {{ data.validationResult[id]['name'] }} is {{ data.validationResult[id]['type'] }}</div>
+        <div class="py-2">
+          <el-button @click="goTo({id: id, prop: data.validationResult[id]['id']})">
+            Property : {{ data.validationResult[id]['name'] }} is {{ data.validationResult[id]['type'] }}
+          </el-button>
+        </div>
         <el-divider/>
       </div>
     </div>

@@ -6,7 +6,7 @@
       "@id",
       "@type",
       "http://purl.org/dc/terms/conformsTo",
-      "http://schema.org/name",
+
       "http://schema.org/description",
       "http://schema.org/conformsTo",
       "http://schema.org/datePublished",
@@ -15,13 +15,15 @@
       "http://schema.org/about",
       "http://schema.org/mentions",
       "http://schema.org/mainEntity",
-      "http://schema.org/sameAs"
+      "http://schema.org/sameAs",
+      "http://schema.org/language"
     ]
   },
   {
     "name": "Related People, Orgs & Works",
     "help": "Context for the creation of this RO-Crate, who made it, funded it etc",
     "inputs": [
+      "http://schema.org/name",
       "http://schema.org/author",
       "http://schema.org/creator",
       "http://schema.org/publisher",

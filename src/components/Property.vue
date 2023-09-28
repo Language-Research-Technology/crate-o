@@ -136,7 +136,7 @@ function removeValue(i, value) {
       <FilteredPaged :modelValue="values" v-slot="{ value, index }">
         <template
             v-for="[component, componentProps] of [(components[index] ??= state.resolveComponent(value, definition))]">
-          <component :is="component" v-bind="componentProps" :modelValue="value" :required="definition.required"
+          <component :is="component" v-bind="componentProps" :modelValue="value"
                      @update:modelValue="value => updateValue(index, value)">
           </component>
         </template>

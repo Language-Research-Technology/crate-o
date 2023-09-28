@@ -1,15 +1,18 @@
 <script setup>
-import {computed, inject, onMounted, onUpdated} from "vue";
+import {computed, inject, onMounted, onUpdated, watch} from "vue";
 import {$state} from './keys';
 import Property from './Property.vue';
 import {ElTabPane, ElTabs} from 'element-plus';
 import {InfoFilled, Plus} from '@element-plus/icons-vue';
 import defaultLayout from '../default_layout.json';
-import {find} from "lodash";
+import {find, isEmpty, isUndefined} from "lodash";
+import {useRoute} from "vue-router";
 
-const props = defineProps(['modelValue']);
+const props = defineProps(['modelValue', 'currentProperty']);
 const emit = defineEmits(['update:modelValue', 'entityCreated']);
 const state = inject($state);
+
+const $route = useRoute();
 
 onUpdated(() => {
   console.log('entity updated');
@@ -26,8 +29,22 @@ onMounted(() => {
 // watch(() => props.modelValue, (newVal, oldVal) => {
 //   data.activeLayout = state.meta[newVal['@id']].__activeLayout ??= 'About';
 // }, { immediate: true });
+watch(() => $route.query.prop, (eProp, oldProp) => {
+  const prop = decodeURIComponent($route.query.prop);
+  if (prop !== "undefined") {
+    let active;
+    for (let l of layouts.value || []) {
+      if (l.inputs?.includes(prop)) {
+        active = l.name;
+      }
+    }
+    activeGroup.value = active || 'Others';
+  }
+})
+
 const activeGroup = computed({
   get() {
+    console.log('get:currentProperty', props.currentProperty)
     return state.meta[props.modelValue['@id']]?.__activeLayout || 'About';
   },
   set(val) {
