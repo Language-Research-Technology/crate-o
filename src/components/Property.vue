@@ -1,6 +1,6 @@
 <script setup>
 import {reactive, computed, toRaw, nextTick, inject, isReactive} from "vue";
-import {QuestionFilled, Delete, InfoFilled} from '@element-plus/icons-vue';
+import {QuestionFilled, Delete, InfoFilled, WarningFilled} from '@element-plus/icons-vue';
 import ControlAdd from "./ControlAdd.vue";
 import {$state} from './keys';
 
@@ -111,7 +111,16 @@ function removeValue(i, value) {
   <!-- <el-form-item class="hover:bg-violet-100 px-2 p-2"> -->
   <el-form-item class="px-2 p-2">
     <template #label>
-      <span class="mr-1" :title="definition.id">{{ label }} </span>
+      <el-tooltip v-if="definition?.required"
+                  content="Property Required"
+                  placement="bottom-start"
+                  effect="light"
+      >
+        <el-icon>
+          <WarningFilled class="text-red-600"/>
+        </el-icon>
+      </el-tooltip>
+      <span class="mx-1" :title="definition.id">{{ label }} </span>
       <el-tooltip v-if="definition.help"
                   :content="definition.help"
                   placement="bottom-start"
@@ -126,7 +135,7 @@ function removeValue(i, value) {
       <FilteredPaged :modelValue="values" v-slot="{ value, index }">
         <template
             v-for="[component, componentProps] of [(components[index] ??= state.resolveComponent(value, definition))]">
-          <component :is="component" v-bind="componentProps" :modelValue="value"
+          <component :is="component" v-bind="componentProps" :modelValue="value" :required="definition.required"
                      @update:modelValue="value => updateValue(index, value)">
           </component>
         </template>

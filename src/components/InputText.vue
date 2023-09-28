@@ -7,6 +7,7 @@ const props = defineProps({
   type: {
     type: String,
     default: 'text',
+    required: false,
     /**
      * @param {string} value 
      */
@@ -33,7 +34,7 @@ function onChange(newValue) {
 
 <template>
   <el-input class="flex-grow" ref="input" :class="{ 'is-error': !isValid }" :show-password="props.type === 'password'"
-    v-model="value" :type="type" :autosize="{ minRows: 1, maxRows: 6 }" @change="onChange">
+    v-model="value" :type="type" :autosize="{ minRows: 1, maxRows: 6 }" :required="props.required" @change="onChange">
   </el-input>
   <!--input :value="modelValue" @input="$emit('update:modelValue', $event.target.value)"/-->
 </template>

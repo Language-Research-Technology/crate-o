@@ -2,9 +2,15 @@
 import {shallowReactive, reactive, ref, computed, watch} from 'vue';
 import {profiles} from '@/profiles';
 import Welcome from "@/components/Welcome.vue";
-import {HomeFilled, ArrowLeftBold, ArrowDown} from '@element-plus/icons-vue';
+import Help from "@/components/Help.vue";
+
 import SpreadSheet from "@/components/SpreadSheet.vue";
 import {Validator} from "@/utils/profileValidator.js";
+import {isEmpty, isUndefined} from "lodash";
+import {ROCrate} from "ro-crate";
+import {useRouter} from 'vue-router';
+
+const $router = useRouter();
 
 const emit = defineEmits(['load:spreadsheet']);
 const defaultProfile = 0;
@@ -21,7 +27,9 @@ const data = shallowReactive({
   spreadSheetBuffer: null,
   loading: false,
   profileError: [],
-  profileErrorDialog: false
+  profileErrorDialog: false,
+  validationResult: {},
+  showWelcome: false
 });
 //window.data = data;
 const profile = computed(() => data.profiles[data.selectedProfile]);
@@ -112,6 +120,9 @@ const commands = {
       const content = JSON.stringify(editor.value.crate, null, 2);
       await writable.write(content);
       await writable.close();
+      data.crate = editor.value.crate;
+      data.validationResult = validate(data.crate, profile.value);
+      data.validationResultDialog = !isEmpty(data.validationResult);
     }
   },
 
@@ -138,6 +149,10 @@ const commands = {
     const buffer = await file.arrayBuffer();
     data.crate = editor.value.crate;
     data.spreadSheetBuffer = buffer;
+  },
+
+  help() {
+    data.showWelcome = true;
   }
 };
 
@@ -188,79 +203,94 @@ watch(() => data.selectedProfile, (v, pv) => {
   }
 });
 
+const menuSelect = (key, keyPath) => {
+  console.log(key, keyPath);
+  commands[key]();
+}
+
+const validate = function (json, profile) {
+  const crate = new ROCrate(json, {array: true, link: true});
+  let validationResult = {};
+  for (let entity of crate.entities()) {
+    if (entity["@id"] !== 'ro-crate-metadata.json') {
+      for (let entityType of entity['@type']) {
+        const classDefinition = profile.classes[entityType];
+        if (classDefinition) {
+          for (let input of classDefinition.inputs) {
+            if (input.required && (isUndefined(entity[input.name]) || entity[input.name] === '')) {
+              //TODO: check that the input value is valid
+              validationResult[entity['@id']] = validationResult[entity['@id']] || {};
+              validationResult[entity['@id']] = {name: input.name, type: 'Required'};
+            }
+          }
+        }
+      }
+    }
+  }
+  return validationResult;
+}
+
+const goTo = function (id) {
+  data.validationResultDialog = false;
+  $router.push({query: {id: encodeURIComponent(id)}});
+}
 </script>
 
 <template>
-  <div class="p-2 bg-slate-200">
-    <el-form :inline="true">
-      <el-form-item class="">
-        <el-dropdown trigger="click" @command="command => commands[command]?.()">
-          <el-button type="primary">File &nbsp;<el-icon class="el-icon--right">
-            <ArrowDown/>
-          </el-icon>
-          </el-button>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item command="open">
-                <el-tooltip effect="dark" placement="right"
-                            content="Open a directory to describe or select an empty directory">
-                  Open Directory
-                </el-tooltip>
-              </el-dropdown-item>
-              <el-dropdown-item command="addFiles" :disabled="!data.dirHandle">
-                <el-tooltip effect="dark" placement="right" content="Load Files (With Selected Directory)">
-                  Load Files
-                </el-tooltip>
-              </el-dropdown-item>
-              <el-dropdown-menu>
-                <el-dropdown-item command="loadSpreadsheet" :disabled="!data.dirHandle">
-                  <el-tooltip effect="dark" placement="right" content="Add Metadata from Spreadsheet">
-                    Load Spreadsheet
-                  </el-tooltip>
-                </el-dropdown-item>
-              </el-dropdown-menu>
-              <el-dropdown-item command="save" :disabled="!data.dirHandle">
-                <el-tooltip effect="dark" placement="right"
-                            content="Save crate metadata to the currently opened directory">
-                  Save Progress
-                </el-tooltip>
-              </el-dropdown-item>
-              <el-dropdown-item command="close" :disabled="!data.dirHandle">
-                <el-tooltip effect="dark" placement="right"
-                            content="Closes without saving">
-                  Close
-                </el-tooltip>
-              </el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
-        <div>&nbsp;</div>
-      </el-form-item>
-
-      <el-form-item label="Profile:" class="w-9/12">
-        <el-select v-model="data.selectedProfile" class="w-full" placeholder="Select a profile">
-          <el-option :value="-1">
-            <p class="font-bold italic">Load and add a new profile from your computer ...</p>
-          </el-option>
-          <el-option v-for="(profile, index) of data.profiles" :label="profile.metadata.name" :value="index">
-            <div class="border-b-1 mb-2">
-              <p>{{ profile.metadata.name }}</p>
-              <p class="text-slate-500 text-xs">{{ profile.metadata.description }}</p>
-            </div>
-          </el-option>
-        </el-select>
-      </el-form-item>
-      <div v-if="data.dirHandle" class="text-large pt-3 pb-1">Selected Directory:
-        <span class="font-bold">{{ data.dirHandle.name }}</span>
-      </div>
-    </el-form>
+  <div class="bg-slate-200">
+    <el-menu
+        default-active="-1"
+        class=""
+        background-color="#ecf5ff"
+        text-color="#000"
+        mode="horizontal"
+        @select="menuSelect"
+    >
+      <el-menu-item index="open">
+        📂 Open Directory
+      </el-menu-item>
+      <el-menu-item index="addFiles" :disabled="!data.dirHandle">
+        🗃️ Load Files
+      </el-menu-item>
+      <el-menu-item index="loadSpreadsheet" :disabled="!data.dirHandle">
+        🗄️ Bulk Add
+      </el-menu-item>
+      <el-menu-item index="save" :disabled="!data.dirHandle">
+        💾 Save
+      </el-menu-item>
+      <el-menu-item index="close" :disabled="!data.dirHandle">
+        ⓧ Close
+      </el-menu-item>
+      <el-menu-item title="Profile" class="">
+        <template #title class="">
+          Profile:&nbsp;
+          <el-select v-model="data.selectedProfile" placeholder="Select a profile" class="w-96">
+            <el-option :value="-1">
+              <p class="font-bold italic">Load and add a new profile from your computer ...</p>
+            </el-option>
+            <el-option v-for="(profile, index) of data.profiles" :label="profile.metadata.name" :value="index">
+              <div class="border-b-1 mb-2">
+                <p>{{ profile.metadata.name }}</p>
+                <p class="text-slate-500 text-xs">{{ profile.metadata.description }}</p>
+              </div>
+            </el-option>
+          </el-select>
+        </template>
+      </el-menu-item>
+      <el-menu-item index="help" title="Help">
+        ﹖
+      </el-menu-item>
+    </el-menu>
+    <el-row v-if="data.dirHandle" class="text-large p-3">
+      Selected Directory:&nbsp;
+      <span class="font-bold">{{ data.dirHandle.name }}</span>
+    </el-row>
   </div>
   <template v-if="data.crate">
     <CrateEditor ref="editor" v-loading="data.loading" v-model:entityId="data.entityId"
                  :crate="data.crate" :profile="profile" @ready="data.loading = false">
     </CrateEditor>
     <SpreadSheet v-model:crate="data.crate" :buffer="data.spreadSheetBuffer"/>
-
   </template>
   <div v-else>
     <welcome/>
@@ -271,7 +301,7 @@ watch(() => data.selectedProfile, (v, pv) => {
              width="50%"
   >
     <div class="overflow-x-scroll h-96">
-      {{data.selectedProfile?.metadata}}
+      {{ data.selectedProfile?.metadata }}
       <el-divider/>
       <div class="p-2" v-for="error of data.profileError">
         <p>
@@ -286,6 +316,41 @@ watch(() => data.selectedProfile, (v, pv) => {
     <template #footer>
       <span class="dialog-footer">
         <el-button type="primary" @click="data.profileErrorDialog = false">Ok</el-button>
+      </span>
+    </template>
+  </el-dialog>
+  <el-dialog v-if="data.validationResultDialog"
+             v-model="data.validationResult"
+             :title="'Saved Crate with warnings'"
+             width="50%"
+  >
+    <div class="overflow-x-scroll h-96">
+      <div class="p-2" v-for="id of Object.keys(data.validationResult)">
+        <p>
+          Entity:
+          <el-button @click=goTo(id)> {{ id }}</el-button>
+          has the following warnings:
+        </p>
+        <div> Property : {{ data.validationResult[id]['name'] }} is {{ data.validationResult[id]['type'] }}</div>
+        <el-divider/>
+      </div>
+    </div>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button type="primary" @click="data.validationResultDialog = false">Ok</el-button>
+      </span>
+    </template>
+  </el-dialog>
+  <el-dialog v-if="data.showWelcome"
+             v-model="data.showWelcome"
+             title="Help"
+             width="50%">
+    <div class="overflow-x-scroll h-96">
+      <help/>
+    </div>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button type="primary" @click="data.showWelcome = false">Close</el-button>
       </span>
     </template>
   </el-dialog>

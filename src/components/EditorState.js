@@ -129,6 +129,8 @@ export class EditorState {
     const typesId = types.join('|');
     if (!defByType[typesId]) {
       let definitions = common;
+      definitions['@id'].required = true;
+      definitions['@type'].required = true;
       const classes = types.map(t => profile.classes[t]).filter(e => e);
       for (const c of classes) {
         for (const input of (c.inputs || [])) {
@@ -136,6 +138,7 @@ export class EditorState {
             const { required, multiple, ...def } = input;
             def.min = required ? 1 : 0;
             def.max = multiple ? Infinity : 1;
+            def.required = required;
             definitions[input.id] = def;
           }
         }

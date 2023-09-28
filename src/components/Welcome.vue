@@ -1,4 +1,6 @@
 <script setup>
+import Help from "@/components/Help.vue";
+
 //TODO: Insert code that will load the readme markdown into here as html
 </script>
 <template>
@@ -48,47 +50,7 @@
         </p>
       </div>
       <div class="grid gap-6">&nbsp;</div>
-      <div class="grid gap-6">
-        <h2 class="mb-3 text-lg text-gray-500 md:text-xl dark:text-gray-400"># How to use this tool?</h2>
-        <h4 class="text-gray-500 dark:text-gray-400">
-          File | Open Directory
-        </h4>
-        <p class="text-gray-500 dark:text-gray-400">
-          Select a directory/folder to describe your research
-        </p>
-        <h4 class="text-gray-500 dark:text-gray-400">
-          File | Load Files
-        </h4>
-        <p class="text-gray-500 dark:text-gray-400">
-          Loads files from the selected directory into this crate
-        </p>
-        <h4 class="text-gray-500 dark:text-gray-400">
-          File | Load Spreadsheet
-        </h4>
-        <p class="text-gray-500 dark:text-gray-400">
-          Select a spreadsheet from a different directory to assist you with metadata description. This will append to
-          your existing crate if there is already one created.
-        </p>
-        <h4 class="text-gray-500 dark:text-gray-400">
-          File | Save Progress
-        </h4>
-        <p class="text-gray-500 dark:text-gray-400">
-          Save the state of this page into your crate. This will create an ro-crate-metadata.json or append data into an
-          existing ro-crate-metadata.json
-        </p>
-        <h4 class="text-gray-500 dark:text-gray-400">
-          File | Close
-        </h4>
-        <p class="text-gray-500 dark:text-gray-400">
-          Closes without saving
-        </p>
-        <h4 class="text-gray-500 dark:text-gray-400">
-          Profile
-        </h4>
-        <p class="text-gray-500 dark:text-gray-400">
-          Select a predefined profile or load one from your computer
-        </p>
-      </div>
+      <help/>
     </el-col>
   </el-row>
 
