@@ -102,6 +102,8 @@ const layouts = computed(() => {
     return layout;
   });
   // console.log(layouts);
+  console.log(props.modelValue);
+
   return layouts.map((layout) => {
     layout.disabled = !layout.definitions.length;
     return layout;
@@ -123,6 +125,9 @@ function getProperty(def) {
   // console.log('def.key', def.key);
   const entity = props.modelValue;
   const key = def.key || def.name;
+  if (def?.isReverse) {
+    return entity['@reverse'][key];
+  }
   return entity[key];
 }
 

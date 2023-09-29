@@ -1,8 +1,9 @@
 <script setup>
 import {reactive, computed, toRaw, nextTick, inject, isReactive} from "vue";
-import {QuestionFilled, Delete, InfoFilled, WarningFilled} from '@element-plus/icons-vue';
+import {QuestionFilled, Delete, InfoFilled, WarningFilled, ArrowRight, ArrowLeft} from '@element-plus/icons-vue';
 import ControlAdd from "./ControlAdd.vue";
 import {$state} from './keys';
+import {first} from "lodash";
 
 const state = inject($state);
 const pageSize = 10; //Later do in conf the page size
@@ -36,6 +37,12 @@ const label = computed(() => {
   }
   label = label.charAt(0).toUpperCase() + label.slice(1);
   return label.replace(/([a-z])([A-Z])/g, '$1 $2');
+});
+
+const isReverse = computed(() => {
+  if(props.definition.isReverse) {
+    return true;
+  }
 });
 
 const values = computed(() => {
@@ -109,7 +116,8 @@ function removeValue(i, value) {
 
 <template>
   <!-- <el-form-item class="hover:bg-violet-100 px-2 p-2"> -->
-  <el-form-item class="px-2 p-2">
+  <!-- TODO: !!! remove hack of checking the ro-crate-metadata.json-->
+  <el-form-item :class="[ isReverse ? 'bg-teal-100 border-1 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md' : 'px-2 p-2', 'px-2 p-2']" v-if="first(values)?.['@id'] !== 'ro-crate-metadata.json'">
     <template #label>
       <el-tooltip v-if="definition?.required"
                   content="Property Required"
@@ -121,6 +129,8 @@ function removeValue(i, value) {
         </el-icon>
       </el-tooltip>
       <span class="mx-1" :title="definition.id">{{ label }} </span>
+      <el-icon v-if="isReverse"><ArrowLeft /></el-icon>
+      <el-icon v-else><ArrowRight /></el-icon>
       <!--Tooltip Commented out for issue https://github.com/Language-Research-Technology/crate-o/issues/78 -->
       <!--      <el-tooltip v-if="definition.help"-->
       <!--                  :content="definition.help"-->
@@ -140,7 +150,7 @@ function removeValue(i, value) {
                      @update:modelValue="value => updateValue(index, value)">
           </component>
         </template>
-        <div class="pl-2 flex flex-nowrap">
+        <div class="pl-2 flex flex-nowrap" v-if="!isReverse" >
           <!-- Delete Button -->
           <el-tooltip v-if="definition?.min >= values.length"
                       content="This property is required and cannot be deleted"
@@ -154,7 +164,7 @@ function removeValue(i, value) {
         </div>
       </FilteredPaged>
 
-      <ControlAdd :modelValue="values" :definition="definition" class="flex flex-col md:flex-row gap-1 flex-nowrap"
+      <ControlAdd v-if="!isReverse" :modelValue="values" :definition="definition" class="flex flex-col md:flex-row gap-1 flex-nowrap"
                   @add="add">
       </ControlAdd>
       <div v-if="definition.help" class="flex items-center bg-indigo-100 text-sm text-indigo-500 px-4 py-3 mt-2"
@@ -165,7 +175,6 @@ function removeValue(i, value) {
       </div>
     </div>
   </el-form-item>
-
 </template>
 
 <style scoped>
