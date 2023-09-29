@@ -6,7 +6,7 @@ import Help from "@/components/Help.vue";
 
 import SpreadSheet from "@/components/SpreadSheet.vue";
 import {Validator} from "@/utils/profileValidator.js";
-import {isEmpty, isUndefined} from "lodash";
+import {first, isEmpty, isUndefined} from "lodash";
 import {ROCrate} from "ro-crate";
 import {useRouter} from 'vue-router';
 
@@ -210,15 +210,16 @@ const validate = function (json, profile) {
   let validationResult = {};
   for (let entity of crate.entities()) {
     if (entity["@id"] !== 'ro-crate-metadata.json') {
-      const entityName = crate.getEntity(entity['@id'])?.name;
       for (let entityType of entity['@type']) {
         const classDefinition = profile.classes[entityType];
         if (classDefinition) {
           for (let input of classDefinition.inputs) {
-            if (input.required && (isUndefined(entity[input.name]) || entity[input.name] === '')) {
+            if (input.required && (!isUndefined(entity[input.name]) || entity[input.name] === '')) {
               //TODO: check that the input value is valid
-              validationResult[entity['@id']] = validationResult[entity['@id']] || {};
-              validationResult[entity['@id']] = {entityName, id: input.id, name: input.name, type: 'Required'};
+              if (!validationResult[entity['@id']]) {
+                validationResult[entity['@id']] = {'name': entity['name'], props: {}};
+              }
+              validationResult[entity["@id"]].props[input.id] = {name: input.name, type: 'required'};
             }
           }
         }
@@ -229,7 +230,6 @@ const validate = function (json, profile) {
 }
 
 const goTo = function ({id, prop}) {
-  data.validationResultDialog = false;
   const query = {id};
   if (prop) {
     query.prop = prop;
@@ -289,6 +289,27 @@ const goTo = function ({id, prop}) {
     </el-row>
   </div>
   <template v-if="data.crate">
+    <div v-if="data.validationResultDialog"
+         class="bg-orange-100 text-orange-700 px-4 py-3 relative" role="alert">
+      <strong class="block sm:inline font-bold">Saved with warnings</strong>
+      <div class="p-2" v-for="(obj, key) in data.validationResult">
+        <p>Entity:
+          <el-button size="small" type="default" @click="goTo({id: key})"> {{ first(obj?.name) || key }}</el-button>
+        </p>
+        Property(s) :
+        <p v-for="(prop, keyProp) in obj.props" class="ml-5 py-1">
+          <el-button size="small" @click="goTo({id: key, prop: keyProp})">{{ prop.name }}</el-button>
+          <span class="text-red-700">&nbsp;is {{ prop['type'] }}</span>
+        </p>
+      </div>
+      <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+        <el-button type="text" @click="data.validationResultDialog = false">
+        <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 20 20"><title>Close</title><path
+            d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
+              </el-button>
+      </span>
+    </div>
     <CrateEditor ref="editor" v-loading="data.loading" v-model:entityId="data.entityId"
                  :crate="data.crate" :profile="profile" @ready="data.loading = false">
     </CrateEditor>
@@ -321,32 +342,7 @@ const goTo = function ({id, prop}) {
       </span>
     </template>
   </el-dialog>
-  <el-dialog v-if="data.validationResultDialog"
-             v-model="data.validationResult"
-             :title="'Saved Crate with warnings'"
-             width="50%"
-  >
-    <div class="overflow-x-scroll h-96">
-      <div class="p-2" v-for="id of Object.keys(data.validationResult)">
-        <p>
-          Entity:
-          <el-button type="primary" @click=goTo({id})> {{ data.validationResult[id]?.entityName || id }}</el-button>
-          has the following warnings:
-        </p>
-        <div class="py-2">
-          <el-button @click="goTo({id: id, prop: data.validationResult[id]['id']})">
-            Property : {{ data.validationResult[id]['name'] }} is {{ data.validationResult[id]['type'] }}
-          </el-button>
-        </div>
-        <el-divider/>
-      </div>
-    </div>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button type="primary" @click="data.validationResultDialog = false">Ok</el-button>
-      </span>
-    </template>
-  </el-dialog>
+
   <el-dialog v-if="data.showWelcome"
              v-model="data.showWelcome"
              title="Help"
