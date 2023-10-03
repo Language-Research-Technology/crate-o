@@ -1,7 +1,7 @@
 [
   {
     "name": "About",
-    "help": "The core metadata for this RO-Crate and is subject matter",
+    "help": "The core metadata for this RO-Crate and its subject matter.",
     "inputs": [
       "@id",
       "@type",
@@ -20,7 +20,7 @@
   },
   {
     "name": "Related People, Orgs & Works",
-    "help": "Context for the creation of this RO-Crate, who made it, funded it etc",
+    "help": "The context for the creation of this RO-Crate; who made it, funded it etc.",
     "inputs": [
       "http://schema.org/author",
       "http://schema.org/creator",
@@ -33,7 +33,7 @@
   },
   {
     "name": "Structure",
-    "help": "How the parts of this Crate relate such as collection and object relationships",
+    "help": "How the parts of this RO-Crate relate, such as collection and object relationships.",
     "inputs": [
       "http://schema.org/memberOf",
       "http://schema.org/hasMember",
@@ -48,8 +48,7 @@
   },
   {
     "name": "Provenance",
-    "help": "Detailed description of how entites were created, by whom and with which tools",
-    "help": "Detailed description of how entites were created, by whom and with which tools",
+    "help": "Detailed description of how entities were created, by whom and with which tools.",
     "inputs": [
       "http://schema.org/agent",
       "http://schema.org/object",
@@ -61,7 +60,7 @@
   },
   {
     "name": "Space & Time",
-    "help": "Where and when the data was collected / the times and places it mentions or describes",
+    "help": "Where and when the data was collected; the times and places it mentions or describes.",
     "inputs": [
       "http://schema.org/temporalCoverage",
       "http://schema.org/spatialCoverage",
@@ -72,7 +71,7 @@
   },
   {
     "name": "Software & Hardware",
-    "help": "For computer programs and execution environments, that could be used to create data, have created data, or are being packaged and described",
+    "help": "For computer programs and execution environments that could be used to create data, have created data, or are being packaged and described.",
       "inputs": [
       "http://schema.org/availableOnDevice",
       "http://schema.org/downloadUrl",
