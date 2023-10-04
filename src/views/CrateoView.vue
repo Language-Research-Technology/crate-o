@@ -263,10 +263,16 @@ const goTo = function ({id, prop}) {
       <el-menu-item index="close" :disabled="!data.dirHandle">
         ⓧ Close
       </el-menu-item>
-      <el-menu-item title="Profile" class="">
-        <template #title class="">
-          Profile:&nbsp;
-          <el-select v-model="data.selectedProfile" placeholder="Select a profile" class="w-96">
+
+      <el-menu-item index="help" title="Help">
+        ﹖
+      </el-menu-item>
+    </el-menu>
+    <el-row class="text-large p-3" :gutter="10">
+      <el-col :xs="24" :sm="24" :md="14" :lg="10" :xl="8">
+        <el-row class="w-full p-1">
+          <span class="flex items-center">Profile:&nbsp;</span>
+          <el-select v-model="data.selectedProfile" placeholder="Select a profile" class="w-[30em]">
             <el-option :value="-1">
               <p class="font-bold italic">Load and add a new profile from your computer ...</p>
             </el-option>
@@ -277,15 +283,15 @@ const goTo = function ({id, prop}) {
               </div>
             </el-option>
           </el-select>
-        </template>
-      </el-menu-item>
-      <el-menu-item index="help" title="Help">
-        ﹖
-      </el-menu-item>
-    </el-menu>
-    <el-row v-if="data.dirHandle" class="text-large p-3">
-      Selected Directory:&nbsp;
-      <span class="font-bold">{{ data.dirHandle.name }}</span>
+        </el-row>
+      </el-col>
+      <el-col v-if="data.dirHandle" :xs="24" :sm="24" :md="10" :lg="14" :xl="16">
+        <el-row class="p-1">
+          <span class="flex items-center">
+          Selected Directory:&nbsp;<span class="font-bold">{{ data.dirHandle.name }}</span>
+          </span>
+        </el-row>
+      </el-col>
     </el-row>
   </div>
   <template v-if="data.crate">
