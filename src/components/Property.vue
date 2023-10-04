@@ -1,6 +1,6 @@
 <script setup>
 import {reactive, computed, toRaw, nextTick, inject, isReactive} from "vue";
-import {QuestionFilled, Delete, InfoFilled, WarningFilled, ArrowRight, ArrowLeft} from '@element-plus/icons-vue';
+import {QuestionFilled, Delete, InfoFilled, WarningFilled, Right, Back} from '@element-plus/icons-vue';
 import ControlAdd from "./ControlAdd.vue";
 import {$state} from './keys';
 import {first} from "lodash";
@@ -129,8 +129,8 @@ function removeValue(i, value) {
         </el-icon>
       </el-tooltip>
       <span class="mx-1" :title="definition.id">{{ label }} </span>
-      <el-icon v-if="isReverse"><ArrowLeft /></el-icon>
-      <el-icon v-else><ArrowRight /></el-icon>
+      <el-icon v-if="isReverse"><Back /></el-icon>
+      <el-icon v-else><Right /></el-icon>
       <!--Tooltip Commented out for issue https://github.com/Language-Research-Technology/crate-o/issues/78 -->
       <!--      <el-tooltip v-if="definition.help"-->
       <!--                  :content="definition.help"-->
