@@ -29,7 +29,8 @@ const data = shallowReactive({
   profileError: [],
   profileErrorDialog: false,
   validationResult: {},
-  showWelcome: false
+  showWelcome: false,
+  validationResultDialog: false
 });
 //window.data = data;
 const profile = computed(() => data.profiles[data.selectedProfile]);
@@ -149,6 +150,8 @@ const commands = {
     data.selectedProfile = defaultProfile;
     data.profiles = shallowReactive(profiles);
     data.spreadSheetBuffer = null;
+    data.validationResultDialog = false;
+    data.validationResult = {};
     $router.push({});
     data.loading = false;
   },

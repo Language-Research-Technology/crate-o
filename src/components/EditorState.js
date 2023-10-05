@@ -313,6 +313,9 @@ export class EditorState {
     }
   }
   ensurePropertyContext(def) {
+    if(def.name === '@type' || def.name === '@id') {
+      return;
+    }
     if (def.id && !this.crate.getTerm(def.id)) {
       const newDef = {};
       newDef[def.name] = def.id;
