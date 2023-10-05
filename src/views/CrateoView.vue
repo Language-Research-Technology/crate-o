@@ -228,7 +228,7 @@ const validate = function (json, profile) {
         const classDefinition = profile.classes[entityType];
         if (classDefinition) {
           for (let input of classDefinition.inputs) {
-            if (input.required && (!isUndefined(entity[input.name]) || entity[input.name] === '')) {
+            if (input.required && (isUndefined(entity[input.name]) || entity[input.name][0] === '')) {
               //TODO: check that the input value is valid
               if (!validationResult[entity['@id']]) {
                 validationResult[entity['@id']] = {'name': entity['name'], props: {}};
