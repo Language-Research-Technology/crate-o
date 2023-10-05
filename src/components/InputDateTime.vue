@@ -26,26 +26,14 @@ const data = reactive({
 });
 
 const acceptedFormats = [
-  moment.ISO_8601,
-  'YY/MM/DD',
-  'YYYY/MM/DD',
-  'YYYY/MM/DD HH:mm:ss',
-  'DD/MM/YY',
-  'DD/MM/YYYY',
-  'DD/MM/YYYY HH:mm:ss',
-  'M/D/YYYY',
-  'D/M/YYYY',
-  'MM/DD/YY',
-  'MM/DD/YYYY',
-  'MM/DD/YYYY HH:mm:ss',
+  moment.ISO_8601
 ];
 
 watch(() => props.modelValue, (val) => {
   data.isValid = true;
   if (val) {
-    const dateObj = moment(val, acceptedFormats, true);
     data.value = val;
-    data.isValid = dateObj.isValid();
+    data.isValid = data.isValid = validate(val);
   } else {
     data.value = '';
     data.isValid = true;
@@ -63,15 +51,15 @@ const input = ref(null);
 var tempValue;
 
 function onInput(value) {
-  const dateObj = moment(value, acceptedFormats, true);
-  data.isValid = dateObj.isValid();
+  data.isValid = validate(value);
   data.value = value;
   tempValue = value
 }
 
-function onChange(value) {
-  const dateObj = moment(tempValue, acceptedFormats, true);
-  data.isValid = dateObj.isValid();
+function onChange(event) {
+  if (event.target && event.target.value) {
+    data.isValid = validate(event.target.value);
+  }
   if (data.isValid) {
     emit('update:modelValue', tempValue);
   }
@@ -79,6 +67,26 @@ function onChange(value) {
 
 function togglePicker() {
   input.value.showPicker();
+}
+
+function validate(value) {
+  let isValid = false;
+  if (typeof value === 'string') {
+    const values = value.split(/\//);
+    if (values[0] && values[1]) {
+      const dateObj1 = moment(values[0], acceptedFormats, true);
+      if (dateObj1.isValid()) {
+        const dateObj2 = moment(values[1], acceptedFormats, true);
+        if (dateObj2.isValid()) {
+          isValid = true;
+        }
+      }
+    } else {
+      const dateObj = moment(value, acceptedFormats, true);
+      isValid = dateObj.isValid();
+    }
+  }
+  return isValid;
 }
 </script>
 
@@ -108,12 +116,12 @@ export default {};
       <div class="text-xs text-red-700" v-if="props.type === 'date'">
         Date value must be in <a class="font-bold hover:underline" target=”_blank”
                                  href="https://www.w3.org/TR/NOTE-datetime">ISO 8601 format</a>.
-        E.g.: 2021-03-22, 2021-03, 2021 or using 'YYYY/MM/DD', 'DD/MM/YYYY', 'MM/DD/YYYY', 'DD/MM/YY', 'YY/MM/DD'
+        E.g.: 2021-03-22, 2021-03, 2021
       </div>
       <div class="text-xs text-red-700" v-if="props.type === 'datetime'">
         Datetime value must be in <a class="font-bold hover:underline" target=”_blank”
                                      href="https://www.w3.org/TR/NOTE-datetime">ISO 8601 format</a>.
-        E.g.: 2021-03-22T03:23:00, 2021-03-22, 2021 or using 'YYYY/MM/DD', 'DD/MM/YYYY', 'MM/DD/YYYY', 'DD/MM/YY', 'YY/MM/DD'
+        E.g.: 2021-03-22T03:23:00, 2021-03-22, 2021, 2021/2022
       </div>
     </template>
   </div>
