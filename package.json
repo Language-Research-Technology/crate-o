@@ -1,10 +1,10 @@
 {
   "name": "crate-o",
-  "version": "0.1.42",
+  "version": "0.1.43",
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "vite",
+    "dev": "npm install ro-crate-editor-profiles && vite",
     "build": "npm install ro-crate-editor-profiles && vite build",
     "preview": "vite preview --port 5000",
     "test": "cypress run --component --browser chrome",
