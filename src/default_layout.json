@@ -15,7 +15,8 @@
       "http://schema.org/about",
       "http://schema.org/mentions",
       "http://schema.org/mainEntity",
-      "http://schema.org/sameAs"
+      "http://schema.org/sameAs",
+      "http://schema.org/language"
     ]
   },
   {

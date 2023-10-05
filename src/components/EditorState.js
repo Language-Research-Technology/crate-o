@@ -174,11 +174,15 @@ export class EditorState {
         definitions[id] = { ...def, key: id };
       }
     }
-
     // Find existing properties in the entity data that are not yet included
     for (const [id, name] of properties) {
       // Add the resolved id to the definitions.
       definitions[id] = { id, name, key: name };
+    }
+    const reverse = new Map(Object.keys(entity['@reverse']).map(name => [crate?.resolveTerm(name) || name, name]));
+    for (const [id, name] of reverse) {
+      // Add the resolved id to the definitions.
+      definitions[id] = {id, name, key: name, isReverse: true};
     }
     //console.log(isReactive(definitions));
     //sort here

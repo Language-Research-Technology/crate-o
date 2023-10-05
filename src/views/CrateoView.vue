@@ -6,7 +6,7 @@ import Help from "@/components/Help.vue";
 
 import SpreadSheet from "@/components/SpreadSheet.vue";
 import {Validator} from "@/utils/profileValidator.js";
-import {isEmpty, isUndefined} from "lodash";
+import {first, isEmpty, isUndefined} from "lodash";
 import {ROCrate} from "ro-crate";
 import {useRouter} from 'vue-router';
 
@@ -84,6 +84,7 @@ const commands = {
         let file = await data.metadataHandle.getFile();
         const content = await file.text();
         data.crate = JSON.parse(content);
+        $router.push({});
       } else {
         data.crate = {};
       }
@@ -134,6 +135,7 @@ const commands = {
     data.selectedProfile = defaultProfile;
     data.profiles = shallowReactive(profiles);
     data.spreadSheetBuffer = null;
+    $router.push({});
     data.loading = false;
   },
 
@@ -203,11 +205,6 @@ watch(() => data.selectedProfile, (v, pv) => {
   }
 });
 
-const menuSelect = (key, keyPath) => {
-  console.log(key, keyPath);
-  commands[key]();
-}
-
 const validate = function (json, profile) {
   const crate = new ROCrate(json, {array: true, link: true});
   let validationResult = {};
@@ -217,10 +214,12 @@ const validate = function (json, profile) {
         const classDefinition = profile.classes[entityType];
         if (classDefinition) {
           for (let input of classDefinition.inputs) {
-            if (input.required && (isUndefined(entity[input.name]) || entity[input.name] === '')) {
+            if (input.required && (!isUndefined(entity[input.name]) || entity[input.name] === '')) {
               //TODO: check that the input value is valid
-              validationResult[entity['@id']] = validationResult[entity['@id']] || {};
-              validationResult[entity['@id']] = {name: input.name, type: 'Required'};
+              if (!validationResult[entity['@id']]) {
+                validationResult[entity['@id']] = {'name': entity['name'], props: {}};
+              }
+              validationResult[entity["@id"]].props[input.id] = {name: input.name, type: 'required'};
             }
           }
         }
@@ -230,9 +229,12 @@ const validate = function (json, profile) {
   return validationResult;
 }
 
-const goTo = function (id) {
-  data.validationResultDialog = false;
-  $router.push({query: {id: encodeURIComponent(id)}});
+const goTo = function ({id, prop}) {
+  const query = {id};
+  if (prop) {
+    query.prop = prop;
+  }
+  $router.push({query});
 }
 </script>
 
@@ -244,7 +246,7 @@ const goTo = function (id) {
         background-color="#ecf5ff"
         text-color="#000"
         mode="horizontal"
-        @select="menuSelect"
+        @select="(key)=>commands[key]()"
     >
       <el-menu-item index="open">
         📂 Open Directory
@@ -261,10 +263,16 @@ const goTo = function (id) {
       <el-menu-item index="close" :disabled="!data.dirHandle">
         ⓧ Close
       </el-menu-item>
-      <el-menu-item title="Profile" class="">
-        <template #title class="">
-          Profile:&nbsp;
-          <el-select v-model="data.selectedProfile" placeholder="Select a profile" class="w-96">
+
+      <el-menu-item index="help" title="Help">
+        ﹖
+      </el-menu-item>
+    </el-menu>
+    <el-row class="text-large p-3" :gutter="10">
+      <el-col :xs="24" :sm="24" :md="14" :lg="10" :xl="8">
+        <el-row class="w-full p-1">
+          <span class="flex items-center">Profile:&nbsp;</span>
+          <el-select v-model="data.selectedProfile" placeholder="Select a profile" class="w-[30em]">
             <el-option :value="-1">
               <p class="font-bold italic">Load and add a new profile from your computer ...</p>
             </el-option>
@@ -275,18 +283,39 @@ const goTo = function (id) {
               </div>
             </el-option>
           </el-select>
-        </template>
-      </el-menu-item>
-      <el-menu-item index="help" title="Help">
-        ﹖
-      </el-menu-item>
-    </el-menu>
-    <el-row v-if="data.dirHandle" class="text-large p-3">
-      Selected Directory:&nbsp;
-      <span class="font-bold">{{ data.dirHandle.name }}</span>
+        </el-row>
+      </el-col>
+      <el-col v-if="data.dirHandle" :xs="24" :sm="24" :md="10" :lg="14" :xl="16">
+        <el-row class="p-1">
+          <span class="flex items-center">
+          Selected Directory:&nbsp;<span class="font-bold">{{ data.dirHandle.name }}</span>
+          </span>
+        </el-row>
+      </el-col>
     </el-row>
   </div>
   <template v-if="data.crate">
+    <div v-if="data.validationResultDialog"
+         class="bg-orange-100 text-orange-700 px-4 py-3 relative" role="alert">
+      <strong class="block sm:inline font-bold">Saved with warnings</strong>
+      <div class="p-2" v-for="(obj, key) in data.validationResult">
+        <p>Entity:
+          <el-button size="small" type="default" @click="goTo({id: key})"> {{ first(obj?.name) || key }}</el-button>
+        </p>
+        Property(s) :
+        <p v-for="(prop, keyProp) in obj.props" class="ml-5 py-1">
+          <el-button size="small" @click="goTo({id: key, prop: keyProp})">{{ prop.name }}</el-button>
+          <span class="text-red-700">&nbsp;is {{ prop['type'] }}</span>
+        </p>
+      </div>
+      <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+        <el-button type="text" @click="data.validationResultDialog = false">
+        <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 20 20"><title>Close</title><path
+            d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
+              </el-button>
+      </span>
+    </div>
     <CrateEditor ref="editor" v-loading="data.loading" v-model:entityId="data.entityId"
                  :crate="data.crate" :profile="profile" @ready="data.loading = false">
     </CrateEditor>
@@ -319,28 +348,7 @@ const goTo = function (id) {
       </span>
     </template>
   </el-dialog>
-  <el-dialog v-if="data.validationResultDialog"
-             v-model="data.validationResult"
-             :title="'Saved Crate with warnings'"
-             width="50%"
-  >
-    <div class="overflow-x-scroll h-96">
-      <div class="p-2" v-for="id of Object.keys(data.validationResult)">
-        <p>
-          Entity:
-          <el-button @click=goTo(id)> {{ id }}</el-button>
-          has the following warnings:
-        </p>
-        <div> Property : {{ data.validationResult[id]['name'] }} is {{ data.validationResult[id]['type'] }}</div>
-        <el-divider/>
-      </div>
-    </div>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button type="primary" @click="data.validationResultDialog = false">Ok</el-button>
-      </span>
-    </template>
-  </el-dialog>
+
   <el-dialog v-if="data.showWelcome"
              v-model="data.showWelcome"
              title="Help"
