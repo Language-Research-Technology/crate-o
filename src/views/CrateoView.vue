@@ -84,6 +84,20 @@ const commands = {
         let file = await data.metadataHandle.getFile();
         const content = await file.text();
         data.crate = JSON.parse(content);
+        const crate = new ROCrate(data.crate, {array: true, link: true});
+        const conformsToCrate = crate.rootDataset['conformsTo'] || [];
+        for (let [index, p] of data.profiles.entries()) {
+          let foundProfile = undefined;
+          const conformsToProfile = p?.conformsToUri || [];
+          for (let conformsTo of conformsToCrate) {
+            if (conformsToProfile.includes(conformsTo['@id'])) {
+              foundProfile = true;
+            }
+          }
+          if (foundProfile) {
+            data.selectedProfile = index;
+          }
+        }
         $router.push({});
       } else {
         data.crate = {};
