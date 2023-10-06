@@ -35,7 +35,6 @@ describe('<CrateEditor /> Lookups', async () => {
             cy.get('.el-popper').find('li').contains(MY_ORG).click();
             cy.get('.el-form-item').find("button").contains(MY_ORG).click();
             cy.get('.el-link').find('span').contains('Root Dataset').click();
-            cy.wait(500);
         });
     }
 
@@ -59,9 +58,7 @@ describe('<CrateEditor /> Lookups', async () => {
         cy.get('.el-form-item').find("button").contains(MY_ORG).click();
         cy.get('.el-input__inner:first', {timeout: 10000}).should('contain.value', MY_ORG_ID);
         cy.get('.el-link').find('span').contains('Root Dataset').click();
-        cy.wait(500);
     });
-
 
     it('Can enter an organization by clicking Create Button', () => {
         // see: https://on.cypress.io/mounting-vue
