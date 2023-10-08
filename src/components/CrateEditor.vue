@@ -1,13 +1,14 @@
 <script setup>
 
-import {ref, shallowReactive, reactive, watch, computed, provide, onUpdated, nextTick} from "vue";
+import {ref, shallowReactive, reactive, watch, computed, provide, onUpdated, nextTick, toRaw} from "vue";
 import {$state} from './keys';
 import {EditorState} from './EditorState';
-import {HomeFilled, ArrowLeftBold} from '@element-plus/icons-vue';
+import {HomeFilled, ArrowLeftBold, Delete} from '@element-plus/icons-vue';
 import FilteredPaged from '../components/FilteredPaged.vue';
 import LinkEntity from '../components/LinkEntity.vue';
 import Entity from '../components/Entity.vue';
 import {useRouter, useRoute, onBeforeRouteUpdate} from 'vue-router';
+import {isEmpty} from "lodash";
 
 const props = defineProps({
   //  modelValue: { type: ROCrate },
@@ -100,7 +101,7 @@ watch(() => $route.query.id, (eid, oldId) => {
   const id = decodeURIComponent([].concat(eid)[0]);
   if (id && state.crate) {
     //console.log('id=', id);
-    if (data.entity?.['@id'] !== id) data.entity = state.entity = state.crate.getEntity(id);
+    if (data.entity?.['@id'] !== id) data.entity = state.crate.getEntity(id);
     // console.log('pos',window.history.state.position);
     // console.log('historyStart', historyStart);
     // console.log('data.history.length', data.history.length);
@@ -118,7 +119,7 @@ watch(() => props.crate, async crate => {
   console.log('watch crate');
   data.loading = true;
   await state.setCrate(crate);
-  data.entity = data.rootDataset = state.entity = state.crate.rootDataset;
+  data.entity = data.rootDataset = state.crate.rootDataset;
   data.history = [];
   historyStart = window.history.state?.position + 1;
   $router.push({query: {id: encodeURIComponent(state.crate.rootId)}});
@@ -180,6 +181,30 @@ function onSelectNewEntity(type) {
   showEntity(item);
 }
 
+function deleteEntity() {
+  //delete
+  //count the links
+  const linksCount = Object.values(data.entity['@reverse']).reduce((count, refs) => count + refs.length, 0);
+  //if no links then do delete
+  if (!linksCount) {
+    const i = state.entities.findIndex(e => e['@id'] === value['@id']);
+    if (i >= 0) state.entities.splice(i, 1);
+    const currentEntity = data.entity
+    data.history.pop();
+    data.entity = data.history[data.history.length - 1] ?? data.rootDataset;
+    state.crate.deleteEntity(currentEntity, {references: false});
+  } else {
+    //promt here
+    const currentEntity = data.entity;
+    data.history.pop();
+    data.entity = null;
+    state.crate.deleteEntity(currentEntity, {references: true});
+    const someEntity = data.history[data.history.length - 1] ?? data.rootDataset;
+    $router.push({query: {id: encodeURIComponent(someEntity['@id'])}});
+  }
+  //go to where?
+
+}
 </script>
 
 
@@ -203,9 +228,18 @@ function onSelectNewEntity(type) {
         </el-breadcrumb>
       </el-col>
       <el-col :span="5" class="pt-1 pr-3">
+        <el-tooltip
+            v-if="data.entity && data.rootDataset !== data.entity"
+            :content="'Delete entity '+ data.entity['name'][0] || data.entity['@id']"
+            placement="bottom-start"
+            effect="light">
+          <el-button @click="deleteEntity" type="danger" plain
+                     :icon="Delete"></el-button>
+        </el-tooltip>
         <el-select-v2 placeholder="Create New Entity" class="flex-grow" filterable :allow-create="false"
                       :model-value="data.newEntityType" :options="data.newEntityTypes"
                       @change="onSelectNewEntity"></el-select-v2>
+
       </el-col>
     </el-row>
 

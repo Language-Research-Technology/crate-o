@@ -36,7 +36,6 @@ onMounted(async function () {
   }, {recurse: true});
   //data.entity = state.crate.rootDataset;
   data.entity = state.crate.getEntity('#TestPlace');
-  state.entity = data.entity;
 
   window.data = data;
   window.state = state;

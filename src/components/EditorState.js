@@ -89,7 +89,6 @@ export class EditorState {
   lookupPromises = {};
   /** cache array of entities */
   entities;
-  entity;
   metadataFileEntityId;
   async setCrate(rawCrate) {
     const crate = this.crate = new ROCrate(rawCrate, { array: true, link: true });
