@@ -185,24 +185,17 @@ function deleteEntity() {
   //delete
   //count the links
   const linksCount = Object.values(data.entity['@reverse']).reduce((count, refs) => count + refs.length, 0);
-  //if no links then do delete
-  if (!linksCount) {
-    const i = state.entities.findIndex(e => e['@id'] === value['@id']);
-    if (i >= 0) state.entities.splice(i, 1);
-    const currentEntity = data.entity
-    data.history.pop();
-    data.entity = data.history[data.history.length - 1] ?? data.rootDataset;
-    state.crate.deleteEntity(currentEntity, {references: false});
-  } else {
-    //promt here
+  const entityMessage = linksCount > 1 ? 'entities' : 'entity';
+  if (linksCount === 0 || window.confirm(`This entity is referenced by ${linksCount} other ${entityMessage}. Are you sure you want to delete it?`)) {
     const currentEntity = data.entity;
+    const i = state.entities.findIndex(e => e['@id'] === currentEntity['@id']);
+    if (i >= 0) state.entities.splice(i, 1);
     data.history.pop();
     data.entity = null;
     state.crate.deleteEntity(currentEntity, {references: true});
     const someEntity = data.history[data.history.length - 1] ?? data.rootDataset;
     $router.push({query: {id: encodeURIComponent(someEntity['@id'])}});
   }
-  //go to where?
 
 }
 </script>
@@ -211,7 +204,7 @@ function deleteEntity() {
 <template>
   <div :key="forceKey">
     <el-row class="bg-slate-300 p-2" v-if="data.rootDataset">
-      <el-col :span="19" class="p-2">
+      <el-col :span="17" class="p-2 flex items-center">
         <el-breadcrumb separator="/">
           <el-breadcrumb-item>
             <el-link :disabled="!data.history.length" :icon="HomeFilled"
@@ -228,14 +221,6 @@ function deleteEntity() {
         </el-breadcrumb>
       </el-col>
       <el-col :span="5" class="pt-1 pr-3">
-        <el-tooltip
-            v-if="data.entity && data.rootDataset !== data.entity"
-            :content="'Delete entity '+ data.entity['name'][0] || data.entity['@id']"
-            placement="bottom-start"
-            effect="light">
-          <el-button @click="deleteEntity" type="danger" plain
-                     :icon="Delete"></el-button>
-        </el-tooltip>
         <el-select-v2 placeholder="Create New Entity" class="flex-grow" filterable :allow-create="false"
                       :model-value="data.newEntityType" :options="data.newEntityTypes"
                       @change="onSelectNewEntity"></el-select-v2>
@@ -245,6 +230,27 @@ function deleteEntity() {
 
     <el-row v-loading="data.loading" class="crate-o">
       <el-col :span="18" class="p-2">
+        <el-page-header :icon="null" v-if="data.entity"
+                        class="bg-blue-100 border-t border-b border-blue-500 text-blue-700 px-4 py-3" role="alert">
+          <template #title>
+            <span class="text-large font-600 mr-3"> {{ data.entity['name']?.[0] || data.entity['@id'] }} </span>
+          </template>
+          <template #content>
+          </template>
+          <template #extra>
+            <div class="flex items-center">
+              <el-tooltip
+                  v-if="data.entity && data.rootDataset !== data.entity"
+                  :content="'Delete entity '+ data.entity['name'][0] || data.entity['@id']"
+                  placement="bottom-start"
+                  effect="light">
+                <el-button @click="deleteEntity" type="danger" plain
+                           :icon="Delete">Remove
+                </el-button>
+              </el-tooltip>
+            </div>
+          </template>
+        </el-page-header>
         <Entity v-if="data.entity" v-model="data.entity" @entityCreated="showEntity"></Entity>
       </el-col>
 
