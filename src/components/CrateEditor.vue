@@ -1,13 +1,14 @@
 <script setup>
 
-import {ref, shallowReactive, reactive, watch, computed, provide, onUpdated, nextTick} from "vue";
+import {ref, shallowReactive, reactive, watch, computed, provide, onUpdated, nextTick, toRaw} from "vue";
 import {$state} from './keys';
 import {EditorState} from './EditorState';
-import {HomeFilled, ArrowLeftBold} from '@element-plus/icons-vue';
+import {HomeFilled, ArrowLeftBold, Delete} from '@element-plus/icons-vue';
 import FilteredPaged from '../components/FilteredPaged.vue';
 import LinkEntity from '../components/LinkEntity.vue';
 import Entity from '../components/Entity.vue';
 import {useRouter, useRoute, onBeforeRouteUpdate} from 'vue-router';
+import {isEmpty} from "lodash";
 
 const props = defineProps({
   //  modelValue: { type: ROCrate },
@@ -100,7 +101,7 @@ watch(() => $route.query.id, (eid, oldId) => {
   const id = decodeURIComponent([].concat(eid)[0]);
   if (id && state.crate) {
     //console.log('id=', id);
-    if (data.entity?.['@id'] !== id) data.entity = state.entity = state.crate.getEntity(id);
+    if (data.entity?.['@id'] !== id) data.entity = state.crate.getEntity(id);
     // console.log('pos',window.history.state.position);
     // console.log('historyStart', historyStart);
     // console.log('data.history.length', data.history.length);
@@ -118,7 +119,7 @@ watch(() => props.crate, async crate => {
   console.log('watch crate');
   data.loading = true;
   await state.setCrate(crate);
-  data.entity = data.rootDataset = state.entity = state.crate.rootDataset;
+  data.entity = data.rootDataset = state.crate.rootDataset;
   data.history = [];
   historyStart = window.history.state?.position + 1;
   $router.push({query: {id: encodeURIComponent(state.crate.rootId)}});
@@ -180,13 +181,30 @@ function onSelectNewEntity(type) {
   showEntity(item);
 }
 
+function deleteEntity() {
+  //delete
+  //count the links
+  const linksCount = Object.values(data.entity['@reverse']).reduce((count, refs) => count + refs.length, 0);
+  const entityMessage = linksCount > 1 ? 'entities' : 'entity';
+  if (linksCount === 0 || window.confirm(`This entity is referenced by ${linksCount} other ${entityMessage}. Are you sure you want to delete it?`)) {
+    const currentEntity = data.entity;
+    const i = state.entities.findIndex(e => e['@id'] === currentEntity['@id']);
+    if (i >= 0) state.entities.splice(i, 1);
+    data.history.pop();
+    data.entity = null;
+    state.crate.deleteEntity(currentEntity, {references: true});
+    const someEntity = data.history[data.history.length - 1] ?? data.rootDataset;
+    $router.push({query: {id: encodeURIComponent(someEntity['@id'])}});
+  }
+
+}
 </script>
 
 
 <template>
   <div :key="forceKey">
     <el-row class="bg-slate-300 p-2" v-if="data.rootDataset">
-      <el-col :span="19" class="p-2">
+      <el-col :span="17" class="p-2 flex items-center">
         <el-breadcrumb separator="/">
           <el-breadcrumb-item>
             <el-link :disabled="!data.history.length" :icon="HomeFilled"
@@ -206,11 +224,33 @@ function onSelectNewEntity(type) {
         <el-select-v2 placeholder="Create New Entity" class="flex-grow" filterable :allow-create="false"
                       :model-value="data.newEntityType" :options="data.newEntityTypes"
                       @change="onSelectNewEntity"></el-select-v2>
+
       </el-col>
     </el-row>
 
     <el-row v-loading="data.loading" class="crate-o">
       <el-col :span="18" class="p-2">
+        <el-page-header :icon="null" v-if="data.entity"
+                        class="bg-blue-100 border-t border-b border-blue-500 text-blue-700 px-4 py-3" role="alert">
+          <template #title>
+            <span class="text-large font-600 mr-3"> {{ data.entity['name']?.[0] || data.entity['@id'] }} </span>
+          </template>
+          <template #content>
+          </template>
+          <template #extra>
+            <div class="flex items-center">
+              <el-tooltip
+                  v-if="data.entity && data.rootDataset !== data.entity"
+                  :content="'Delete entity '+ data.entity['name'][0] || data.entity['@id']"
+                  placement="bottom-start"
+                  effect="light">
+                <el-button @click="deleteEntity" type="danger" plain
+                           :icon="Delete">Remove
+                </el-button>
+              </el-tooltip>
+            </div>
+          </template>
+        </el-page-header>
         <Entity v-if="data.entity" v-model="data.entity" @entityCreated="showEntity"></Entity>
       </el-col>
 

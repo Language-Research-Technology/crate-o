@@ -1,5 +1,10 @@
 {
-  "@context": "https://w3id.org/ro/crate/1.1/context",
+  "@context": [
+    "https://w3id.org/ro/crate/1.1/context",
+    {
+      "hasCollectionProtocol": "http://schema.org/hasCollectionProtocol"
+    }
+  ],
   "@graph": [
     {
       "@id": "ro-crate-metadata.json",
@@ -32,6 +37,9 @@
         },
         {
           "@id": "#SydS"
+        },
+        {
+          "@id": "#Dataset-1"
         }
       ],
       "funder": {
@@ -81,7 +89,10 @@
     },
     {
       "@id": "#SydS",
-      "@type": "Dataset, RepositoryCollection",
+      "@type": [
+        "Dataset",
+        "RepositoryCollection"
+      ],
       "name": "Sydney Speaks 2010s",
       "temporalCoverage": "2010-2019",
       "conformsTo": "https://purl.archive.org/textcommons/profile#Collection",
@@ -187,6 +198,14 @@
       "@id": "#If I type a new value the text field disappears",
       "@type": "CollectionProtocol",
       "name": "If I type a new value the text field disappears"
+    },
+    {
+      "@id": "#Dataset-1",
+      "@type": [
+        "Dataset",
+        "RepositoryCollection"
+      ],
+      "name": "Dataset"
     }
   ]
 }

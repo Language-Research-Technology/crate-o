@@ -216,7 +216,7 @@ function addConformTos(rTypes) {
         </span>
       </template>
       <el-form id="#entityForm" label-width="auto" novalidate v-if="activeGroup === layout.name">
-        <div v-if="state.crate.rootDataset['@id'] === state.entity['@id']">
+        <div v-if="state.crate.rootDataset['@id'] === props.modelValue['@id']">
           <el-row v-if="checkRootTypes().length > 0"
                   class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4">
             This dataset does not have all the types required in profile:

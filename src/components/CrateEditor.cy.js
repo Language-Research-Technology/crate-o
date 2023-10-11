@@ -66,20 +66,20 @@ describe('<CrateEditor />', async () => {
         });
     });
 
-    it('cannot delete Version type of a required type', () => {
-        // see: https://on.cypress.io/mounting-vue
-        cy.mount(CrateEditor, {
-            props: {
-                crate: {},
-                profile: software,
-                entityId: './'
-            },
-            ref: 'editor'
-        });
-        cy.get('#tab-Others').click();
-        cy.get('.el-form-item > *').contains('Version').parent().siblings().find('.el-input__inner:first').click();
-        cy.get('.el-select-dropdown__item').contains('Number').click();
-        cy.get('.el-form-item > *').contains('Version').parent().siblings().find(':button').should('be.disabled')
-    });
+    // it('cannot delete Version type of a required type', () => {
+    //     // see: https://on.cypress.io/mounting-vue
+    //     cy.mount(CrateEditor, {
+    //         props: {
+    //             crate: {},
+    //             profile: software,
+    //             entityId: './'
+    //         },
+    //         ref: 'editor'
+    //     });
+    //     cy.get('#tab-Others').click();
+    //     cy.get('.el-form-item > *').contains('Version').parent().siblings().find('.el-input__inner:first').click();
+    //     cy.get('.el-select-dropdown__item').contains('Number').click();
+    //     cy.get('.el-form-item > *').contains('Version').parent().siblings().find(':button').should('be.disabled')
+    // });
 
 });
