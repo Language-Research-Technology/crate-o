@@ -44,7 +44,7 @@ watch(() => $route.query.prop, (eProp, oldProp) => {
 
 const activeGroup = computed({
   get() {
-    console.log('get:currentProperty', props.currentProperty)
+    //console.log('get:currentProperty', props.currentProperty)
     return state.meta[props.modelValue['@id']]?.__activeLayout || 'About';
   },
   set(val) {

@@ -44,7 +44,6 @@
       "http://schema.org/hasFile",
       "http://schema.org/inDefinedTermSet",
       "http://schema.org/hasDefinedTerm"
-
     ]
   },
   {
@@ -66,8 +65,10 @@
       "http://schema.org/temporalCoverage",
       "http://schema.org/spatialCoverage",
       "http://schema.org/contentLocation",
-      "http://schema.org/locationCreated"
-
+      "http://schema.org/locationCreated",
+      "http://schema.org/geo",
+      "http://www.opengis.net/ont/geosparql#asWKT",
+      "http://schema.org/address"
     ]
   },
   {

@@ -94,7 +94,7 @@ export class EditorState {
     const crate = this.crate = new ROCrate(rawCrate, { array: true, link: true });
     var mid = this.metadataFileEntityId = crate.metadataFileEntity['@id'];
     this.meta = reactive({});
-    this.entities = shallowReactive(Array.from(crate.entities({ filter: e => e['@id'] !== mid })));
+    this.entities = reactive(Array.from(crate.entities({ filter: e => e['@id'] !== mid })));
     await crate.resolveContext();
     return crate;
   }

@@ -132,8 +132,12 @@ watch(() => props.profile, (profile) => {
   newEntityUpdate();
 }, {immediate: true});
 
-const unlinkedEntities = computed(() => state.entities.filter(e => e['@reverse'] === undefined));
-const reverseEntities = computed(() => Object.values(data.entity?.['@reverse'] || {}).reduce((a, e) => a.concat(e), []).filter(e => e !== state.crate.metadataFileEntity));
+const unlinkedEntities = computed(() => state.entities.filter(e => {
+  //TODO: make this into an utility function because we are doing this in many parts
+  const linksCount = Object.values(e['@reverse']).reduce((count, refs) => count + refs.length, 0);
+  return linksCount <= 0;
+}));
+//const reverseEntities = computed(() => Object.values(data.entity?.['@reverse'] || {}).reduce((a, e) => a.concat(e), []).filter(e => e !== state.crate.metadataFileEntity));
 
 const forceKey = ref(0);
 defineExpose({
@@ -176,8 +180,9 @@ function onSelectNewEntity(type) {
     "name": [cleanName]
   };
   state.crate.addEntity(item, {replace: true, recurse: true});
+  const newEntity = state.crate.getEntity(item['@id'])
   state.ensureContext(type);
-  state.entities.push(item);
+  state.entities.push(newEntity);
   showEntity(item);
 }
 
@@ -188,13 +193,16 @@ function deleteEntity() {
   const entityMessage = linksCount > 1 ? 'entities' : 'entity';
   if (linksCount === 0 || window.confirm(`This entity is referenced by ${linksCount} other ${entityMessage}. Are you sure you want to delete it?`)) {
     const currentEntity = data.entity;
+
     const i = state.entities.findIndex(e => e['@id'] === currentEntity['@id']);
     if (i >= 0) state.entities.splice(i, 1);
-    data.history.pop();
-    data.entity = null;
-    state.crate.deleteEntity(currentEntity, {references: true});
-    const someEntity = data.history[data.history.length - 1] ?? data.rootDataset;
-    $router.push({query: {id: encodeURIComponent(someEntity['@id'])}});
+    nextTick(() => {
+      data.history.pop();
+      data.entity = null;
+      state.crate.deleteEntity(currentEntity, {references: true});
+      const someEntity = data.history[data.history.length - 1] ?? data.rootDataset;
+      $router.push({query: {id: encodeURIComponent(someEntity['@id'])}});
+    })
   }
 
 }
