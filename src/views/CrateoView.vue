@@ -6,6 +6,8 @@ import Help from "@/components/Help.vue";
 
 import SpreadSheet from "@/components/SpreadSheet.vue";
 import {Validator} from "@/utils/profileValidator.js";
+import HTMLPreview from "@/components/HTMLPreview.vue";
+
 import {first, isEmpty, isUndefined} from "lodash";
 import {ROCrate} from "ro-crate";
 import {useRouter} from 'vue-router';
@@ -152,6 +154,7 @@ const commands = {
     data.spreadSheetBuffer = null;
     data.validationResultDialog = false;
     data.validationResult = {};
+    data.previewLink = null;
     $router.push({});
     data.loading = false;
   },
@@ -172,6 +175,10 @@ const commands = {
 
   help() {
     data.showWelcome = true;
+  },
+
+  web() {
+    data.crate = editor.value.crate;
   }
 };
 
@@ -253,6 +260,17 @@ const goTo = function ({id, prop}) {
   }
   $router.push({query});
 }
+
+async function compiled(html) {
+  if (data.metadataHandle) {
+    const preview = await data.dirHandle.getFileHandle('ro-crate-preview.html', {create: true});
+    const writable = await preview.createWritable();
+    await writable.write(html);
+    await writable.close();
+    data.previewLink = URL.createObjectURL(await preview.getFile())
+    console.log(data.previewLink)
+  }
+}
 </script>
 
 <template>
@@ -276,6 +294,9 @@ const goTo = function ({id, prop}) {
       </el-menu-item>
       <el-menu-item index="save" :disabled="!data.dirHandle">
         💾 Save
+      </el-menu-item>
+      <el-menu-item index="web" :disabled="!data.dirHandle">
+        🌐 Save HTML
       </el-menu-item>
       <el-menu-item index="close" :disabled="!data.dirHandle">
         ⓧ Close
@@ -302,11 +323,17 @@ const goTo = function ({id, prop}) {
           </el-select>
         </el-row>
       </el-col>
-      <el-col v-if="data.dirHandle" :xs="24" :sm="24" :md="10" :lg="14" :xl="16">
+      <el-col v-if="data.dirHandle" :xs="24" :sm="24" :md="7" :lg="11" :xl="13">
         <el-row class="p-1">
           <span class="flex items-center">
           Selected Directory:&nbsp;<span class="font-bold">{{ data.dirHandle.name }}</span>
           </span>
+        </el-row>
+      </el-col>
+      <el-col v-if="data.previewLink" :xs="24" :sm="24" :md="3" :lg="3" :xl="3">
+        <el-row class="p-1">
+          <a :href="data.previewLink" target="_blank" class="underline text-blue-600 dark:text-blue-500">Preview
+            Crate</a>
         </el-row>
       </el-col>
     </el-row>
@@ -337,6 +364,7 @@ const goTo = function ({id, prop}) {
                  :crate="data.crate" :profile="profile" @ready="data.loading = false">
     </CrateEditor>
     <SpreadSheet v-model:crate="data.crate" :buffer="data.spreadSheetBuffer"/>
+    <HTMLPreview v-model:crate="data.crate" @compiled="compiled"/>
   </template>
   <div v-else>
     <welcome/>

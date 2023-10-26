@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "npm install ro-crate-editor-profiles && vite",
+    "dev": "vite",
     "build": "npm install ro-crate-editor-profiles && vite build",
     "preview": "vite preview --port 5000",
     "test": "cypress run --component --browser chrome",
@@ -28,6 +28,7 @@
     "ro-crate": "^3.3.3",
     "ro-crate-editor-profiles": "github:Language-Research-Technology/ro-crate-editor-profiles",
     "ro-crate-excel": "^1.0.16",
+    "ro-crate-html": "github:Language-Research-Technology/ro-crate-html-js#issue_4-vite",
     "vue": "^3.2.45",
     "vue-router": "^4.1.6"
   },
