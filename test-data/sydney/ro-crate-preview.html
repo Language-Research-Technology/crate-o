@@ -1,0 +1,745 @@
+
+
+<html>
+<head>
+
+
+<script type="application/ld+json"> 
+  {
+  "@context": [
+    "https://w3id.org/ro/crate/1.1/context",
+    {
+      "hasCollectionProtocol": "http://schema.org/hasCollectionProtocol"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.1"
+      },
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryCollection"
+      ],
+      "name": "Sydney Speaks",
+      "description": "A compilation of three sub-corpora of Australian English, made up of sociolinguistic interviews and oral histories. Recordings are from a total of 260 speakers, born from the 1890s to the 1990s, recorded in the 1970s~1980s and 2010s~2020s. The sub-corpora include the Bicentennial Oral History Project (with speakers born around 1900, and recorded in 1988); the Sydney Social Dialect Survey (with speakers born in the 1930s and 1960s, and recorded in 1977-1981; cf. Horvath 1985); and Sydney Speaks 2010s (with speakers born in the 1960s and 1990s, and recorded from 2014 to the present). All participants are native speakers of Australian English, and come from diverse ethnic backgrounds, currently Anglo-Celtic, Chinese, Greek and Italian (and this is under expansion). The sample is further stratified according to sex and social class. Approximately 5,000 words per speaker have been transcribed, for a total of some 1.5 million words. Orthographic transcriptions (including prosodic information) are time aligned at the level of the utterance, and have been force aligned to the level of the segment, making the data ideal for linguistic analysis at a range of levels. The socio-historical information in the recordings provides both information about the times the participants have lived through, and allows for social contextualisation of the linguistic patterns observed. ",
+      "temporalCoverage": "2023-10-05T19:16",
+      "conformsTo": {
+        "@id": "https://purl.archive.org/language-data-commons/profile#Collection"
+      },
+      "hasMember": [
+        {
+          "@id": "#BCNT"
+        },
+        {
+          "@id": "#SSDS"
+        },
+        {
+          "@id": "#SydS"
+        }
+      ],
+      "funder": {
+        "@id": "https://ror.org/05mmh0f86"
+      },
+      "publisher": {
+        "@id": "https://ror.org/019wvm592"
+      },
+      "author": {
+        "@id": "#0000-0002-1410-3268"
+      },
+      "citation": [
+        {
+          "@id": "#Grama, James, Catherine E. Travis and Simon Gonzalez. 2020. Ethnolectal and community change ov(er) time: Word-final (er) in Australian English. Australian Journal of Linguistics 40(3): 346-368.  https://doi.org/10.1080/07268602.2020.1823818"
+        },
+        {
+          "@id": "#Grama, James, Catherine E. Travis and Simon Gonzalez. 2021. Ethnic variation in real time: Change in Australian English diphthongs. In Hans Van de Velde, Nanna Haug Hilton and Remco Knooihuizen (eds), Studies in Language Variation, 292-314. Amsterdam: John Benjamins. https://www.jbe-platform.com/content/books/9789027259820-silv.25.13gra"
+        },
+        {
+          "@id": "#Gonzalez, Simon, James Grama and Catherine E. Travis. 2020. Comparing the performance of forced aligners used in sociophonetic research. Linguistics Vanguard 6(1). https://doi.org/10.1515/lingvan-2019-0058"
+        },
+        {
+          "@id": "#Grama, James, Catherine E. Travis and Simon Gonzalez. 2019. Initiation, progression and conditioning of the short-front vowel shift in Australian English. In Sasha Calhoun, Paola Escudero, Marija Tabain and Paul Warren (eds), Proceedings of the 19th International Congress of Phonetic Sciences (ICPhS), Melbourne, Australia, 1769-1773. Canberra, Australia: Australasian Speech Science and Technology Association Inc. https://assta.org/proceedings/ICPhS2019/papers/ICPhS_1818.pdf"
+        },
+        {
+          "@id": "#Purser, Benjamin, James Grama and Catherine E. Travis. 2020. Australian English over time: Using sociolinguistic analysis to inform dialect coaching. Voice and Speech Review 14(3): 269-291. https://doi.org/10.1080/23268263.2020.1750791"
+        }
+      ],
+      "https://schema.org/language": {
+        "@id": "https://glottolog.org/resource/languoid/id/stan1293"
+      },
+      "http://schema.org/hasCollectionProtocol": []
+    },
+    {
+      "@id": "#BCNT",
+      "@type": "Dataset, RepositoryCollection",
+      "name": "NSW Bicentennial Oral History Collection",
+      "conformsTo": "https://purl.archive.org/textcommons/profile#Collection",
+      "description": "The NSW Bicentennial Oral History Collection was produced in 1988 by the NSW Bicentennial Oral History Project, funded by a bicentennial grant to the NSW Council on the Ageing and the Oral History Association of Australia (NSW). The Collection includes two hundred recorded interviews with men and women born before 1910 who lived in NSW between 1900 and 1930. The interviews focus on everyday life in the early 20th Century, and speakers talk about topics such as education, health, employment, religion and courtship.\nThe Sydney Speaks project analyses the data from the 31 speakers in the collection who were born and grew up in the Sydney area, and whose parents also did so (or at most have one parent born in the UK). Born around the turn of the 20th Century, these Elderly speakers give time depth to the study of Australian English."
+    },
+    {
+      "@id": "#SSDS",
+      "@type": "Dataset, RepositoryCollection",
+      "name": "Sydney Social Dialect Survey",
+      "conformsTo": "https://purl.archive.org/textcommons/profile#Collection",
+      "description": "The Sydney Social Dialect Survey was compiled by Barbara Horvath between 1977 and 1980. The original corpus comprises 177 sociolinguistic interviews, with adult and teenage Australians of Anglo, Greek and Italian descent (including 1st and 2nd generation), stratified according to gender and socio-economic status. In the 120 hours of recorded speech, among other topics, participants talk about schooling, childhood games, and attitudes to Australian English.\nThe Sydney Speaks project has digitised a subset of the Sydney Social Dialect Survey data, which serves as a benchmark from which to track change in contemporary Australian English. This subset consists of over 40 hours of speech (approximately 400,000 words) from 20 Anglo Adults and 72 Teenagers, roughly evenly distributed across Anglo, and 2nd generation Italian, and Greek Australians."
+    },
+    {
+      "@id": "#SydS",
+      "@type": [
+        "Dataset",
+        "RepositoryCollection"
+      ],
+      "name": "Sydney Speaks 2010s",
+      "temporalCoverage": "2010-2019",
+      "conformsTo": "https://purl.archive.org/textcommons/profile#Collection",
+      "description": "The Sydney Speaks 2010s sub-corpus consists of sociolinguistic interviews with Sydneysiders from two age groups, Adults (born 1960s) and Young Adults (born 1990s). Participants are of varied socio-economic status, region within Sydney, and ethnic community, including Anglo Australians (whose parents and grandparents were born in Australia), and 2nd generation Australians of different backgrounds, as of 2021, Anglo, Italian, Chinese and Greek Australians. This corpus is still under compilation, as we expand the range of ethnic communities represented.\nThe sociolinguistic interviews were conducted by community Research Assistants with their extended network, providing long samples of natural speech for analysis and, at the same time, detailed information about participants’ demographic profile, their sociolinguistic history and their social network."
+    },
+    {
+      "@id": "https://ror.org/05mmh0f86",
+      "@type": "Organization",
+      "name": "ARC"
+    },
+    {
+      "@id": "https://ror.org/019wvm592",
+      "@type": "Organization",
+      "name": "Australian National University"
+    },
+    {
+      "@id": "#0000-0002-1410-3268",
+      "@type": "Person",
+      "name": "Catherine Travis",
+      "affiliation": {
+        "@id": "https://ror.org/019wvm592"
+      }
+    },
+    {
+      "@id": "#Grama, James, Catherine E. Travis and Simon Gonzalez. 2020. Ethnolectal and community change ov(er) time: Word-final (er) in Australian English. Australian Journal of Linguistics 40(3): 346-368.  https://doi.org/10.1080/07268602.2020.1823818",
+      "@type": "ScholarlyArticle",
+      "name": "Grama, James, Catherine E. Travis and Simon Gonzalez. 2020. Ethnolectal and community change ov(er) time: Word-final (er) in Australian English. Australian Journal of Linguistics 40(3): 346-368.  https://doi.org/10.1080/07268602.2020.1823818"
+    },
+    {
+      "@id": "#Grama, James, Catherine E. Travis and Simon Gonzalez. 2021. Ethnic variation in real time: Change in Australian English diphthongs. In Hans Van de Velde, Nanna Haug Hilton and Remco Knooihuizen (eds), Studies in Language Variation, 292-314. Amsterdam: John Benjamins. https://www.jbe-platform.com/content/books/9789027259820-silv.25.13gra",
+      "@type": "ScholarlyArticle",
+      "name": "Grama, James, Catherine E. Travis and Simon Gonzalez. 2021. Ethnic variation in real time: Change in Australian English diphthongs. In Hans Van de Velde, Nanna Haug Hilton and Remco Knooihuizen (eds), Studies in Language Variation, 292-314. Amsterdam: John Benjamins. https://www.jbe-platform.com/content/books/9789027259820-silv.25.13gra"
+    },
+    {
+      "@id": "#Gonzalez, Simon, James Grama and Catherine E. Travis. 2020. Comparing the performance of forced aligners used in sociophonetic research. Linguistics Vanguard 6(1). https://doi.org/10.1515/lingvan-2019-0058",
+      "@type": "ScholarlyArticle",
+      "name": "Gonzalez, Simon, James Grama and Catherine E. Travis. 2020. Comparing the performance of forced aligners used in sociophonetic research. Linguistics Vanguard 6(1). https://doi.org/10.1515/lingvan-2019-0058"
+    },
+    {
+      "@id": "#Grama, James, Catherine E. Travis and Simon Gonzalez. 2019. Initiation, progression and conditioning of the short-front vowel shift in Australian English. In Sasha Calhoun, Paola Escudero, Marija Tabain and Paul Warren (eds), Proceedings of the 19th International Congress of Phonetic Sciences (ICPhS), Melbourne, Australia, 1769-1773. Canberra, Australia: Australasian Speech Science and Technology Association Inc. https://assta.org/proceedings/ICPhS2019/papers/ICPhS_1818.pdf",
+      "@type": "ScholarlyArticle",
+      "name": "Grama, James, Catherine E. Travis and Simon Gonzalez. 2019. Initiation, progression and conditioning of the short-front vowel shift in Australian English. In Sasha Calhoun, Paola Escudero, Marija Tabain and Paul Warren (eds), Proceedings of the 19th International Congress of Phonetic Sciences (ICPhS), Melbourne, Australia, 1769-1773. Canberra, Australia: Australasian Speech Science and Technology Association Inc. https://assta.org/proceedings/ICPhS2019/papers/ICPhS_1818.pdf"
+    },
+    {
+      "@id": "#Purser, Benjamin, James Grama and Catherine E. Travis. 2020. Australian English over time: Using sociolinguistic analysis to inform dialect coaching. Voice and Speech Review 14(3): 269-291. https://doi.org/10.1080/23268263.2020.1750791",
+      "@type": "ScholarlyArticle",
+      "name": "Purser, Benjamin, James Grama and Catherine E. Travis. 2020. Australian English over time: Using sociolinguistic analysis to inform dialect coaching. Voice and Speech Review 14(3): 269-291. https://doi.org/10.1080/23268263.2020.1750791"
+    },
+    {
+      "@id": "https://glottolog.org/resource/languoid/id/stan1293",
+      "@type": "Language",
+      "languageCode": "stan1293",
+      "name": "English",
+      "geo": {
+        "@id": "#English"
+      },
+      "source": "Glottolog",
+      "sameAs": {
+        "@id": "https://www.ethnologue.com/language/eng"
+      },
+      "alternateName": [
+        "English (Standard Southern British)",
+        "Englisch",
+        "Anglais moderne [fr]",
+        "English [en]",
+        "Inglese moderno [it]",
+        "Inglês moderno [pt]",
+        "Modern English [en]",
+        "Moderna angla lingvo [eo]",
+        "Moderne engelsk [no]",
+        "Modernes Englisch [de]",
+        "Nyengelska [sv]",
+        "anglais [fr]",
+        "თანამედროვე ინგლისური პერიოდი [ka]",
+        "現代英語 [zh]",
+        "近代英語 [ja]"
+      ],
+      "iso639-3": "eng"
+    },
+    {
+      "@id": "#English",
+      "@type": "GeoCoordinates",
+      "name": "Geographical coverage for English",
+      "geojson": "{\"type\":\"Feature\",\"properties\":{\"name\":\"English\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[\"-1.0\",\"53.0\"]}}"
+    },
+    {
+      "@id": "https://ror.org/04mz5ra38",
+      "@type": "Organization",
+      "name": "University of Duisburg-Essen"
+    },
+    {
+      "@id": "#Sub-collection Sydney Speeks ",
+      "@type": "CollectionProtocol",
+      "name": ""
+    },
+    {
+      "@id": "#Each of the three sub-collections has its own Collection Protocol.",
+      "@type": "CollectionProtocol",
+      "name": "Each of the three sub-collections has its own Collection Protocol.",
+      "description": ""
+    },
+    {
+      "@id": "#If I type a new value the text field disappears",
+      "@type": "CollectionProtocol",
+      "name": "If I type a new value the text field disappears"
+    }
+  ]
+}
+</script>
+
+    
+<!-- script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script -->
+<script src="https://unpkg.com/ro-crate-html@0.1/dist/ro-crate-dynamic.min.js"></script>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<meta charset='utf-8'/>
+<style>
+
+table.table {
+  padding-bottom: 300px;
+}
+</style>
+</head>
+
+
+<body>
+
+  <nav class="navbar">
+
+    <ul class="nav navbar-nav" >
+        <li ><a href="#"><span class="glyphicon glyphicon-home dataset_name">&nbsp;Sydney Speaks</span></a></li>
+    </ul>
+
+  </nav>
+<div class="container">
+<div class="jumbotron">
+<h4 class="citation"></h3>
+<h3 class="item_name">Sydney Speaks</h4>
+
+
+<a href="./ro-crate-metadata.json">⬇️🏷️ Download all the metadata for <span class='name'>Sydney Speaks</span> in JSON-LD format</a>
+
+
+<div id="check"></div>
+
+
+</div>
+
+
+
+<div id="summary">
+<div class='all-meta'>
+           <div>
+            <h3> Sydney Speaks</h3>
+            
+            
+            
+            
+        <div id="./">
+            
+            <table class="table metadata table-striped" >
+                <tbody><tr>
+            <th style="text-align:left;" class="prop">@id</th>
+            <td style='text-align:left'><span>./</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">name<span>&nbsp;</span><a href="http://schema.org/name">[?]</a></th>
+            <td style='text-align:left'><span>Sydney Speaks</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">@type</th>
+            <td style='text-align:left'><ul>
+                        <li><span>Dataset</span></li>
+                        
+                        <li><span>RepositoryCollection</span></li>
+                        </ul></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">description<span>&nbsp;</span><a href="http://schema.org/description">[?]</a></th>
+            <td style='text-align:left'><span>A compilation of three sub-corpora of Australian English, made up of sociolinguistic interviews and oral histories. Recordings are from a total of 260 speakers, born from the 1890s to the 1990s, recorded in the 1970s~1980s and 2010s~2020s. The sub-corpora include the Bicentennial Oral History Project (with speakers born around 1900, and recorded in 1988); the Sydney Social Dialect Survey (with speakers born in the 1930s and 1960s, and recorded in 1977-1981; cf. Horvath 1985); and Sydney Speaks 2010s (with speakers born in the 1960s and 1990s, and recorded from 2014 to the present). All participants are native speakers of Australian English, and come from diverse ethnic backgrounds, currently Anglo-Celtic, Chinese, Greek and Italian (and this is under expansion). The sample is further stratified according to sex and social class. Approximately 5,000 words per speaker have been transcribed, for a total of some 1.5 million words. Orthographic transcriptions (including prosodic information) are time aligned at the level of the utterance, and have been force aligned to the level of the segment, making the data ideal for linguistic analysis at a range of levels. The socio-historical information in the recordings provides both information about the times the participants have lived through, and allows for social contextualisation of the linguistic patterns observed. </span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">funder<span>&nbsp;</span><a href="http://schema.org/funder">[?]</a></th>
+            <td style='text-align:left'><a href="#https%3A//ror.org/05mmh0f86">ARC</a></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">author<span>&nbsp;</span><a href="http://schema.org/author">[?]</a></th>
+            <td style='text-align:left'><a href="#%230000-0002-1410-3268">Catherine Travis</a></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">temporalCoverage<span>&nbsp;</span><a href="http://schema.org/temporalCoverage">[?]</a></th>
+            <td style='text-align:left'><span>2023-10-05T19:16</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">conformsTo<span>&nbsp;</span><a href="http://purl.org/dc/terms/conformsTo">[?]</a></th>
+            <td style='text-align:left'><a href="https://purl.archive.org/language-data-commons/profile#Collection">https://purl.archive.org/language-data-commons/profile#Collection</a></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">hasMember<span>&nbsp;</span><a href="http://pcdm.org/models#hasMember">[?]</a></th>
+            <td style='text-align:left'><ul>
+                        <li><a href="#%23BCNT">NSW Bicentennial Oral History Collection</a></li>
+                        
+                        <li><a href="#%23SSDS">Sydney Social Dialect Survey</a></li>
+                        
+                        <li><a href="#%23SydS">Sydney Speaks 2010s</a></li>
+                        </ul></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">publisher<span>&nbsp;</span><a href="http://schema.org/publisher">[?]</a></th>
+            <td style='text-align:left'><a href="#https%3A//ror.org/019wvm592">Australian National University</a></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">citation<span>&nbsp;</span><a href="http://schema.org/citation">[?]</a></th>
+            <td style='text-align:left'><ul>
+                        <li><a href="#%23Grama%2C%20James%2C%20Catherine%20E.%20Travis%20and%20Simon%20Gonzalez.%202020.%20Ethnolectal%20and%20community%20change%20ov%28er%29%20time%3A%20Word-final%20%28er%29%20in%20Australian%20English.%20Australian%20Journal%20of%20Linguistics%2040%283%29%3A%20346-368.%20%20https%3A//doi.org/10.1080/07268602.2020.1823818">Grama, James, Catherine E. Travis and Simon Gonzalez. 2020. Ethnolectal and community change ov(er) time: Word-final (er) in Australian English. Australian Journal of Linguistics 40(3): 346-368.  https://doi.org/10.1080/07268602.2020.1823818</a></li>
+                        
+                        <li><a href="#%23Grama%2C%20James%2C%20Catherine%20E.%20Travis%20and%20Simon%20Gonzalez.%202021.%20Ethnic%20variation%20in%20real%20time%3A%20Change%20in%20Australian%20English%20diphthongs.%20In%20Hans%20Van%20de%20Velde%2C%20Nanna%20Haug%20Hilton%20and%20Remco%20Knooihuizen%20%28eds%29%2C%20Studies%20in%20Language%20Variation%2C%20292-314.%20Amsterdam%3A%20John%20Benjamins.%20https%3A//www.jbe-platform.com/content/books/9789027259820-silv.25.13gra">Grama, James, Catherine E. Travis and Simon Gonzalez. 2021. Ethnic variation in real time: Change in Australian English diphthongs. In Hans Van de Velde, Nanna Haug Hilton and Remco Knooihuizen (eds), Studies in Language Variation, 292-314. Amsterdam: John Benjamins. https://www.jbe-platform.com/content/books/9789027259820-silv.25.13gra</a></li>
+                        
+                        <li><a href="#%23Gonzalez%2C%20Simon%2C%20James%20Grama%20and%20Catherine%20E.%20Travis.%202020.%20Comparing%20the%20performance%20of%20forced%20aligners%20used%20in%20sociophonetic%20research.%20Linguistics%20Vanguard%206%281%29.%20https%3A//doi.org/10.1515/lingvan-2019-0058">Gonzalez, Simon, James Grama and Catherine E. Travis. 2020. Comparing the performance of forced aligners used in sociophonetic research. Linguistics Vanguard 6(1). https://doi.org/10.1515/lingvan-2019-0058</a></li>
+                        
+                        <li><a href="#%23Grama%2C%20James%2C%20Catherine%20E.%20Travis%20and%20Simon%20Gonzalez.%202019.%20Initiation%2C%20progression%20and%20conditioning%20of%20the%20short-front%20vowel%20shift%20in%20Australian%20English.%20In%20Sasha%20Calhoun%2C%20Paola%20Escudero%2C%20Marija%20Tabain%20and%20Paul%20Warren%20%28eds%29%2C%20Proceedings%20of%20the%2019th%20International%20Congress%20of%20Phonetic%20Sciences%20%28ICPhS%29%2C%20Melbourne%2C%20Australia%2C%201769-1773.%20Canberra%2C%20Australia%3A%20Australasian%20Speech%20Science%20and%20Technology%20Association%20Inc.%20https%3A//assta.org/proceedings/ICPhS2019/papers/ICPhS_1818.pdf">Grama, James, Catherine E. Travis and Simon Gonzalez. 2019. Initiation, progression and conditioning of the short-front vowel shift in Australian English. In Sasha Calhoun, Paola Escudero, Marija Tabain and Paul Warren (eds), Proceedings of the 19th International Congress of Phonetic Sciences (ICPhS), Melbourne, Australia, 1769-1773. Canberra, Australia: Australasian Speech Science and Technology Association Inc. https://assta.org/proceedings/ICPhS2019/papers/ICPhS_1818.pdf</a></li>
+                        
+                        <li><a href="#%23Purser%2C%20Benjamin%2C%20James%20Grama%20and%20Catherine%20E.%20Travis.%202020.%20Australian%20English%20over%20time%3A%20Using%20sociolinguistic%20analysis%20to%20inform%20dialect%20coaching.%20Voice%20and%20Speech%20Review%2014%283%29%3A%20269-291.%20https%3A//doi.org/10.1080/23268263.2020.1750791">Purser, Benjamin, James Grama and Catherine E. Travis. 2020. Australian English over time: Using sociolinguistic analysis to inform dialect coaching. Voice and Speech Review 14(3): 269-291. https://doi.org/10.1080/23268263.2020.1750791</a></li>
+                        </ul></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">https://schema.org/language<span>&nbsp;</span><a href="https://schema.org/language">[?]</a></th>
+            <td style='text-align:left'><a href="#https%3A//glottolog.org/resource/languoid/id/stan1293">English</a></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">http://schema.org/hasCollectionProtocol<span>&nbsp;</span><a href="http://schema.org/hasCollectionProtocol">[?]</a></th>
+            <td style='text-align:left'></td>
+            </tr><tr><th colspan="2" style="text-align:center">Items that reference this one</th><tr><tr>
+            <th style="text-align:left;" class="prop">about<span>&nbsp;</span><a href="http://schema.org/about">[?]</a></th>
+            <td style='text-align:left'><a href="#ro-crate-metadata.json">ro-crate-metadata.json</a></td>
+            </tr></tbody>
+            </table>
+        </div>
+
+        </div>
+        <hr/><br/><br/>
+           <div>
+            <h3><a href="https://ror.org/05mmh0f86">Go to: </a> ARC</h3>
+            
+            
+            
+            
+        <div id="https://ror.org/05mmh0f86">
+            
+            <table class="table metadata table-striped" >
+                <tbody><tr>
+            <th style="text-align:left;" class="prop">@id</th>
+            <td style='text-align:left'><a href="https://ror.org/05mmh0f86">https://ror.org/05mmh0f86</a></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">name<span>&nbsp;</span><a href="http://schema.org/name">[?]</a></th>
+            <td style='text-align:left'><span>ARC</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">@type</th>
+            <td style='text-align:left'><span>Organization</span></td>
+            </tr><tr><th colspan="2" style="text-align:center">Items that reference this one</th><tr><tr>
+            <th style="text-align:left;" class="prop">funder<span>&nbsp;</span><a href="http://schema.org/funder">[?]</a></th>
+            <td style='text-align:left'><a href="#./">Sydney Speaks</a></td>
+            </tr></tbody>
+            </table>
+        </div>
+
+        </div>
+        <hr/><br/><br/>
+           <div>
+            <h3> Catherine Travis</h3>
+            
+            
+            
+            
+        <div id="#0000-0002-1410-3268">
+            
+            <table class="table metadata table-striped" >
+                <tbody><tr>
+            <th style="text-align:left;" class="prop">@id</th>
+            <td style='text-align:left'><span>#0000-0002-1410-3268</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">name<span>&nbsp;</span><a href="http://schema.org/name">[?]</a></th>
+            <td style='text-align:left'><span>Catherine Travis</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">@type</th>
+            <td style='text-align:left'><span>Person</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">affiliation<span>&nbsp;</span><a href="http://schema.org/affiliation">[?]</a></th>
+            <td style='text-align:left'><a href="#https%3A//ror.org/019wvm592">Australian National University</a></td>
+            </tr><tr><th colspan="2" style="text-align:center">Items that reference this one</th><tr><tr>
+            <th style="text-align:left;" class="prop">author<span>&nbsp;</span><a href="http://schema.org/author">[?]</a></th>
+            <td style='text-align:left'><a href="#./">Sydney Speaks</a></td>
+            </tr></tbody>
+            </table>
+        </div>
+
+        </div>
+        <hr/><br/><br/><hr/><br/><br/>
+           <div>
+            <h3> NSW Bicentennial Oral History Collection</h3>
+            
+            
+            
+            
+        <div id="#BCNT">
+            
+            <table class="table metadata table-striped" >
+                <tbody><tr>
+            <th style="text-align:left;" class="prop">@id</th>
+            <td style='text-align:left'><span>#BCNT</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">name<span>&nbsp;</span><a href="http://schema.org/name">[?]</a></th>
+            <td style='text-align:left'><span>NSW Bicentennial Oral History Collection</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">@type</th>
+            <td style='text-align:left'><span>Dataset, RepositoryCollection</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">description<span>&nbsp;</span><a href="http://schema.org/description">[?]</a></th>
+            <td style='text-align:left'><span>The NSW Bicentennial Oral History Collection was produced in 1988 by the NSW Bicentennial Oral History Project, funded by a bicentennial grant to the NSW Council on the Ageing and the Oral History Association of Australia (NSW). The Collection includes two hundred recorded interviews with men and women born before 1910 who lived in NSW between 1900 and 1930. The interviews focus on everyday life in the early 20th Century, and speakers talk about topics such as education, health, employment, religion and courtship.
+The Sydney Speaks project analyses the data from the 31 speakers in the collection who were born and grew up in the Sydney area, and whose parents also did so (or at most have one parent born in the UK). Born around the turn of the 20th Century, these Elderly speakers give time depth to the study of Australian English.</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">conformsTo<span>&nbsp;</span><a href="http://purl.org/dc/terms/conformsTo">[?]</a></th>
+            <td style='text-align:left'><a href="https://purl.archive.org/textcommons/profile#Collection">https://purl.archive.org/textcommons/profile#Collection</a></td>
+            </tr><tr><th colspan="2" style="text-align:center">Items that reference this one</th><tr><tr>
+            <th style="text-align:left;" class="prop">hasMember<span>&nbsp;</span><a href="http://pcdm.org/models#hasMember">[?]</a></th>
+            <td style='text-align:left'><a href="#./">Sydney Speaks</a></td>
+            </tr></tbody>
+            </table>
+        </div>
+
+        </div>
+        <hr/><br/><br/>
+           <div>
+            <h3> Sydney Social Dialect Survey</h3>
+            
+            
+            
+            
+        <div id="#SSDS">
+            
+            <table class="table metadata table-striped" >
+                <tbody><tr>
+            <th style="text-align:left;" class="prop">@id</th>
+            <td style='text-align:left'><span>#SSDS</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">name<span>&nbsp;</span><a href="http://schema.org/name">[?]</a></th>
+            <td style='text-align:left'><span>Sydney Social Dialect Survey</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">@type</th>
+            <td style='text-align:left'><span>Dataset, RepositoryCollection</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">description<span>&nbsp;</span><a href="http://schema.org/description">[?]</a></th>
+            <td style='text-align:left'><span>The Sydney Social Dialect Survey was compiled by Barbara Horvath between 1977 and 1980. The original corpus comprises 177 sociolinguistic interviews, with adult and teenage Australians of Anglo, Greek and Italian descent (including 1st and 2nd generation), stratified according to gender and socio-economic status. In the 120 hours of recorded speech, among other topics, participants talk about schooling, childhood games, and attitudes to Australian English.
+The Sydney Speaks project has digitised a subset of the Sydney Social Dialect Survey data, which serves as a benchmark from which to track change in contemporary Australian English. This subset consists of over 40 hours of speech (approximately 400,000 words) from 20 Anglo Adults and 72 Teenagers, roughly evenly distributed across Anglo, and 2nd generation Italian, and Greek Australians.</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">conformsTo<span>&nbsp;</span><a href="http://purl.org/dc/terms/conformsTo">[?]</a></th>
+            <td style='text-align:left'><a href="https://purl.archive.org/textcommons/profile#Collection">https://purl.archive.org/textcommons/profile#Collection</a></td>
+            </tr><tr><th colspan="2" style="text-align:center">Items that reference this one</th><tr><tr>
+            <th style="text-align:left;" class="prop">hasMember<span>&nbsp;</span><a href="http://pcdm.org/models#hasMember">[?]</a></th>
+            <td style='text-align:left'><a href="#./">Sydney Speaks</a></td>
+            </tr></tbody>
+            </table>
+        </div>
+
+        </div>
+        <hr/><br/><br/>
+           <div>
+            <h3> Sydney Speaks 2010s</h3>
+            
+            
+            
+            
+        <div id="#SydS">
+            
+            <table class="table metadata table-striped" >
+                <tbody><tr>
+            <th style="text-align:left;" class="prop">@id</th>
+            <td style='text-align:left'><span>#SydS</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">name<span>&nbsp;</span><a href="http://schema.org/name">[?]</a></th>
+            <td style='text-align:left'><span>Sydney Speaks 2010s</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">@type</th>
+            <td style='text-align:left'><ul>
+                        <li><span>Dataset</span></li>
+                        
+                        <li><span>RepositoryCollection</span></li>
+                        </ul></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">description<span>&nbsp;</span><a href="http://schema.org/description">[?]</a></th>
+            <td style='text-align:left'><span>The Sydney Speaks 2010s sub-corpus consists of sociolinguistic interviews with Sydneysiders from two age groups, Adults (born 1960s) and Young Adults (born 1990s). Participants are of varied socio-economic status, region within Sydney, and ethnic community, including Anglo Australians (whose parents and grandparents were born in Australia), and 2nd generation Australians of different backgrounds, as of 2021, Anglo, Italian, Chinese and Greek Australians. This corpus is still under compilation, as we expand the range of ethnic communities represented.
+The sociolinguistic interviews were conducted by community Research Assistants with their extended network, providing long samples of natural speech for analysis and, at the same time, detailed information about participants’ demographic profile, their sociolinguistic history and their social network.</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">temporalCoverage<span>&nbsp;</span><a href="http://schema.org/temporalCoverage">[?]</a></th>
+            <td style='text-align:left'><span>2010-2019</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">conformsTo<span>&nbsp;</span><a href="http://purl.org/dc/terms/conformsTo">[?]</a></th>
+            <td style='text-align:left'><a href="https://purl.archive.org/textcommons/profile#Collection">https://purl.archive.org/textcommons/profile#Collection</a></td>
+            </tr><tr><th colspan="2" style="text-align:center">Items that reference this one</th><tr><tr>
+            <th style="text-align:left;" class="prop">hasMember<span>&nbsp;</span><a href="http://pcdm.org/models#hasMember">[?]</a></th>
+            <td style='text-align:left'><a href="#./">Sydney Speaks</a></td>
+            </tr></tbody>
+            </table>
+        </div>
+
+        </div>
+        <hr/><br/><br/>
+           <div>
+            <h3><a href="https://ror.org/019wvm592">Go to: </a> Australian National University</h3>
+            
+            
+            
+            
+        <div id="https://ror.org/019wvm592">
+            
+            <table class="table metadata table-striped" >
+                <tbody><tr>
+            <th style="text-align:left;" class="prop">@id</th>
+            <td style='text-align:left'><a href="https://ror.org/019wvm592">https://ror.org/019wvm592</a></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">name<span>&nbsp;</span><a href="http://schema.org/name">[?]</a></th>
+            <td style='text-align:left'><span>Australian National University</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">@type</th>
+            <td style='text-align:left'><span>Organization</span></td>
+            </tr><tr><th colspan="2" style="text-align:center">Items that reference this one</th><tr><tr>
+            <th style="text-align:left;" class="prop">publisher<span>&nbsp;</span><a href="http://schema.org/publisher">[?]</a></th>
+            <td style='text-align:left'><a href="#./">Sydney Speaks</a></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">affiliation<span>&nbsp;</span><a href="http://schema.org/affiliation">[?]</a></th>
+            <td style='text-align:left'><a href="#%230000-0002-1410-3268">Catherine Travis</a></td>
+            </tr></tbody>
+            </table>
+        </div>
+
+        </div>
+        <hr/><br/><br/>
+           <div>
+            <h3> Grama, James, Catherine E. Travis and Simon Gonzalez. 2020. Ethnolectal and community change ov(er) time: Word-final (er) in Australian English. Australian Journal of Linguistics 40(3): 346-368.  https://doi.org/10.1080/07268602.2020.1823818</h3>
+            
+            
+            
+            
+        <div id="#Grama, James, Catherine E. Travis and Simon Gonzalez. 2020. Ethnolectal and community change ov(er) time: Word-final (er) in Australian English. Australian Journal of Linguistics 40(3): 346-368.  https://doi.org/10.1080/07268602.2020.1823818">
+            
+            <table class="table metadata table-striped" >
+                <tbody><tr>
+            <th style="text-align:left;" class="prop">@id</th>
+            <td style='text-align:left'><span>#Grama, James, Catherine E. Travis and Simon Gonzalez. 2020. Ethnolectal and community change ov(er) time: Word-final (er) in Australian English. Australian Journal of Linguistics 40(3): 346-368.  https://doi.org/10.1080/07268602.2020.1823818</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">name<span>&nbsp;</span><a href="http://schema.org/name">[?]</a></th>
+            <td style='text-align:left'><span>Grama, James, Catherine E. Travis and Simon Gonzalez. 2020. Ethnolectal and community change ov(er) time: Word-final (er) in Australian English. Australian Journal of Linguistics 40(3): 346-368.  https://doi.org/10.1080/07268602.2020.1823818</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">@type</th>
+            <td style='text-align:left'><span>ScholarlyArticle</span></td>
+            </tr><tr><th colspan="2" style="text-align:center">Items that reference this one</th><tr><tr>
+            <th style="text-align:left;" class="prop">citation<span>&nbsp;</span><a href="http://schema.org/citation">[?]</a></th>
+            <td style='text-align:left'><a href="#./">Sydney Speaks</a></td>
+            </tr></tbody>
+            </table>
+        </div>
+
+        </div>
+        <hr/><br/><br/>
+           <div>
+            <h3> Grama, James, Catherine E. Travis and Simon Gonzalez. 2021. Ethnic variation in real time: Change in Australian English diphthongs. In Hans Van de Velde, Nanna Haug Hilton and Remco Knooihuizen (eds), Studies in Language Variation, 292-314. Amsterdam: John Benjamins. https://www.jbe-platform.com/content/books/9789027259820-silv.25.13gra</h3>
+            
+            
+            
+            
+        <div id="#Grama, James, Catherine E. Travis and Simon Gonzalez. 2021. Ethnic variation in real time: Change in Australian English diphthongs. In Hans Van de Velde, Nanna Haug Hilton and Remco Knooihuizen (eds), Studies in Language Variation, 292-314. Amsterdam: John Benjamins. https://www.jbe-platform.com/content/books/9789027259820-silv.25.13gra">
+            
+            <table class="table metadata table-striped" >
+                <tbody><tr>
+            <th style="text-align:left;" class="prop">@id</th>
+            <td style='text-align:left'><span>#Grama, James, Catherine E. Travis and Simon Gonzalez. 2021. Ethnic variation in real time: Change in Australian English diphthongs. In Hans Van de Velde, Nanna Haug Hilton and Remco Knooihuizen (eds), Studies in Language Variation, 292-314. Amsterdam: John Benjamins. https://www.jbe-platform.com/content/books/9789027259820-silv.25.13gra</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">name<span>&nbsp;</span><a href="http://schema.org/name">[?]</a></th>
+            <td style='text-align:left'><span>Grama, James, Catherine E. Travis and Simon Gonzalez. 2021. Ethnic variation in real time: Change in Australian English diphthongs. In Hans Van de Velde, Nanna Haug Hilton and Remco Knooihuizen (eds), Studies in Language Variation, 292-314. Amsterdam: John Benjamins. https://www.jbe-platform.com/content/books/9789027259820-silv.25.13gra</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">@type</th>
+            <td style='text-align:left'><span>ScholarlyArticle</span></td>
+            </tr><tr><th colspan="2" style="text-align:center">Items that reference this one</th><tr><tr>
+            <th style="text-align:left;" class="prop">citation<span>&nbsp;</span><a href="http://schema.org/citation">[?]</a></th>
+            <td style='text-align:left'><a href="#./">Sydney Speaks</a></td>
+            </tr></tbody>
+            </table>
+        </div>
+
+        </div>
+        <hr/><br/><br/>
+           <div>
+            <h3> Gonzalez, Simon, James Grama and Catherine E. Travis. 2020. Comparing the performance of forced aligners used in sociophonetic research. Linguistics Vanguard 6(1). https://doi.org/10.1515/lingvan-2019-0058</h3>
+            
+            
+            
+            
+        <div id="#Gonzalez, Simon, James Grama and Catherine E. Travis. 2020. Comparing the performance of forced aligners used in sociophonetic research. Linguistics Vanguard 6(1). https://doi.org/10.1515/lingvan-2019-0058">
+            
+            <table class="table metadata table-striped" >
+                <tbody><tr>
+            <th style="text-align:left;" class="prop">@id</th>
+            <td style='text-align:left'><span>#Gonzalez, Simon, James Grama and Catherine E. Travis. 2020. Comparing the performance of forced aligners used in sociophonetic research. Linguistics Vanguard 6(1). https://doi.org/10.1515/lingvan-2019-0058</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">name<span>&nbsp;</span><a href="http://schema.org/name">[?]</a></th>
+            <td style='text-align:left'><span>Gonzalez, Simon, James Grama and Catherine E. Travis. 2020. Comparing the performance of forced aligners used in sociophonetic research. Linguistics Vanguard 6(1). https://doi.org/10.1515/lingvan-2019-0058</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">@type</th>
+            <td style='text-align:left'><span>ScholarlyArticle</span></td>
+            </tr><tr><th colspan="2" style="text-align:center">Items that reference this one</th><tr><tr>
+            <th style="text-align:left;" class="prop">citation<span>&nbsp;</span><a href="http://schema.org/citation">[?]</a></th>
+            <td style='text-align:left'><a href="#./">Sydney Speaks</a></td>
+            </tr></tbody>
+            </table>
+        </div>
+
+        </div>
+        <hr/><br/><br/>
+           <div>
+            <h3> Grama, James, Catherine E. Travis and Simon Gonzalez. 2019. Initiation, progression and conditioning of the short-front vowel shift in Australian English. In Sasha Calhoun, Paola Escudero, Marija Tabain and Paul Warren (eds), Proceedings of the 19th International Congress of Phonetic Sciences (ICPhS), Melbourne, Australia, 1769-1773. Canberra, Australia: Australasian Speech Science and Technology Association Inc. https://assta.org/proceedings/ICPhS2019/papers/ICPhS_1818.pdf</h3>
+            
+            
+            
+            
+        <div id="#Grama, James, Catherine E. Travis and Simon Gonzalez. 2019. Initiation, progression and conditioning of the short-front vowel shift in Australian English. In Sasha Calhoun, Paola Escudero, Marija Tabain and Paul Warren (eds), Proceedings of the 19th International Congress of Phonetic Sciences (ICPhS), Melbourne, Australia, 1769-1773. Canberra, Australia: Australasian Speech Science and Technology Association Inc. https://assta.org/proceedings/ICPhS2019/papers/ICPhS_1818.pdf">
+            
+            <table class="table metadata table-striped" >
+                <tbody><tr>
+            <th style="text-align:left;" class="prop">@id</th>
+            <td style='text-align:left'><span>#Grama, James, Catherine E. Travis and Simon Gonzalez. 2019. Initiation, progression and conditioning of the short-front vowel shift in Australian English. In Sasha Calhoun, Paola Escudero, Marija Tabain and Paul Warren (eds), Proceedings of the 19th International Congress of Phonetic Sciences (ICPhS), Melbourne, Australia, 1769-1773. Canberra, Australia: Australasian Speech Science and Technology Association Inc. https://assta.org/proceedings/ICPhS2019/papers/ICPhS_1818.pdf</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">name<span>&nbsp;</span><a href="http://schema.org/name">[?]</a></th>
+            <td style='text-align:left'><span>Grama, James, Catherine E. Travis and Simon Gonzalez. 2019. Initiation, progression and conditioning of the short-front vowel shift in Australian English. In Sasha Calhoun, Paola Escudero, Marija Tabain and Paul Warren (eds), Proceedings of the 19th International Congress of Phonetic Sciences (ICPhS), Melbourne, Australia, 1769-1773. Canberra, Australia: Australasian Speech Science and Technology Association Inc. https://assta.org/proceedings/ICPhS2019/papers/ICPhS_1818.pdf</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">@type</th>
+            <td style='text-align:left'><span>ScholarlyArticle</span></td>
+            </tr><tr><th colspan="2" style="text-align:center">Items that reference this one</th><tr><tr>
+            <th style="text-align:left;" class="prop">citation<span>&nbsp;</span><a href="http://schema.org/citation">[?]</a></th>
+            <td style='text-align:left'><a href="#./">Sydney Speaks</a></td>
+            </tr></tbody>
+            </table>
+        </div>
+
+        </div>
+        <hr/><br/><br/>
+           <div>
+            <h3> Purser, Benjamin, James Grama and Catherine E. Travis. 2020. Australian English over time: Using sociolinguistic analysis to inform dialect coaching. Voice and Speech Review 14(3): 269-291. https://doi.org/10.1080/23268263.2020.1750791</h3>
+            
+            
+            
+            
+        <div id="#Purser, Benjamin, James Grama and Catherine E. Travis. 2020. Australian English over time: Using sociolinguistic analysis to inform dialect coaching. Voice and Speech Review 14(3): 269-291. https://doi.org/10.1080/23268263.2020.1750791">
+            
+            <table class="table metadata table-striped" >
+                <tbody><tr>
+            <th style="text-align:left;" class="prop">@id</th>
+            <td style='text-align:left'><span>#Purser, Benjamin, James Grama and Catherine E. Travis. 2020. Australian English over time: Using sociolinguistic analysis to inform dialect coaching. Voice and Speech Review 14(3): 269-291. https://doi.org/10.1080/23268263.2020.1750791</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">name<span>&nbsp;</span><a href="http://schema.org/name">[?]</a></th>
+            <td style='text-align:left'><span>Purser, Benjamin, James Grama and Catherine E. Travis. 2020. Australian English over time: Using sociolinguistic analysis to inform dialect coaching. Voice and Speech Review 14(3): 269-291. https://doi.org/10.1080/23268263.2020.1750791</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">@type</th>
+            <td style='text-align:left'><span>ScholarlyArticle</span></td>
+            </tr><tr><th colspan="2" style="text-align:center">Items that reference this one</th><tr><tr>
+            <th style="text-align:left;" class="prop">citation<span>&nbsp;</span><a href="http://schema.org/citation">[?]</a></th>
+            <td style='text-align:left'><a href="#./">Sydney Speaks</a></td>
+            </tr></tbody>
+            </table>
+        </div>
+
+        </div>
+        <hr/><br/><br/>
+           <div>
+            <h3><a href="https://glottolog.org/resource/languoid/id/stan1293">Go to: </a> English</h3>
+            
+            
+            
+            
+        <div id="https://glottolog.org/resource/languoid/id/stan1293">
+            
+            <table class="table metadata table-striped" >
+                <tbody><tr>
+            <th style="text-align:left;" class="prop">@id</th>
+            <td style='text-align:left'><a href="https://glottolog.org/resource/languoid/id/stan1293">https://glottolog.org/resource/languoid/id/stan1293</a></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">name<span>&nbsp;</span><a href="http://schema.org/name">[?]</a></th>
+            <td style='text-align:left'><span>English</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">@type</th>
+            <td style='text-align:left'><span>Language</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">languageCode</th>
+            <td style='text-align:left'><span>stan1293</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">geo<span>&nbsp;</span><a href="http://schema.org/geo">[?]</a></th>
+            <td style='text-align:left'>Lat: undefined, Long: undefined</td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">source</th>
+            <td style='text-align:left'><span>Glottolog</span></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">sameAs<span>&nbsp;</span><a href="http://schema.org/sameAs">[?]</a></th>
+            <td style='text-align:left'><a href="https://www.ethnologue.com/language/eng">https://www.ethnologue.com/language/eng</a></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">alternateName<span>&nbsp;</span><a href="http://schema.org/alternateName">[?]</a></th>
+            <td style='text-align:left'><ul>
+                        <li><span>English (Standard Southern British)</span></li>
+                        
+                        <li><span>Englisch</span></li>
+                        
+                        <li><span>Anglais moderne [fr]</span></li>
+                        
+                        <li><span>English [en]</span></li>
+                        
+                        <li><span>Inglese moderno [it]</span></li>
+                        
+                        <li><span>Inglês moderno [pt]</span></li>
+                        
+                        <li><span>Modern English [en]</span></li>
+                        
+                        <li><span>Moderna angla lingvo [eo]</span></li>
+                        
+                        <li><span>Moderne engelsk [no]</span></li>
+                        
+                        <li><span>Modernes Englisch [de]</span></li>
+                        
+                        <li><span>Nyengelska [sv]</span></li>
+                        
+                        <li><span>anglais [fr]</span></li>
+                        
+                        <li><span>თანამედროვე ინგლისური პერიოდი [ka]</span></li>
+                        
+                        <li><span>現代英語 [zh]</span></li>
+                        
+                        <li><span>近代英語 [ja]</span></li>
+                        </ul></td>
+            </tr><tr>
+            <th style="text-align:left;" class="prop">iso639-3</th>
+            <td style='text-align:left'><span>eng</span></td>
+            </tr><tr><th colspan="2" style="text-align:center">Items that reference this one</th><tr><tr>
+            <th style="text-align:left;" class="prop">https://schema.org/language<span>&nbsp;</span><a href="https://schema.org/language">[?]</a></th>
+            <td style='text-align:left'><a href="#./">Sydney Speaks</a></td>
+            </tr></tbody>
+            </table>
+        </div>
+
+        </div>
+        <hr/><br/><br/></div>
+</div>
+
+
+
+
+
+</body>
+</html>

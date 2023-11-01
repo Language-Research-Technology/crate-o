@@ -37,9 +37,6 @@
         },
         {
           "@id": "#SydS"
-        },
-        {
-          "@id": "#Dataset-1"
         }
       ],
       "funder": {
@@ -198,14 +195,6 @@
       "@id": "#If I type a new value the text field disappears",
       "@type": "CollectionProtocol",
       "name": "If I type a new value the text field disappears"
-    },
-    {
-      "@id": "#Dataset-1",
-      "@type": [
-        "Dataset",
-        "RepositoryCollection"
-      ],
-      "name": "Dataset"
     }
   ]
 }

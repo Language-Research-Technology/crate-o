@@ -176,10 +176,7 @@ const commands = {
   help() {
     data.showWelcome = true;
   },
-
-  web() {
-    data.crate = editor.value.crate;
-  }
+  
 };
 
 const excludedFiles = {
@@ -267,8 +264,6 @@ async function compiled(html) {
     const writable = await preview.createWritable();
     await writable.write(html);
     await writable.close();
-    data.previewLink = URL.createObjectURL(await preview.getFile())
-    console.log(data.previewLink)
   }
 }
 </script>
@@ -294,9 +289,6 @@ async function compiled(html) {
       </el-menu-item>
       <el-menu-item index="save" :disabled="!data.dirHandle">
         💾 Save
-      </el-menu-item>
-      <el-menu-item index="web" :disabled="!data.dirHandle">
-        🌐 Save HTML
       </el-menu-item>
       <el-menu-item index="close" :disabled="!data.dirHandle">
         ⓧ Close
@@ -330,10 +322,8 @@ async function compiled(html) {
           </span>
         </el-row>
       </el-col>
-      <el-col v-if="data.previewLink" :xs="24" :sm="24" :md="3" :lg="3" :xl="3">
+      <el-col :xs="24" :sm="24" :md="3" :lg="3" :xl="3">
         <el-row class="p-1">
-          <a :href="data.previewLink" target="_blank" class="underline text-blue-600 dark:text-blue-500">Preview
-            Crate</a>
         </el-row>
       </el-col>
     </el-row>

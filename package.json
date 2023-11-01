@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "npm install ro-crate-editor-profiles && vite build",
     "preview": "vite preview --port 5000",
-    "test": "cypress run --component --browser chrome",
+    "test": "npx cypress run --component --browser chrome",
     "test:unit": "npm test -- --record --spec ",
     "cypress:open": "npx cypress open",
     "dev:webpack": "npm install && webpack serve -c webpack-development.js",
