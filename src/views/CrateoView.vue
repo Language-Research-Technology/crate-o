@@ -253,6 +253,8 @@ const goTo = function ({id, prop}) {
   }
   $router.push({query});
 }
+
+
 </script>
 
 <template>
@@ -334,7 +336,8 @@ const goTo = function ({id, prop}) {
       </span>
     </div>
     <CrateEditor ref="editor" v-loading="data.loading" v-model:entityId="data.entityId"
-                 :crate="data.crate" :profile="profile" @ready="data.loading = false">
+                 :crate="data.crate" :profile="profile" @ready="data.loading = false"
+                 :dir-handle="data.dirHandle">
     </CrateEditor>
     <SpreadSheet v-model:crate="data.crate" :buffer="data.spreadSheetBuffer"/>
   </template>

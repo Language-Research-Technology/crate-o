@@ -17,7 +17,8 @@ const props = defineProps({
   /** RO Crate editor profile. */
   profile: {type: Object, default: {}},
   /** Identifier of the currently displayed entity. Default to the root dataset */
-  entityId: {type: String}
+  entityId: {type: String},
+  dirHandle: {type: Object, default: {}},
 });
 
 const emit = defineEmits({
@@ -123,6 +124,7 @@ watch(() => props.crate, async crate => {
   data.history = [];
   historyStart = window.history.state?.position + 1;
   $router.push({query: {id: encodeURIComponent(state.crate.rootId)}});
+  state.dirHandle = toRaw(props.dirHandle);
   console.log(data.entity['@id']);
 }, {immediate: true});
 
@@ -249,7 +251,7 @@ function deleteEntity() {
             <div class="flex items-center">
               <el-tooltip
                   v-if="data.entity && data.rootDataset !== data.entity"
-                  :content="'Delete entity '+ data.entity['name'][0] || data.entity['@id']"
+                  :content="'Delete entity '+ data.entity['name']?.[0] || data.entity['@id']"
                   placement="bottom-start"
                   effect="light">
                 <el-button @click="deleteEntity" type="danger" plain

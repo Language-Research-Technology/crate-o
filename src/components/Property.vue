@@ -167,7 +167,7 @@ function removeValue(i, value) {
       <ControlAdd v-if="!isReverse" :modelValue="values" :definition="definition" class="flex flex-col md:flex-row gap-1 flex-nowrap"
                   @add="add">
       </ControlAdd>
-      <div v-if="definition.help" class="flex items-center bg-indigo-100 text-sm text-indigo-500 px-4 py-3 mt-2"
+      <div v-if="definition.help" class="flex items-center text-sm text-indigo-400 py-3 mt-2"
            role="alert">
         <el-icon>
           <InfoFilled/>
