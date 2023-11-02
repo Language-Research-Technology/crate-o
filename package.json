@@ -1,13 +1,41 @@
 {
   "name": "crate-o",
   "version": "0.2.0",
+  "description": "A VueJS UI component to create and edit Research Object Crate (RO-Crate) metadata",
+  "keywords": [
+    "RO-Crate",
+    "rocrate",
+    "research object",
+    "research object crate",
+    "metadata",
+    "jsonld",
+    "editor",
+    "vue component",
+    "ro-crate editor"
+  ],
+  "license": "GPL-3.0-or-later",
+  "contributors": [
+    "Alvin Sebastian (https://orcid.org/0000-0002-9086-1722)",
+    "Moises Sacal Bonequi (https://orcid.org/0000-0002-4438-2755)",
+    "Peter Sefton (https://orcid.org/0000-0002-3545-944X)",
+    "Rosanna Smith"
+  ],
+  "files": [
+    "src/components",
+    "src/lookups"
+  ],
+  "main": "index.js",
   "type": "module",
-  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Language-Research-Technology/crate-o"
+  },
   "scripts": {
     "dev": "npm install ro-crate-editor-profiles && vite",
     "build": "npm install ro-crate-editor-profiles && vite build",
     "preview": "vite preview --port 5000",
-    "test": "cypress run --component --browser chrome",
+    "test": "cypress run --component --browser chrome --headless",
+    "test:ui": "cypress run --component --browser chrome",
     "test:unit": "npm test -- --record --spec ",
     "cypress:open": "npx cypress open",
     "dev:webpack": "npm install && webpack serve -c webpack-development.js",
