@@ -262,7 +262,7 @@ async function getFileHandle(path) {
         <Property v-for="def in layout.definitions" :key="def.id" :modelValue="getProperty(def)"
                   :components="getComponents(def)" :definition="def" @update:modelValue="v => updateProperty(def, v)"
                   @entityCreated="(e) => $emit('entityCreated', e)"></Property>
-        <el-form-item label="Preview" class="pt-2">
+        <el-form-item label="Preview" class="pt-2" v-if="props.modelValue['@type'].includes('File')">
           <MediaPreview :file="data.file"/>
         </el-form-item>
       </el-form>
