@@ -52,6 +52,7 @@
     "leaflet-gesture-handling": "^1.2.2",
     "leaflet.path.drag": "^0.0.6",
     "lodash": "^4.17.21",
+    "mime": "^3.0.0",
     "moment": "^2.29.4",
     "ro-crate": "^3.3.3",
     "ro-crate-editor-profiles": "github:Language-Research-Technology/ro-crate-editor-profiles",

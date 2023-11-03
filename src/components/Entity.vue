@@ -1,5 +1,5 @@
 <script setup>
-import {computed, inject, onMounted, onUpdated, watch} from "vue";
+import {computed, inject, onMounted, onUpdated, reactive, watch} from "vue";
 import {$state} from './keys';
 import Property from './Property.vue';
 import {ElTabPane, ElTabs} from 'element-plus';
@@ -7,6 +7,7 @@ import {InfoFilled, Plus} from '@element-plus/icons-vue';
 import defaultLayout from '../default_layout.json';
 import {find, isEmpty, isUndefined} from "lodash";
 import {useRoute} from "vue-router";
+import MediaPreview from "@/components/MediaPreview.vue";
 
 const props = defineProps(['modelValue', 'currentProperty']);
 const emit = defineEmits(['update:modelValue', 'entityCreated']);
@@ -22,13 +23,19 @@ onMounted(() => {
   //console.log(definitions.value);
 });
 
-// const data = reactive({
-//   activeLayout: ''
-// });
+const data = reactive({
+  file: ''
+});
 
-// watch(() => props.modelValue, (newVal, oldVal) => {
-//   data.activeLayout = state.meta[newVal['@id']].__activeLayout ??= 'About';
-// }, { immediate: true });
+watch(() => props.modelValue, async (newVal, oldVal) => {
+  // data.activeLayout = state.meta[newVal['@id']].__activeLayout ??= 'About';
+  if (props.modelValue['@type'].includes('File')) {
+    data.file = await getFileHandle(props.modelValue['@id']);
+  }else{
+    data.file = null
+  }
+}, {immediate: true});
+
 watch(() => $route.query.prop, (eProp, oldProp) => {
   const prop = decodeURIComponent($route.query.prop);
   if (prop !== "undefined") {
@@ -185,6 +192,26 @@ function addConformTos(rTypes) {
   entity["conformsTo"] = entity["conformsTo"].concat(rTypes);
   emit('update:modelValue', entity);
 }
+
+async function getFileHandle(path) {
+  console.log('readFile')
+  console.log(path);
+  try {
+    const paths = path.split('/');
+    const fileName = paths.pop();
+    let dirHandle = state.dirHandle;
+    for (let p of paths) {
+      dirHandle = await dirHandle.getDirectoryHandle(p);
+    }
+    const dataHandle = await dirHandle.getFileHandle(fileName);
+    return await dataHandle.getFile();
+
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+
 </script>
 
 <template>
@@ -235,7 +262,12 @@ function addConformTos(rTypes) {
         <Property v-for="def in layout.definitions" :key="def.id" :modelValue="getProperty(def)"
                   :components="getComponents(def)" :definition="def" @update:modelValue="v => updateProperty(def, v)"
                   @entityCreated="(e) => $emit('entityCreated', e)"></Property>
+        <el-form-item label="Preview" class="pt-2" v-if="props.modelValue['@type'].includes('File')">
+          <MediaPreview :file="data.file"/>
+        </el-form-item>
       </el-form>
+
+
     </ElTabPane>
   </ElTabs>
 </template>
