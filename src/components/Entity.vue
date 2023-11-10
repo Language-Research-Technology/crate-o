@@ -5,7 +5,6 @@ import Property from './Property.vue';
 import { ElTabPane, ElTabs } from 'element-plus';
 import { InfoFilled, Plus } from '@element-plus/icons-vue';
 import defaultLayout from '../default_layout.json';
-import { find, isEmpty, isUndefined } from "lodash";
 import MediaPreview from "@/components/MediaPreview.vue";
 
 const props = defineProps(['modelValue', 'propertyId', 'getFile']);

@@ -90,11 +90,13 @@ export class EditorState {
   /** cache array of entities */
   entities;
   metadataFileEntityId;
+  rootDatasetId;
   showEntity;
 
   async setCrate(rawCrate) {
     const crate = this.crate = new ROCrate(rawCrate, { array: true, link: true });
     this.metadataFileEntityId = crate.metadataFileEntity['@id'];
+    this.rootDatasetId = crate.rootDataset['@id'];
     this.meta = reactive({});
     this.refreshEntities();
     await crate.resolveContext();
@@ -186,10 +188,12 @@ export class EditorState {
       // Add the resolved id to the definitions.
       definitions[id] = { id, name, key: name };
     }
-    const reverse = new Map(Object.keys(entity['@reverse']).map(name => [crate?.resolveTerm(name) || name, name]));
-    for (const [id, name] of reverse) {
-      // Add the resolved id to the definitions.
-      definitions[id] = {id, name, key: name, isReverse: true};
+
+    for (const name in entity['@reverse']) {
+      const id = crate?.resolveTerm(name);
+      if (entity['@id'] !== this.rootDatasetId || id !== "http://schema.org/about") {
+        definitions[id] = {id, name, key: name, isReverse: true};
+      }
     }
     //console.log(isReactive(definitions));
     //sort here

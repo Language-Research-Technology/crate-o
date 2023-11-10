@@ -3,7 +3,6 @@ import {reactive, computed, toRaw, nextTick, inject, isReactive} from "vue";
 import {QuestionFilled, Delete, InfoFilled, WarningFilled, Right, Back} from '@element-plus/icons-vue';
 import ControlAdd from "./ControlAdd.vue";
 import {$state} from './keys';
-import {first} from "lodash";
 
 const state = inject($state);
 const pageSize = 10; //Later do in conf the page size
@@ -117,7 +116,7 @@ function removeValue(i, value) {
 <template>
   <!-- <el-form-item class="hover:bg-violet-100 px-2 p-2"> -->
   <!-- TODO: !!! remove hack of checking the ro-crate-metadata.json-->
-  <el-form-item :class="[ isReverse ? 'bg-teal-100 border-1 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md' : 'px-2 p-2', 'px-2 p-2']" v-if="first(values)?.['@id'] !== 'ro-crate-metadata.json'">
+  <el-form-item :class="[ isReverse ? 'bg-teal-100 border-1 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md' : 'px-2 p-2', 'px-2 p-2']">
     <template #label>
       <el-tooltip v-if="definition?.required"
                   content="Property Required"
