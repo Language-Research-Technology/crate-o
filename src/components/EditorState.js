@@ -9,7 +9,7 @@ import LinkEntity from '../components/LinkEntity.vue';
 import dateTimeUtils from '../components/datetimeutils';
 import lookupModules from '../lookups/index';
 
-const entityComponent = [LinkEntity, {}];
+const entityComponent = [LinkEntity, { }];
 const primitiveComponents = {
   boolean: [ElCheckbox, { border: true }, false],
   text: [InputText, { type: 'textarea' }, ''],
@@ -90,17 +90,20 @@ export class EditorState {
   /** cache array of entities */
   entities;
   metadataFileEntityId;
+  showEntity;
+
   async setCrate(rawCrate) {
     const crate = this.crate = new ROCrate(rawCrate, { array: true, link: true });
-    var mid = this.metadataFileEntityId = crate.metadataFileEntity['@id'];
+    this.metadataFileEntityId = crate.metadataFileEntity['@id'];
     this.meta = reactive({});
-    this.entities = reactive(Array.from(crate.entities({ filter: e => e['@id'] !== mid })));
+    this.refreshEntities();
     await crate.resolveContext();
     return crate;
   }
 
   setProfile(profile) {
     this.profile = profile;
+    this.meta = reactive({});
     this.defByType = {};
     // set select options for @type lookup
     jsonldKeywords['@type'].props.options = profile.enabledClasses;
@@ -113,6 +116,11 @@ export class EditorState {
         catch(e => { });
     }
     return profile;
+  }
+
+  refreshEntities() {
+    const mid = this.metadataFileEntityId;
+    this.entities = reactive(Array.from(this.crate.entities({ filter: e => e['@id'] !== mid })));
   }
 
   /**
