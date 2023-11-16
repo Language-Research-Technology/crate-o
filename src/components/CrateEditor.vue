@@ -7,6 +7,7 @@ import { HomeFilled, ArrowLeftBold, Delete } from '@element-plus/icons-vue';
 import FilteredPaged from './FilteredPaged.vue';
 import LinkEntity from './LinkEntity.vue';
 import Entity from './Entity.vue';
+import { countReverse } from '../utils/rocrate'
 
 const props = defineProps({
   //  modelValue: { type: ROCrate },
@@ -70,17 +71,23 @@ watch(() => props.crate, async crate => {
   //data.entity = data.rootDataset = state.crate.rootDataset;
   data.rootDataset = state.crate.rootDataset;
   //state.dirHandle = toRaw(props.dirHandle);
+  initEntity(props.entityId);
 }, { immediate: true });
 
 watch(() => props.profile, (profile) => {
-  console.log('watch profile', profile);
+  //console.log('watch profile', profile);
   state.setProfile(profile);
   //newEntityUpdate();
 }, { immediate: true });
 
-watchEffect(() => {
+watch(() => props.entityId, entityId => {
+  console.log('watch entityId');
+  initEntity(props.entityId);
+});
+
+function initEntity(entityId) {
   if (state.crate) {
-    data.entity = state.crate.getEntity(props.entityId);
+    data.entity = state.crate.getEntity(entityId);
     if (data.entity) {
       let id = data.entity['@id'];
       let i = data.history.findIndex(e => e['@id'] === id);
@@ -90,13 +97,9 @@ watchEffect(() => {
       showEntity(data.rootDataset);
     }
   }
-});
+}
 
-const unlinkedEntities = computed(() => state.entities.filter(e => {
-  //TODO: make this into an utility function because we are doing this in many parts
-  const linksCount = Object.values(e['@reverse']).reduce((count, refs) => count + refs.length, 0);
-  return linksCount <= 0;
-}));
+const unlinkedEntities = computed(() => Array.from(state.entities.value).filter(e => !countReverse(e)));
 //const reverseEntities = computed(() => Object.values(data.entity?.['@reverse'] || {}).reduce((a, e) => a.concat(e), []).filter(e => e !== state.crate.metadataFileEntity));
 
 const forceKey = ref(0);
@@ -142,7 +145,7 @@ function onSelectNewEntity(type) {
     state.crate.addEntity(item, { replace: true, recurse: true });
     const newEntity = state.crate.getEntity(item['@id'])
     state.ensureContext(type);
-    state.entities.push(newEntity);
+    state.entities.value.add(newEntity);
     showEntity(item);
     data.newEntityType = null;
   }
@@ -151,11 +154,12 @@ function onSelectNewEntity(type) {
 function deleteEntity() {
   //delete
   //count the links
-  const linksCount = Object.values(data.entity['@reverse']).reduce((count, refs) => count + refs.length, 0);
+  const linksCount = countReverse(data.entity);
   const entityMessage = linksCount > 1 ? 'entities' : 'entity';
   if (linksCount === 0 || window.confirm(`This entity is referenced by ${linksCount} other ${entityMessage}. Are you sure you want to delete it?`)) {
-    const i = state.entities.findIndex(e => e['@id'] === data.entity['@id']);
-    if (i >= 0) state.entities.splice(i, 1);
+    // const i = state.entities.findIndex(e => e['@id'] === data.entity['@id']);
+    // if (i >= 0) state.entities.splice(i, 1);
+    state.entities.value.delete(data.entity['@id']);
     nextTick(() => {
       data.history.pop();
       state.crate.deleteEntity(data.entity, { references: true });
@@ -234,7 +238,7 @@ function truncate(text) {
             </section>
           </el-tab-pane>
           <el-tab-pane label="All Entities" name="all" lazy>
-            <FilteredPaged :modelValue="state.entities" v-slot="{ value, index }">
+            <FilteredPaged :modelValue="Array.from(state.entities.value)" v-slot="{ value, index }">
               <LinkEntity :modelValue="value"></LinkEntity>
             </FilteredPaged>
           </el-tab-pane>

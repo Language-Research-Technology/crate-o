@@ -1,4 +1,4 @@
-import { reactive, shallowReactive, isReactive } from 'vue';
+import { ref, reactive, shallowReactive, isReactive } from 'vue';
 import { ROCrate } from 'ro-crate';
 import { ElCheckbox } from 'element-plus';
 import InputDateTime from '../components/InputDateTime.vue';
@@ -88,7 +88,7 @@ export class EditorState {
   defByType;
   lookupPromises = {};
   /** cache array of entities */
-  entities;
+  entities = ref({});
   metadataFileEntityId;
   rootDatasetId;
   showEntity;
@@ -122,7 +122,7 @@ export class EditorState {
 
   refreshEntities() {
     const mid = this.metadataFileEntityId;
-    this.entities = reactive(Array.from(this.crate.entities({ filter: e => e['@id'] !== mid })));
+    this.entities.value = new Set(this.crate.entities({ filter: e => e['@id'] !== mid }));
   }
 
   /**
@@ -305,7 +305,6 @@ export class EditorState {
       for (const type of types) {
         const c = this.profile.classes[type];
         if (c) {
-          console.log(this.crate.getTerm(c.id))
           if (c.id && !this.crate.getTerm(c.id)) {
             context[type] = c.id;
           }
@@ -316,9 +315,7 @@ export class EditorState {
           }
         }
       }
-      console.log(context);
       if (Object.keys(context).length) {
-        console.log('added');
         this.crate.addContext(context);
       }
     }

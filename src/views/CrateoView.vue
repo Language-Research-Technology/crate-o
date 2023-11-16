@@ -1,5 +1,5 @@
 <script setup>
-import { shallowReactive, reactive, ref, computed, watch } from 'vue';
+import { shallowReactive, reactive, ref, computed, watch, watchEffect, nextTick } from 'vue';
 import { profiles } from '@/profiles';
 import Welcome from "@/components/Welcome.vue";
 import Help from "@/components/Help.vue";
@@ -8,12 +8,14 @@ import SpreadSheet from "@/components/SpreadSheet.vue";
 import { Validator } from "@/utils/profileValidator.js";
 import { first, isEmpty, isUndefined } from "lodash";
 import { ROCrate } from "ro-crate";
-//import { useRouter } from 'vue-router';
 import { handleRoute } from '../components/DefaultRouteHandler.js'
 
 const navigate = handleRoute((entityId, propertyId) => {
-  data.entityId = entityId;
-  data.propertyId = propertyId;
+  if (data.metadataHandle) {
+    console.log('handleRoute, set entityId', entityId)
+    data.entityId = entityId;
+    data.propertyId = propertyId;
+  }
 });
 //const $router = useRouter();
 
@@ -73,10 +75,11 @@ const commands = {
   },
 
   async open() {
+    console.log('open');
     try {
       data.dirHandle = await window.showDirectoryPicker();
       // reset crate
-      data.metadataHandle = null;
+      resetData();
       try {
         data.metadataHandle = await data.dirHandle.getFileHandle('ro-crate-metadata.json');
       } catch (error) {
@@ -93,23 +96,15 @@ const commands = {
         data.crate = JSON.parse(content);
         const crate = new ROCrate(data.crate, { array: true, link: true });
         const conformsToCrate = crate.rootDataset['conformsTo'] || [];
-        for (let [index, p] of data.profiles.entries()) {
-          let foundProfile = undefined;
-          const conformsToProfile = p?.conformsToUri || [];
-          for (let conformsTo of conformsToCrate) {
-            if (conformsToProfile.includes(conformsTo['@id'])) {
-              foundProfile = true;
-            }
-          }
-          if (foundProfile) {
-            data.selectedProfile = index;
-          }
-        }
-        navigate();
+        const profileIndex = data.profiles.findIndex(p => 
+          conformsToCrate.some(ct => (p?.conformsToUri || []).includes(ct['@id'])));
+        if (profileIndex >= 0) data.selectedProfile = profileIndex;
       } else {
         data.crate = {};
       }
+      //navigate();
       //data.loading = false;
+      console.log('end open')
     } catch (error) {
       console.error(error);
       window.alert(error);
@@ -155,14 +150,8 @@ const commands = {
     data.dirHandle = null;
     data.metadataHandle = null;
     data.crate = null;
-    data.entityId = '';
-    data.selectedProfile = defaultProfile;
-    data.profiles = shallowReactive(profiles);
-    data.spreadSheetBuffer = null;
-    data.validationResultDialog = false;
-    data.validationResult = {};
+    resetData();
     navigate();
-    data.loading = false;
   },
 
   async loadSpreadsheet() {
@@ -188,6 +177,21 @@ const excludedFiles = {
   'ro-crate-metadata.json': '',
   'node_modules': ''
 };
+
+function resetData() {
+  data.entityId = '';
+  data.selectedProfile = defaultProfile;
+  //data.profiles = shallowReactive(profiles);
+  data.spreadSheetBuffer = null;
+  data.validationResultDialog = false;
+  data.validationResult = {};
+  data.loading = false;
+}
+
+function updateEntityId(id, pages) {
+  console.log('updateEntityId', id);
+  navigate(id, '', pages);
+}
 
 /**
  *
@@ -230,6 +234,7 @@ watch(() => data.selectedProfile, (v, pv) => {
     commands.loadProfile();
   }
 });
+
 
 const validate = function (json, profile) {
   const crate = new ROCrate(json, { array: true, link: true });
@@ -370,7 +375,7 @@ async function getFile(id) {
       </span>
     </div>
     <CrateEditor ref="editor" v-loading="data.loading" :crate="data.crate" :profile="profile" 
-    :entityId="data.entityId" @update:entityId="(id, pages) => navigate(id, '', pages)" :propertyId="data.propertyId"
+    :entityId="data.entityId" @update:entityId="updateEntityId" :propertyId="data.propertyId"
     @ready="data.loading = false" :get-file="getFile">
     </CrateEditor>
     <SpreadSheet v-model:crate="data.crate" :buffer="data.spreadSheetBuffer" />
