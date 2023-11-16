@@ -94,11 +94,6 @@ const commands = {
         let file = await data.metadataHandle.getFile();
         const content = await file.text();
         data.crate = JSON.parse(content);
-        const crate = new ROCrate(data.crate, { array: true, link: true });
-        const conformsToCrate = crate.rootDataset['conformsTo'] || [];
-        const profileIndex = data.profiles.findIndex(p => 
-          conformsToCrate.some(ct => (p?.conformsToUri || []).includes(ct['@id'])));
-        if (profileIndex >= 0) data.selectedProfile = profileIndex;
       } else {
         data.crate = {};
       }
@@ -114,9 +109,7 @@ const commands = {
   async addFiles() {
     const dirHandle = data.dirHandle;
     const files = await collectFiles({ dirHandle, root: '' });
-    editor.value.updateCrate((crate) => {
-      crate.rootDataset.hasPart = files;
-    });
+    editor.value.setProperty(editor.value.rootDatasetId, 'hasPart', files);
   },
 
   async save() {
@@ -136,11 +129,12 @@ const commands = {
       }
     }
     if (data.metadataHandle) {
+      const crate = editor.value.crate;
       const writable = await data.metadataHandle.createWritable();
-      const content = JSON.stringify(editor.value.crate, null, 2);
+      const content = JSON.stringify(crate, null, 2);
       await writable.write(content);
       await writable.close();
-      data.crate = editor.value.crate;
+      data.crate = crate;
       data.validationResult = validate(data.crate, profile.value);
       data.validationResultDialog = !isEmpty(data.validationResult);
     }
@@ -177,6 +171,13 @@ const excludedFiles = {
   'ro-crate-metadata.json': '',
   'node_modules': ''
 };
+
+function detectProfile(roc) {
+  const conformsToCrate = roc.rootDataset['conformsTo'] || [];
+  const profileIndex = data.profiles.findIndex(p =>
+    conformsToCrate.some(ct => (p?.conformsToUri || []).includes(ct['@id'])));
+  if (profileIndex >= 0) data.selectedProfile = profileIndex;
+}
 
 function resetData() {
   data.entityId = '';
@@ -279,8 +280,8 @@ async function getFile(id) {
     const file = await fileHandle.getFile();
     return {
       id,
-      type:  file.type,
-      name:  file.name,
+      type: file.type,
+      name: file.name,
       get url() {
         if (prevObjectUrl) {
           URL.revokeObjectURL(prevObjectUrl);
@@ -374,9 +375,9 @@ async function getFile(id) {
         </el-button>
       </span>
     </div>
-    <CrateEditor ref="editor" v-loading="data.loading" :crate="data.crate" :profile="profile" 
-    :entityId="data.entityId" @update:entityId="updateEntityId" :propertyId="data.propertyId"
-    @ready="data.loading = false" :get-file="getFile">
+    <CrateEditor ref="editor" v-loading="data.loading" :crate="data.crate" :profile="profile" :entityId="data.entityId"
+      @update:entityId="updateEntityId" :propertyId="data.propertyId" @ready="data.loading = false" :get-file="getFile"
+      @data="detectProfile">
     </CrateEditor>
     <SpreadSheet v-model:crate="data.crate" :buffer="data.spreadSheetBuffer" />
   </template>

@@ -19,7 +19,7 @@ const props = defineProps({
   entityId: { type: String },
   /** Property that needs to be specifically displayed. */
   propertyId: { type: String },
-  getFile: { type: Function, default: null },
+  getFile: { type: Function, default: null }
 });
 
 const emit = defineEmits({
@@ -31,6 +31,8 @@ const emit = defineEmits({
   remove: null,
   /** Triggered when changing a value */
   change: null,
+  /** Triggered when the internal data of ROCrate instance is created */
+  data: null,
   /** Triggered when data is rendered */
   ready: null
 });
@@ -56,7 +58,7 @@ var historyStart = window.history.length;
 onUpdated(() => {
   console.log('crate updated');
   data.loading = false;
-  emit("ready");
+  emit('ready');
 });
 
 
@@ -67,11 +69,12 @@ watch(() => props.crate, async crate => {
   data.history = [];
   historyStart = window.history.state?.position + 1;
   //$router.push({query: {id: encodeURIComponent(state.crate.rootId)}});
-  await state.setCrate(crate);
+  const roc = await state.setCrate(crate);
   //data.entity = data.rootDataset = state.crate.rootDataset;
-  data.rootDataset = state.crate.rootDataset;
+  data.rootDataset = roc.rootDataset;
   //state.dirHandle = toRaw(props.dirHandle);
   initEntity(props.entityId);
+  emit('rocrate', roc);
 }, { immediate: true });
 
 watch(() => props.profile, (profile) => {
@@ -104,12 +107,18 @@ const unlinkedEntities = computed(() => Array.from(state.entities.value).filter(
 
 const forceKey = ref(0);
 defineExpose({
-  get rootDataset() {
-    return data.rootDataset;
+  get rootDatasetId() {
+    return data.rootDataset['@id'];
   },
   get crate() {
     return state.crate.toJSON();
   },
+  setProperty(entity, propName, values) {
+    state.crate.setProperty(entity, propName, values);
+    state.refreshEntities();
+    forceKey.value++;
+  },
+  /** Manually update the editor's internal representation of the ro-crate data */
   updateCrate(cb) {
     cb(state.crate);
     state.refreshEntities();
