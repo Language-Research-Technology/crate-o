@@ -1,6 +1,6 @@
 {
   "name": "crate-o",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A VueJS UI component to create and edit Research Object Crate (RO-Crate) metadata",
   "keywords": [
     "RO-Crate",
@@ -56,7 +56,7 @@
     "moment": "^2.29.4",
     "ro-crate": "^3.3.3",
     "ro-crate-editor-profiles": "github:Language-Research-Technology/ro-crate-editor-profiles",
-    "ro-crate-excel": "^1.0.16",
+    "ro-crate-excel": "^1.0.18",
     "vue": "^3.2.45",
     "vue-router": "^4.1.6"
   },
