@@ -1,5 +1,5 @@
 import {useRoute, useRouter, onBeforeRouteUpdate } from 'vue-router';
-
+//const {useRoute, useRouter, onBeforeRouteUpdate } = await import('vue-router');
 
 export function handleRoute(onUpdate) {
   const $router = useRouter();

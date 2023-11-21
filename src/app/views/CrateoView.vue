@@ -1,14 +1,14 @@
 <script setup>
 import { shallowReactive, reactive, ref, computed, watch, watchEffect, nextTick } from 'vue';
-import { profiles } from '@/profiles';
-import Welcome from "@/components/Welcome.vue";
-import Help from "@/components/Help.vue";
-
-import SpreadSheet from "@/components/SpreadSheet.vue";
-import { Validator } from "@/utils/profileValidator.js";
+import { profiles } from '../../profiles';
+import Welcome from "../components/Welcome.vue";
+import Help from "../components/Help.vue";
+import SpreadSheet from "../components/SpreadSheet.vue";
+import { Validator } from "../utils/profileValidator.js";
 import { first, isEmpty, isUndefined } from "lodash";
 import { ROCrate } from "ro-crate";
-import { handleRoute } from '../components/DefaultRouteHandler.js'
+import { handleRoute } from '../../lib/DefaultRouteHandler.js'
+import { CrateEditor } from '../../lib'
 
 const navigate = handleRoute((entityId, propertyId) => {
   if (data.metadataHandle) {

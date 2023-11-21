@@ -4,8 +4,8 @@ import { $state } from './keys';
 import Property from './Property.vue';
 import { ElTabPane, ElTabs } from 'element-plus';
 import { InfoFilled, Plus } from '@element-plus/icons-vue';
-import defaultLayout from '../default_layout.json';
-import MediaPreview from "@/components/MediaPreview.vue";
+import defaultLayout from './default_layout.json';
+import MediaPreview from "./MediaPreview.vue";
 
 const props = defineProps(['modelValue', 'propertyId', 'getFile']);
 const emit = defineEmits(['update:modelValue']);

@@ -1,5 +1,5 @@
 <script setup>
-import Help from "@/components/Help.vue";
+import Help from "./Help.vue";
 
 //TODO: Insert code that will load the readme markdown into here as html
 </script>

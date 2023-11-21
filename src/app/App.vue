@@ -18,7 +18,7 @@ if (!window.showDirectoryPicker) {
     <el-row :gutter="10" class="flex items-center justify-center min-w-md">
       <el-col :span="8">
         <span class="flex flex-col justify-center items-center ml-2">
-          <img alt="Crate-O an RO-Crate Editor" class="logo min-h-full p-0 h-16" src="@/assets/logo.svg" width="85"/>
+          <img alt="Crate-O an RO-Crate Editor" class="logo min-h-full p-0 h-16" src="/logo.svg" width="85"/>
         </span>
       </el-col>
       <el-col :span="16">

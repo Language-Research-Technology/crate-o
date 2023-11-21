@@ -7,7 +7,7 @@ import { HomeFilled, ArrowLeftBold, Delete } from '@element-plus/icons-vue';
 import FilteredPaged from './FilteredPaged.vue';
 import LinkEntity from './LinkEntity.vue';
 import Entity from './Entity.vue';
-import { countReverse } from '../utils/rocrate'
+import { countReverse } from './utils.js'
 
 const props = defineProps({
   //  modelValue: { type: ROCrate },
@@ -74,7 +74,7 @@ watch(() => props.crate, async crate => {
   data.rootDataset = roc.rootDataset;
   //state.dirHandle = toRaw(props.dirHandle);
   initEntity(props.entityId);
-  emit('rocrate', roc);
+  emit('data', roc);
 }, { immediate: true });
 
 watch(() => props.profile, (profile) => {

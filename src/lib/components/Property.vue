@@ -3,8 +3,8 @@ import { reactive, computed, toRaw, nextTick, inject, isReactive } from "vue";
 import { QuestionFilled, Delete, InfoFilled, WarningFilled, Right, Back } from '@element-plus/icons-vue';
 import ControlAdd from "./ControlAdd.vue";
 import { $state } from './keys';
-import { countReverse } from '../utils/rocrate'
-
+import { countReverse } from './utils.js'
+import FilteredPaged from "./FilteredPaged.vue";
 
 const state = inject($state);
 const pageSize = 10; //Later do in conf the page size

@@ -21,11 +21,16 @@
     "Rosanna Smith"
   ],
   "files": [
-    "src/components",
-    "src/lookups"
+    "src/lib",
+    "!src/lib/**/*.cy.js"
   ],
-  "main": "src/index.js",
+  "main": "./src/lib/index.js",
+  "module": "./src/lib/index.js",
   "type": "module",
+  "exports": {
+    ".": "./src/lib/index.js",
+    "./DefaultRouteHandler": "./src/lib/DefaultRouteHandler.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/Language-Research-Technology/crate-o"
@@ -33,6 +38,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:library": "vite build --mode library",
     "preview": "vite preview --port 5000",
     "test": "cypress run --component --browser chrome --headless",
     "test:ui": "cypress run --component --browser chrome",
@@ -45,7 +51,6 @@
   "dependencies": {
     "@element-plus/icons-vue": "^2.1.0",
     "@element-plus/theme-chalk": "^2.2.16",
-    "element-plus": "^2.4.2",
     "leaflet": "^1.9.4",
     "leaflet-editable": "^1.2.0",
     "leaflet-gesture-handling": "^1.2.2",
@@ -54,6 +59,10 @@
     "mime": "^3.0.0",
     "moment": "^2.29.4",
     "ro-crate": "^3.3.3"
+  },
+  "peerDependencies": {
+    "vue": "^3.3.8",
+    "element-plus": "^2.4.2"
   },
   "devDependencies": {
     "@babel/core": "^7.14.8",
@@ -96,8 +105,5 @@
     "webpack-dev-server": "^4.0.0",
     "webpack-merge": "^5.8.0",
     "yargs": "^17.7.1"
-  },
-  "peerDependencies": {
-    "vue": "^3.3.8"
   }
 }
