@@ -17,7 +17,7 @@ const props = defineProps({
   components: { type: Array, required: true },
   definition: { type: Object, required: true }
 });
-const emit = defineEmits(['update:modelValue', 'entityCreated']);
+const emit = defineEmits(['update:modelValue']);
 
 const label = computed(() => {
   var label = props.definition.label || props.definition.name || props.definition.id;
@@ -47,9 +47,9 @@ const isReverse = computed(() => {
 });
 
 const values = computed(() => {
-  const value = props.modelValue;
+  const value = toRaw(props.modelValue);
   //return value ? (Array.isArray(value) ? value : [value]) : [];
-  return Array.isArray(value) ? value : (value == null ? [] : [value]);
+  return Array.isArray(value) ? value.slice(0) : (value == null ? [] : [value]);
 });
 
 function add(type, value, fromLookup) {
@@ -63,23 +63,22 @@ function add(type, value, fromLookup) {
     const options = props.definition.values;
     const propsOpt = { ...props.definition.props, ...(options && { options }) };
     const c = props.components[vals.length] = state.getInlineComponent(type, propsOpt);
-    val ??= c[2];
+    val ??= c[2] ?? '';
   }
-  vals.push(val ?? '');
-  console.log('add val:', val);
-
+  vals.push(val);
   emit('update:modelValue', vals);
   if (typeof value === 'object' && value['@id']) {
+    // when an entity is added as values of a property
     const entity = state.crate.getEntity(value['@id']);
     state.ensureContext(entity['@type']);
     state.entities.value.add(entity);
-    if (!fromLookup && !isInline) emit('entityCreated', entity);
+    if (!fromLookup && !isInline) state.showEntity(entity);
   }
 }
 
 function updateValue(i, value) {
-  const vals = toRaw(props.modelValue);
-  if (Array.isArray(vals)) {
+  if (Array.isArray(toRaw(props.modelValue))) {
+    const vals = values.value;
     vals[i] = value;
     emit('update:modelValue', vals);
   } else {
@@ -88,8 +87,8 @@ function updateValue(i, value) {
 }
 
 function removeValue(i, value) {
-  const vals = toRaw(props.modelValue);
-  if (Array.isArray(vals)) {
+  if (Array.isArray(toRaw(props.modelValue))) {
+    const vals = values.value;
     vals.splice(i, 1);
     props.components.splice(i, 1);
     if (typeof value === 'object' && value['@id']) {
@@ -104,6 +103,8 @@ function removeValue(i, value) {
       }
     }
     emit('update:modelValue', vals);
+  } else {
+    emit('update:modelValue', undefined);
   }
 }
 

@@ -95,8 +95,7 @@ function updateProperty(def, value) {
   state.ensurePropertyContext(def);
   const entity = props.modelValue;
   const key = def.key || def.name;
-  if (entity[key] !== value) entity[key] = value;
-  emit('update:modelValue', entity);
+  emit('update:modelValue', entity, key, value);
 }
 
 function getProperty(def) {
@@ -134,8 +133,7 @@ function checkRootTypes() {
 
 function addRootTypes(rTypes) {
   const entity = props.modelValue;
-  entity["@type"] = entity["@type"].concat(rTypes);
-  emit('update:modelValue', entity);
+  emit('update:modelValue', entity, '@type', entity['@type'].concat(rTypes));
 }
 
 function checkConformsTo() {
@@ -160,11 +158,8 @@ function checkConformsTo() {
 
 function addConformTos(rTypes) {
   const entity = props.modelValue;
-  if (!entity["conformsTo"]?.length) {
-    entity["conformsTo"] = [];
-  }
-  entity["conformsTo"] = entity["conformsTo"].concat(rTypes);
-  emit('update:modelValue', entity);
+  const newVal = entity.conformsTo ? entity.conformsTo.concat(rTypes) : [rTypes];
+  emit('update:modelValue', entity, 'conformsTo', newVal);
 }
 
 </script>
@@ -206,9 +201,9 @@ function addConformTos(rTypes) {
           </el-row>
         </div>
 
-        <Property v-for="def in layout.definitions" :key="def.id" :modelValue="getProperty(def)"
-          :components="getComponents(def)" :definition="def" @update:modelValue="v => updateProperty(def, v)"
-          @entityCreated="(e) => $emit('update:modelValue', e)"></Property>
+        <Property v-for="def in layout.definitions" :key="def.id" :model-value="getProperty(def)"
+          :components="getComponents(def)" :definition="def" @update:model-value="v => updateProperty(def, v)">
+        </Property>
 
         <el-form-item label="Preview" class="pt-2" v-if="data.file">
           <MediaPreview :file="data.file" />

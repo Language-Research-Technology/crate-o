@@ -23,6 +23,8 @@ const props = defineProps({
 });
 
 const emit = defineEmits({
+  /** Triggered when crate data is changed */
+  'update:crate': null,
   /** Triggered when navigating internally to display a different entity */
   'update:entityId': null,
   /** Triggered when adding a value */
@@ -48,12 +50,10 @@ const data = reactive({
   newEntityType: null,
 });
 
-const state = shallowReactive(new EditorState());
-state.showEntity = showEntity;
-//window.editorState = state;
+const state = shallowReactive(new EditorState({showEntity}));
 provide($state, state);
 
-var historyStart = window.history.length;
+//var historyStart = window.history.length;
 
 onUpdated(() => {
   console.log('crate updated');
@@ -64,10 +64,10 @@ onUpdated(() => {
 
 
 watch(() => props.crate, async crate => {
-  console.log('watch crate');
+  console.log('watch crate', props.crate);
   data.loading = true;
   data.history = [];
-  historyStart = window.history.state?.position + 1;
+  //historyStart = window.history.state?.position + 1;
   //$router.push({query: {id: encodeURIComponent(state.crate.rootId)}});
   const roc = await state.setCrate(crate);
   //data.entity = data.rootDataset = state.crate.rootDataset;
@@ -157,6 +157,19 @@ function onSelectNewEntity(type) {
     state.entities.value.add(newEntity);
     showEntity(item);
     data.newEntityType = null;
+    emit('update:crate', props.crate);
+  }
+}
+
+function updateEntity(entity, prop, value) {
+  if (data.entity === entity) {
+    if (data.entity[prop] !== value) {
+      entity[prop] = value;
+      emit('update:crate', props.crate); // ,state.crate, diff
+    }
+  } else {
+    data.entity = entity;
+    emit('update:crate', props.crate); // ,state.crate, diff
   }
 }
 
@@ -173,6 +186,7 @@ function deleteEntity() {
       data.history.pop();
       state.crate.deleteEntity(data.entity, { references: true });
       const prevEntity = data.history[data.history.length - 1] ?? data.rootDataset;
+      emit("update:crate", props.crate);
       emit("update:entityId", prevEntity['@id']);
     })
   }
@@ -192,7 +206,6 @@ function truncate(text) {
       <el-col :span="17" class="p-2 flex items-center">
         <el-breadcrumb separator="/">
           <el-breadcrumb-item v-for="e, i in data.history">
-            <!-- <router-link to="/">Go to Home</router-link> -->
             <el-link :disabled="i === data.history.length - 1" :icon="i ? null : HomeFilled" href="/"
               @click.prevent="showEntity(e)" :title="e.name?.[0] || e['@id']">
               <span v-html="truncate(e.name?.[0] || (i ? e['@id'] : 'Root Dataset'))"></span>
@@ -203,7 +216,6 @@ function truncate(text) {
       <el-col :span="5" class="pt-1 pr-3">
         <el-select-v2 placeholder="Create New Entity" class="flex-grow" filterable clearable :allow-create="false"
           v-model="data.newEntityType" :options="newEntityTypes" @change="onSelectNewEntity"></el-select-v2>
-
       </el-col>
     </el-row>
 
@@ -228,7 +240,7 @@ function truncate(text) {
             </template>
           </el-page-header>
 
-          <Entity :model-value="data.entity" @update:model-value="showEntity" :getFile="getFile" :propertyId="propertyId">
+          <Entity :model-value="data.entity" @update:model-value="updateEntity" :getFile="getFile" :propertyId="propertyId">
           </Entity>
 
         </template>

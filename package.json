@@ -21,16 +21,13 @@
     "Rosanna Smith"
   ],
   "files": [
+    "dist",
     "src/lib",
-    "!src/lib/**/*.cy.js"
+    "!/src/lib/**/*.cy.js"
   ],
   "main": "./src/lib/index.js",
   "module": "./src/lib/index.js",
   "type": "module",
-  "exports": {
-    ".": "./src/lib/index.js",
-    "./DefaultRouteHandler": "./src/lib/DefaultRouteHandler.js"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/Language-Research-Technology/crate-o"

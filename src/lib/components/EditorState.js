@@ -93,6 +93,10 @@ export class EditorState {
   rootDatasetId;
   showEntity;
 
+  constructor(opt) {
+    this._showEntity = opt.showEntity;
+  }
+
   async setCrate(rawCrate) {
     const crate = this.crate = new ROCrate(rawCrate, { array: true, link: true });
     this.metadataFileEntityId = crate.metadataFileEntity['@id'];
@@ -118,6 +122,10 @@ export class EditorState {
         catch(e => { });
     }
     return profile;
+  }
+
+  showEntity(e) {
+    return this._showEntity(e);
   }
 
   refreshEntities() {

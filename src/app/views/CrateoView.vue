@@ -40,7 +40,7 @@ const data = shallowReactive({
   showWelcome: false,
   validationResultDialog: false
 });
-//window.data = data;
+window.data = data;
 const profile = computed(() => data.profiles[data.selectedProfile]);
 
 const editor = ref();
@@ -176,7 +176,7 @@ function detectProfile(roc) {
   const conformsToCrate = roc.rootDataset['conformsTo'] || [];
   const profileIndex = data.profiles.findIndex(p =>
     conformsToCrate.some(ct => (p?.conformsToUri || []).includes(ct['@id'])));
-  if (profileIndex >= 0) data.selectedProfile = profileIndex;
+  data.selectedProfile = profileIndex >= 0 ? profileIndex : 0;
 }
 
 function resetData() {
@@ -298,6 +298,10 @@ async function getFile(id) {
   }
 }
 
+function updateCrate(raw, roc) {
+  console.log(raw);
+  data.crate = raw;
+}
 
 </script>
 
@@ -376,8 +380,8 @@ async function getFile(id) {
       </span>
     </div>
     <CrateEditor ref="editor" v-loading="data.loading" :crate="data.crate" :profile="profile" :entityId="data.entityId"
-      @update:entityId="updateEntityId" :propertyId="data.propertyId" @ready="data.loading = false" :get-file="getFile"
-      @data="detectProfile">
+      :propertyId="data.propertyId" :get-file="getFile" @update:entityId="updateEntityId" @update:crate="updateCrate"
+      @ready="data.loading = false" @data="detectProfile">
     </CrateEditor>
     <SpreadSheet v-model:crate="data.crate" :buffer="data.spreadSheetBuffer" />
   </template>
