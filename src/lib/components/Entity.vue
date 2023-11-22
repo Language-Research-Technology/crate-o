@@ -1,9 +1,9 @@
 <script setup>
-import { computed, inject, onMounted, onUpdated, reactive, watch, watchEffect } from "vue";
+import { computed, inject, onMounted, onUpdated, reactive, watch } from "vue";
+import { ElTabPane, ElTabs, ElTooltip, ElPopover, ElIcon, ElRow, ElForm, ElFormItem, ElButton } from 'element-plus';
+import { InfoFilled, Plus } from '@element-plus/icons-vue';
 import { $state } from './keys';
 import Property from './Property.vue';
-import { ElTabPane, ElTabs } from 'element-plus';
-import { InfoFilled, Plus } from '@element-plus/icons-vue';
 import defaultLayout from './default_layout.json';
 import MediaPreview from "./MediaPreview.vue";
 

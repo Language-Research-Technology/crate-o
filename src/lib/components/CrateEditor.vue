@@ -1,9 +1,13 @@
 <script setup>
 
-import { ref, shallowReactive, reactive, watch, watchEffect, computed, provide, onUpdated, nextTick, toRaw } from "vue";
+import { ref, shallowReactive, reactive, watch, computed, provide, onUpdated, nextTick } from "vue";
+import { HomeFilled, ArrowLeftBold, Delete } from '@element-plus/icons-vue';
+import {
+  ElRow, ElCol, ElBreadcrumb, ElBreadcrumbItem, ElTabs, ElTabPane,
+  ElPageHeader, ElTooltip, ElLink, ElSelectV2, ElButton
+} from 'element-plus';
 import { $state } from './keys';
 import { EditorState } from './EditorState';
-import { HomeFilled, ArrowLeftBold, Delete } from '@element-plus/icons-vue';
 import FilteredPaged from './FilteredPaged.vue';
 import LinkEntity from './LinkEntity.vue';
 import Entity from './Entity.vue';
@@ -50,7 +54,7 @@ const data = reactive({
   newEntityType: null,
 });
 
-const state = shallowReactive(new EditorState({showEntity}));
+const state = shallowReactive(new EditorState({ showEntity }));
 provide($state, state);
 
 //var historyStart = window.history.length;
@@ -240,7 +244,8 @@ function truncate(text) {
             </template>
           </el-page-header>
 
-          <Entity :model-value="data.entity" @update:model-value="updateEntity" :getFile="getFile" :propertyId="propertyId">
+          <Entity :model-value="data.entity" @update:model-value="updateEntity" :getFile="getFile"
+            :propertyId="propertyId">
           </Entity>
 
         </template>

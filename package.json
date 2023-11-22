@@ -25,9 +25,13 @@
     "src/lib",
     "!/src/lib/**/*.cy.js"
   ],
-  "main": "./src/lib/index.js",
-  "module": "./src/lib/index.js",
+  "main": "./dist/crate-o.js",
+  "module": "./dist/crate-o.js",
   "type": "module",
+  "exports": {
+    ".": "./dist/crate-o.js",
+    "./DefaultRouteHandler": "./src/lib/DefaultRouteHandler.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/Language-Research-Technology/crate-o"

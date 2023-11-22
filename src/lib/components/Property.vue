@@ -1,5 +1,7 @@
 <script setup>
-import { reactive, computed, toRaw, nextTick, inject, isReactive } from "vue";
+import { reactive, computed, toRaw, nextTick, inject } from "vue";
+import { ElTooltip, ElIcon, ElFormItem, ElButton } from 'element-plus';
+
 import { QuestionFilled, Delete, InfoFilled, WarningFilled, Right, Back } from '@element-plus/icons-vue';
 import ControlAdd from "./ControlAdd.vue";
 import { $state } from './keys';
