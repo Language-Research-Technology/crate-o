@@ -91,7 +91,6 @@ export class EditorState {
   entities = ref({});
   metadataFileEntityId;
   rootDatasetId;
-  showEntity;
 
   constructor(opt) {
     this._showEntity = opt.showEntity;

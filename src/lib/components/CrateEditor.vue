@@ -4,7 +4,7 @@ import { ref, shallowReactive, reactive, watch, computed, provide, onUpdated, ne
 import { HomeFilled, ArrowLeftBold, Delete } from '@element-plus/icons-vue';
 import {
   ElRow, ElCol, ElBreadcrumb, ElBreadcrumbItem, ElTabs, ElTabPane,
-  ElPageHeader, ElTooltip, ElLink, ElSelectV2, ElButton
+  ElPageHeader, ElTooltip, ElLink, ElSelectV2, ElButton, ElLoading
 } from 'element-plus';
 import { $state } from './keys';
 import { EditorState } from './EditorState';
@@ -13,6 +13,7 @@ import LinkEntity from './LinkEntity.vue';
 import Entity from './Entity.vue';
 import { countReverse } from './utils.js'
 
+const vLoading = ElLoading.directive;
 const props = defineProps({
   //  modelValue: { type: ROCrate },
   /** RO Crate data in form of plain JSON object. */
@@ -71,6 +72,7 @@ watch(() => props.crate, async crate => {
   console.log('watch crate', props.crate);
   data.loading = true;
   data.history = [];
+  data.entity = null;
   //historyStart = window.history.state?.position + 1;
   //$router.push({query: {id: encodeURIComponent(state.crate.rootId)}});
   const roc = await state.setCrate(crate);
@@ -93,16 +95,29 @@ watch(() => props.entityId, entityId => {
 });
 
 function initEntity(entityId) {
+  var id = entityId || data.rootDataset?.['@id'];
   if (state.crate) {
-    data.entity = state.crate.getEntity(entityId);
-    if (data.entity) {
-      let id = data.entity['@id'];
-      let i = data.history.findIndex(e => e['@id'] === id);
-      if (i > -1) data.history.splice(i + 1);
-      else data.history.push(data.entity);
-    } else if (data.rootDataset) {
-      showEntity(data.rootDataset);
+    if (data.entity?.['@id'] !== id) {
+      const entity = state.crate.getEntity(id);
+      if (entity) {
+        let i = data.history.findIndex(e => e['@id'] === id);
+        if (i > -1) data.history.splice(i + 1);
+        else data.history.push(entity);
+        data.entity = entity;
+        console.log(data.history);
+        if (entityId !== id) emit('update:entityId', id);
+      }
     }
+  }
+}
+
+function showEntity(e) {
+  if (data.entity !== e) {
+    let pages; // the number of pages to go back to
+    let i = data.history.findIndex(e2 => e['@id'] === e2['@id']);
+    if (i > -1) pages = data.history.length - i - 1;
+    initEntity(e['@id']);
+    emit('update:entityId', e['@id'], pages);
   }
 }
 
@@ -129,16 +144,6 @@ defineExpose({
     forceKey.value++;
   }
 });
-
-function showEntity(e) {
-  if (data.entity !== e) {
-    let pages; // the number of pages to go back to
-    let i = data.history.findIndex(e2 => e['@id'] === e2['@id']);
-    if (i > -1) pages = data.history.length - i - 1;
-    emit('update:entityId', e['@id'], pages);
-  }
-  // $router.push({ query: { id: encodeURIComponent(e['@id']) } });
-}
 
 // const value = computed(() => data.newEntityType);
 const newEntityTypes = computed(() => {
@@ -249,6 +254,7 @@ function truncate(text) {
           </Entity>
 
         </template>
+        <div v-else="">Entity with id `{{ entityId }}` does not exist in the crate.</div>
       </el-col>
 
       <el-col :span="6" class="h-screen p-2">

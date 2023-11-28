@@ -30,7 +30,8 @@
   "type": "module",
   "exports": {
     ".": "./dist/crate-o.js",
-    "./DefaultRouteHandler": "./src/lib/DefaultRouteHandler.js"
+    "./DefaultRouteHandler": "./src/lib/DefaultRouteHandler.js",
+    "./*": "./*"
   },
   "repository": {
     "type": "git",
