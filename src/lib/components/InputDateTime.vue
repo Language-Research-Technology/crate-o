@@ -1,7 +1,8 @@
 <script setup>
-import {ref, reactive, watch, computed} from "vue";
-import {Clock, Calendar} from '@element-plus/icons-vue';
-import {utilsByType} from './datetimeutils';
+import { ref, reactive, watch, computed } from "vue";
+import { ElInput, ElButton } from 'element-plus';
+import { Clock, Calendar } from '@element-plus/icons-vue';
+import { utilsByType } from './datetimeutils';
 import moment from 'moment';
 
 const props = defineProps({
@@ -38,7 +39,7 @@ watch(() => props.modelValue, (val) => {
     data.value = '';
     data.isValid = true;
   }
-}, {immediate: true});
+}, { immediate: true });
 
 const pickerIcon = computed(() => props.type === 'time' ? Clock : Calendar);
 const utils = computed(() => utilsByType[props.type]);
@@ -91,36 +92,34 @@ function validate(value) {
 </script>
 
 <script>
-const inputTypes = {time: 'time', date: 'date', datetime: 'datetime-local'};
+const inputTypes = { time: 'time', date: 'date', datetime: 'datetime-local' };
 export default {};
 </script>
 
 
 <template>
   <div class="flex flex-col flex-grow">
-    <el-input v-model="data.value" type="text" :class="{ 'is-error': !data.isValid }"
-              @input="onInput" @change="onChange">
+    <el-input v-model="data.value" type="text" :class="{ 'is-error': !data.isValid }" @input="onInput" @change="onChange">
       <template #append>
         <el-button :icon="pickerIcon" @click="togglePicker"></el-button>
-        <input ref="input" class="native-picker" :value="nativeValue"
-               @input="onInput($event.target.value)" @change="onChange"
-               :type="inputTypes[props.type]"/>
+        <input ref="input" class="native-picker" :value="nativeValue" @input="onInput($event.target.value)"
+          @change="onChange" :type="inputTypes[props.type]" />
       </template>
     </el-input>
     <template v-if="!data.isValid">
       <div class="text-xs text-red-700" v-if="props.type === 'time'">
         Time value must be in <a class="font-bold hover:underline" target=”_blank”
-                                 href="https://www.w3.org/TR/NOTE-datetime">ISO 8601 format</a>.
+          href="https://www.w3.org/TR/NOTE-datetime">ISO 8601 format</a>.
         E.g.: 03:23:00, 03:23:00.001, 03:23:00+10, 03:23:00Z
       </div>
       <div class="text-xs text-red-700" v-if="props.type === 'date'">
         Date value must be in <a class="font-bold hover:underline" target=”_blank”
-                                 href="https://www.w3.org/TR/NOTE-datetime">ISO 8601 format</a>.
+          href="https://www.w3.org/TR/NOTE-datetime">ISO 8601 format</a>.
         E.g.: 2021-03-22, 2021-03, 2021
       </div>
       <div class="text-xs text-red-700" v-if="props.type === 'datetime'">
         Datetime value must be in <a class="font-bold hover:underline" target=”_blank”
-                                     href="https://www.w3.org/TR/NOTE-datetime">ISO 8601 format</a>.
+          href="https://www.w3.org/TR/NOTE-datetime">ISO 8601 format</a>.
         E.g.: 2021-03-22T03:23:00, 2021-03-22, 2021, 2021/2022
       </div>
     </template>

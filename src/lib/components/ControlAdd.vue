@@ -1,8 +1,9 @@
 <script setup>
-import { reactive, computed, markRaw, inject, nextTick } from "vue";
+import { reactive, computed, markRaw, inject } from "vue";
 import { Plus, Close } from '@element-plus/icons-vue';
 import { $state } from './keys';
-import {sortedUniq, sortBy} from 'lodash';
+import { sortedUniq, sortBy } from 'lodash';
+import { ElSelect, ElOption, ElOptionGroup, ElButton, ElIcon } from 'element-plus';
 
 const props = defineProps({
   /** The full property values */
@@ -14,10 +15,10 @@ const emit = defineEmits(['update:modelValue', 'add']);
 
 const state = inject($state);
 const types = computed(() => {
-  if(props.definition?.type) {
+  if (props.definition?.type) {
     let types = [];
-    for(let classType of props.definition.type || []) {
-      if(state.profile.classes[classType]) {
+    for (let classType of props.definition.type || []) {
+      if (state.profile.classes[classType]) {
         // console.log(state.profile.classes[classType]?.['hasSubclass'])
         types = types.concat(state.profile.classes[classType]?.['hasSubclass'] || [])
       }
@@ -66,10 +67,10 @@ function createEntity(type, name) {
   console.log('createEntity');
   let id = '';
   let cleanName = '';
-  if(!name) {
+  if (!name) {
     name = type;
   }
-  cleanName = name.replace(/\W/g,"_");
+  cleanName = name.replace(/\W/g, "_");
   id = state.crate.uniqueId(`#${cleanName}-`);
   return {
     "@id": id,
@@ -100,17 +101,18 @@ function search(query) {
     data.options[0].options = [];
     data.options[1].options = [];
     //return;
-    return setTimeout(()=>data.keyword = '', 100);
+    return setTimeout(() => data.keyword = '', 100);
   }
   data.keyword = query;
   const type = [].concat(data.selectedType);
   // local search
   const qRegex = new RegExp(query, 'i');
   //filter: { '@type': new RegExp(type, 'i') }
-  const it = state.crate.entities({filter: e =>
-    e['@id'] !== state.metadataFileEntityId &&
-    type.every(t => e['@type'].includes(t)) &&
-    (e.name ?? []).concat(e['@id']).some(v => qRegex.test(v))
+  const it = state.crate.entities({
+    filter: e =>
+      e['@id'] !== state.metadataFileEntityId &&
+      type.every(t => e['@type'].includes(t)) &&
+      (e.name ?? []).concat(e['@id']).some(v => qRegex.test(v))
   });
   const localOptions = Array.from(it);
   //console.log(localOptions);
@@ -153,9 +155,8 @@ function typeLabel(type) {
     </el-button>
     <!-- search input -->
     <template v-if="data.selectedType">
-      <el-select v-focus class="flex-grow min-w-[100px]" filterable remote clearable 
-        v-model="data.entity" value-key="@id" :loading="data.loading"
-        @change="addEntity" :filter-method="v => true" :remote-method="search" size="small"
+      <el-select v-focus class="flex-grow min-w-[100px]" filterable remote clearable v-model="data.entity" value-key="@id"
+        :loading="data.loading" @change="addEntity" :filter-method="v => true" :remote-method="search" size="small"
         @keyup.enter="addNewEntity">
         <template v-for="group in data.options" :key="group.value">
           <el-option-group v-if="group.options.length" :label="group.label">
@@ -177,7 +178,7 @@ function typeLabel(type) {
 .el-button.add-new-entity {
   @media (min-width: 768px) {
     max-width: 35%;
-  }  
+  }
 }
 
 .el-button.add-new-entity>span {

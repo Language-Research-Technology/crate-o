@@ -8,11 +8,37 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
+const build = {
+  _all: {
+    rollupOptions: {},
+    commonjsOptions: {
+      include: [/ro-crate-excel/, /node_modules/],
+      transformMixedEsModules: true
+    },
+  },
+  production: {},
+  library: {
+    lib: {
+      entry: fileURLToPath(new URL('./src/lib/index.js', import.meta.url)),
+      fileName: 'crate-o',
+      formats: ['es']
+    },
+    rollupOptions: {
+      external: ['vue', /^element-plus/ ],
+      output: {
+        globals: {
+          vue: 'Vue',
+        },
+      },
+      
+    },
+  }
+}
 // https://vitejs.dev/config/
 export default defineConfig(({mode}) => ({
   plugins: [
     vue(),
-    createHtmlPlugin({minify: true, entry: 'src/main.js'}),
+    createHtmlPlugin({minify: true, entry: 'src/app/main.js'}),
     AutoImport({resolvers: [ElementPlusResolver()]}),
     Components({resolvers: [ElementPlusResolver()]}),
   ],
@@ -25,15 +51,12 @@ export default defineConfig(({mode}) => ({
     }
   },
   esbuild: {
-    drop: mode === 'production' ? ['console', 'debugger'] : [],
+    drop: mode !== 'development' ? ['console', 'debugger'] : [],
   },
   base: './',
-  build: {
-    rollupOptions: {},
-    commonjsOptions: {
-      include: [/ro-crate-excel/, /node_modules/],
-      transformMixedEsModules: true
-    }
+  build: build[mode] ?? build._all,
+  define: {
+    __APP_VERSION__: JSON.stringify(process.env.npm_package_version)
   },
   test:{
     globals: true,

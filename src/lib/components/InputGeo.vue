@@ -1,5 +1,7 @@
 <script setup>
-import { reactive, onMounted, watchEffect, computed, isReactive, isProxy, watch } from "vue";
+//import { reactive, onMounted, watchEffect, computed, isReactive, isProxy, watch } from "vue";
+import { ElRow, ElCol, ElForm, ElFormItem } from 'element-plus';
+
 import InputText from '../components/InputText.vue';
 import LeafletMap from '../components/LeafletMap.vue';
 //import { fromEntity, updateEntity } from './geo';

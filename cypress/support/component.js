@@ -22,7 +22,7 @@ import './commands';
 import { mount } from 'cypress/vue';
 
 import { createMemoryHistory, createRouter } from 'vue-router'
-import router from '../../src/router';
+import router from '../../src/app/router';
 
 Cypress.Commands.add('mount', (component, options = {}) => {
     // Setup options object

@@ -1,6 +1,7 @@
 <script setup>
 
 import { ref, watch, computed } from 'vue';
+import { ElInput } from 'element-plus';
 
 const props = defineProps({
   modelValue: [String, Number],

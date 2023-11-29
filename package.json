@@ -1,6 +1,6 @@
 {
   "name": "crate-o",
-  "version": "0.2.7",
+  "version": "0.3.0",
   "description": "A VueJS UI component to create and edit Research Object Crate (RO-Crate) metadata",
   "keywords": [
     "RO-Crate",
@@ -21,20 +21,28 @@
     "Rosanna Smith"
   ],
   "files": [
-    "src/components",
-    "src/lookups"
+    "dist",
+    "src/lib",
+    "!/src/lib/**/*.cy.js"
   ],
-  "main": "index.js",
+  "main": "./dist/crate-o.js",
+  "module": "./dist/crate-o.js",
   "type": "module",
+  "exports": {
+    ".": "./dist/crate-o.js",
+    "./DefaultRouteHandler": "./src/lib/DefaultRouteHandler.js",
+    "./*": "./*"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/Language-Research-Technology/crate-o"
   },
   "scripts": {
-    "dev": "npm install ro-crate-editor-profiles && vite",
-    "build": "npm install ro-crate-editor-profiles && vite build",
+    "dev": "vite",
+    "build": "vite build",
+    "build:library": "vite build --mode library",
     "preview": "vite preview --port 5000",
-    "test": "cypress run --component --browser chrome --headless",
+    "test": "cypress run --component --headless",
     "test:ui": "cypress run --component --browser chrome",
     "test:unit": "npm test -- --record --spec ",
     "cypress:open": "npx cypress open",
@@ -45,8 +53,6 @@
   "dependencies": {
     "@element-plus/icons-vue": "^2.1.0",
     "@element-plus/theme-chalk": "^2.2.16",
-    "ajv": "^8.12.0",
-    "element-plus": "^2.3.5",
     "leaflet": "^1.9.4",
     "leaflet-editable": "^1.2.0",
     "leaflet-gesture-handling": "^1.2.2",
@@ -54,11 +60,11 @@
     "lodash": "^4.17.21",
     "mime": "^3.0.0",
     "moment": "^2.29.4",
-    "ro-crate": "^3.3.3",
-    "ro-crate-editor-profiles": "github:Language-Research-Technology/ro-crate-editor-profiles",
-    "ro-crate-excel": "^1.0.18",
-    "vue": "^3.2.45",
-    "vue-router": "^4.1.6"
+    "ro-crate": "^3.3.3"
+  },
+  "peerDependencies": {
+    "vue": "^3.3.8",
+    "element-plus": "^2.4.2"
   },
   "devDependencies": {
     "@babel/core": "^7.14.8",
@@ -69,6 +75,7 @@
     "@types/leaflet-editable": "^1.2.2",
     "@types/wicg-file-system-access": "^2020.9.5",
     "@vitejs/plugin-vue": "^4.3.1",
+    "ajv": "^8.12.0",
     "autoprefixer": "^10.4.14",
     "babel-loader": "^8.2.2",
     "buffer": "^6.0.3",
@@ -84,6 +91,8 @@
     "mini-css-extract-plugin": "^2.1.0",
     "postcss": "^8.4.21",
     "postcss-loader": "^6.1.1",
+    "ro-crate-editor-profiles": "github:Language-Research-Technology/ro-crate-editor-profiles",
+    "ro-crate-excel": "^1.0.18",
     "sass": "^1.57.1",
     "tailwindcss": "^3.3.1",
     "to-arraybuffer": "^1.0.1",
@@ -92,6 +101,7 @@
     "vite": "^4.5.0",
     "vite-plugin-html": "^3.2.0",
     "vue-loader": "^17.0.1",
+    "vue-router": "^4.2.5",
     "webpack": "^5.72.0",
     "webpack-cli": "^4.9.2",
     "webpack-dev-server": "^4.0.0",

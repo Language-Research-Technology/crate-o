@@ -1,5 +1,6 @@
 <script setup>
-import { ref, reactive, watch, computed } from "vue";
+import { computed } from "vue";
+import { ElSelectV2 } from 'element-plus';
 
 const props = defineProps({
   modelValue: { type: [String, Object] },

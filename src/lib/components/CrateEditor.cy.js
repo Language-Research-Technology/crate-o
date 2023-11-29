@@ -20,7 +20,6 @@ describe('<CrateEditor />', async () => {
             },
             ref: 'editor'
         });
-        cy.get('#tab-About').click();
         cy.get('[id^=tab-Related]').click();
         cy.get('.el-form-item').find('button').contains('Organization').click();
         cy.get('button').contains('Create new Organization').click();

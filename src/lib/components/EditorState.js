@@ -1,4 +1,4 @@
-import { reactive, shallowReactive, isReactive } from 'vue';
+import { ref, reactive, shallowReactive, isReactive } from 'vue';
 import { ROCrate } from 'ro-crate';
 import { ElCheckbox } from 'element-plus';
 import InputDateTime from '../components/InputDateTime.vue';
@@ -9,7 +9,7 @@ import LinkEntity from '../components/LinkEntity.vue';
 import dateTimeUtils from '../components/datetimeutils';
 import lookupModules from '../lookups/index';
 
-const entityComponent = [LinkEntity, {}];
+const entityComponent = [LinkEntity, { }];
 const primitiveComponents = {
   boolean: [ElCheckbox, { border: true }, false],
   text: [InputText, { type: 'textarea' }, ''],
@@ -88,19 +88,27 @@ export class EditorState {
   defByType;
   lookupPromises = {};
   /** cache array of entities */
-  entities;
+  entities = ref({});
   metadataFileEntityId;
+  rootDatasetId;
+
+  constructor(opt) {
+    this._showEntity = opt.showEntity;
+  }
+
   async setCrate(rawCrate) {
     const crate = this.crate = new ROCrate(rawCrate, { array: true, link: true });
-    var mid = this.metadataFileEntityId = crate.metadataFileEntity['@id'];
+    this.metadataFileEntityId = crate.metadataFileEntity['@id'];
+    this.rootDatasetId = crate.rootDataset['@id'];
     this.meta = reactive({});
-    this.entities = reactive(Array.from(crate.entities({ filter: e => e['@id'] !== mid })));
+    this.refreshEntities();
     await crate.resolveContext();
     return crate;
   }
 
   setProfile(profile) {
     this.profile = profile;
+    this.meta = reactive({});
     this.defByType = {};
     // set select options for @type lookup
     jsonldKeywords['@type'].props.options = profile.enabledClasses;
@@ -113,6 +121,15 @@ export class EditorState {
         catch(e => { });
     }
     return profile;
+  }
+
+  showEntity(e) {
+    return this._showEntity(e);
+  }
+
+  refreshEntities() {
+    const mid = this.metadataFileEntityId;
+    this.entities.value = new Set(this.crate.entities({ filter: e => e['@id'] !== mid }));
   }
 
   /**
@@ -178,10 +195,12 @@ export class EditorState {
       // Add the resolved id to the definitions.
       definitions[id] = { id, name, key: name };
     }
-    const reverse = new Map(Object.keys(entity['@reverse']).map(name => [crate?.resolveTerm(name) || name, name]));
-    for (const [id, name] of reverse) {
-      // Add the resolved id to the definitions.
-      definitions[id] = {id, name, key: name, isReverse: true};
+
+    for (const name in entity['@reverse']) {
+      const id = crate?.resolveTerm(name);
+      if (entity['@id'] !== this.rootDatasetId || id !== "http://schema.org/about") {
+        definitions[id] = {id, name, key: name, isReverse: true};
+      }
     }
     //console.log(isReactive(definitions));
     //sort here
@@ -293,7 +312,6 @@ export class EditorState {
       for (const type of types) {
         const c = this.profile.classes[type];
         if (c) {
-          console.log(this.crate.getTerm(c.id))
           if (c.id && !this.crate.getTerm(c.id)) {
             context[type] = c.id;
           }
@@ -304,9 +322,7 @@ export class EditorState {
           }
         }
       }
-      console.log(context);
       if (Object.keys(context).length) {
-        console.log('added');
         this.crate.addContext(context);
       }
     }

@@ -1,5 +1,6 @@
 <script setup>
-import { reactive, computed } from "vue";
+import { reactive, computed } from 'vue';
+import { ElInput, ElPagination } from 'element-plus';
 
 const props = defineProps({
   modelValue: { 

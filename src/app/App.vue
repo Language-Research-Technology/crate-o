@@ -3,6 +3,7 @@ import {RouterLink, RouterView} from 'vue-router';
 
 import {reactive} from "vue";
 
+const version = __APP_VERSION__;
 const data = reactive({
   noBrowserSupport: false
 });
@@ -18,12 +19,12 @@ if (!window.showDirectoryPicker) {
     <el-row :gutter="10" class="flex items-center justify-center min-w-md">
       <el-col :span="8">
         <span class="flex flex-col justify-center items-center ml-2">
-          <img alt="Crate-O an RO-Crate Editor" class="logo min-h-full p-0 h-16" src="@/assets/logo.svg" width="85"/>
+          <img alt="Crate-O an RO-Crate Editor" class="logo min-h-full p-0" src="/logo.svg" width="60"/>
         </span>
       </el-col>
       <el-col :span="16">
-        <div class="flex flex-col justify-center items-center">
-          <p class="text-2xl">Crate-O</p>
+        <div class="justify-center text-2xl">Crate-O
+          <span class="text-xs">v{{ version }}</span>
         </div>
       </el-col>
     </el-row>

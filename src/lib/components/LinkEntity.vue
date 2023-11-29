@@ -1,9 +1,11 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, inject } from 'vue';
+import { ElButton, ElIcon, ElTag, ElDialog } from 'element-plus';
 import { Edit } from '@element-plus/icons-vue';
-import { useRouter, useRoute } from 'vue-router';
-
-const $router = useRouter();
+//import { useRouter, useRoute } from 'vue-router';
+//const $router = useRouter();
+import { $state } from './keys';
+const state = inject($state);
 
 const props = defineProps({
   modelValue: [Object],
@@ -13,7 +15,11 @@ const props = defineProps({
   }
 });
 
-//const emit = defineEmits(['route']);
+const emit = defineEmits({
+  /** Triggered when the link is clicked and the entity exists */
+  'entity': null,
+});
+//const emit = defineEmits(['show']);
 //const id = computed(() => props.modelValue['@id']);
 const label = computed(() => props.modelValue['name']?.['0'] || props.modelValue['@id']);
 const dialogVisible = ref(false);
@@ -21,7 +27,8 @@ const dialogVisible = ref(false);
 function showEntity() {
   const id = props.modelValue['@id'];
   if (props.modelValue['@type']) {
-    $router.push({query: {id: encodeURIComponent(id)}});
+    //$router.push({query: {id: encodeURIComponent(id)}});
+    state.showEntity(props.modelValue);
   } else {
     dialogVisible.value = true;
   }
@@ -35,17 +42,18 @@ function openUrl() {
 
 <template>
   <el-button class="link-entity" color="#626aef" type="primary" plain @click="showEntity" :title="modelValue['@id']">
-    <el-icon v-if="icon"><component :is="icon"></component></el-icon>
+    <el-icon v-if="icon">
+      <component :is="icon"></component>
+    </el-icon>
     <span class="flex mr-2">
-      <el-tag class="mr-1 font-bold" size="small" plain v-for="type of modelValue['@type']">{{ type }}</el-tag>
+      <el-tag class="mr-1 font-bold" size="small" plain v-for="t of modelValue['@type']">{{ t }}</el-tag>
     </span>
     <slot> {{ label }} </slot>
-    <!-- <el-icon class="el-icon--right">
-        <Edit />
-      </el-icon> -->
   </el-button>
   <el-dialog v-model="dialogVisible" :title="label" width="50%">
-    <span>No entity with identifier <pre>{{ modelValue['@id'] }}</pre> found in this crate. Please select from the following options:</span>
+    <span>No entity with identifier
+      <pre>{{ modelValue['@id'] }}</pre> found in this crate. Please select from the following options:
+    </span>
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogVisible = false">Cancel</el-button>
@@ -65,6 +73,7 @@ function openUrl() {
   height: fit-content;
   min-height: 32px;
 }
+
 .el-button.link-entity>span {
   flex-wrap: wrap;
   row-gap: 0.5em;
