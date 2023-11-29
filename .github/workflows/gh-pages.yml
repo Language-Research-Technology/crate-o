@@ -1,9 +1,9 @@
 # Publish web app to github pages
 name: Publish
 
-on: 
-  push:
-    branches: [master, main]
+on: push
+#  push:
+#    branches: [master, main]
 
 jobs:
   publish:
@@ -25,7 +25,7 @@ jobs:
       # - run: echo ${{ steps.create_tag.outputs.tagname }}
       # - run: echo ${{ steps.create_tag.outputs.version }}
       - name: Check if a new tag is created
-        run: "[[ '${{ steps.create_tag.outputs.tagname }}' ]]"
+        run: "[ '${{ steps.create_tag.outputs.tagname }}' ] || (echo 'tag already exists' && exit 1)"
       - run: npm ci
       - run: npm test
       - run: npm run build
