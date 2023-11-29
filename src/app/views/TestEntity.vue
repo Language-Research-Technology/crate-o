@@ -1,11 +1,11 @@
 <script setup>
 import { reactive, computed, shallowReactive, onMounted, provide } from 'vue';
-import Entity from '../components/Entity.vue';
+import Entity from '../../lib/components/Entity.vue';
 //import testData from '../../test-data/cooee/ro-crate-metadata.json' ;
-import testData from '../../test-data/sydney/ro-crate-metadata.json';
-import { $state } from '../components/keys';
+import testData from '../../../test-data/sydney/ro-crate-metadata.json';
+import { $state } from '../../lib/components/keys';
 
-import { EditorState } from '../components/EditorState';
+import { EditorState } from '../../lib/components/EditorState';
 import language_collection from 'ro-crate-editor-profiles/profiles/language-data-commons-collection-profile.json';
 const data = reactive({
   entity: null,

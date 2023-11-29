@@ -2,11 +2,11 @@
 import { reactive, computed } from 'vue';
 import { Delete } from '@element-plus/icons-vue';
 
-import InputDateTime from '../components/InputDateTime.vue';
-import InputGeo from '../components/InputGeo.vue';
-import InputText from '../components/InputText.vue';
-import InputSelect from '../components/InputSelect.vue';
-import FilteredPaged from '../components/FilteredPaged.vue';
+import InputDateTime from '../../lib/components/InputDateTime.vue';
+import InputGeo from '../../lib/components/InputGeo.vue';
+import InputText from '../../lib/components/InputText.vue';
+import InputSelect from '../../lib/components/InputSelect.vue';
+import FilteredPaged from '../../lib/components/FilteredPaged.vue';
 
 const testValues = [
   {
