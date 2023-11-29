@@ -29,9 +29,9 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
-      - name: Deploy app to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: dist
-          single-commit: true
-          clean: true
+      # - name: Deploy app to GitHub Pages
+      #   uses: JamesIves/github-pages-deploy-action@v4
+      #   with:
+      #     folder: dist
+      #     single-commit: true
+      #     clean: true
