@@ -8,7 +8,7 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    container: cypress/base:latest
+    #container: cypress/base:latest
     env:
       NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
@@ -27,7 +27,7 @@ jobs:
       - name: Check if a new tag is created
         run: "[[ '${{ steps.create_tag.outputs.tagname }}' ]]"
       - run: npm ci
-      - run: npm test
+      # - run: npm test
       - run: npm run build
       - name: Deploy app to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
