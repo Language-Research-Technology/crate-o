@@ -8,7 +8,6 @@ on: push
 jobs:
   publish:
     runs-on: ubuntu-latest
-    container: cypress/base:latest
     env:
       NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
@@ -27,8 +26,13 @@ jobs:
       - name: Check if a new tag is created
         run: "[ '${{ steps.create_tag.outputs.tagname }}' ] || (echo 'tag already exists' && exit 1)"
       - run: npm ci
-      - run: npm test
       - run: npm run build
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
+        with:
+          component: true
+          browser: chrome
+
       # - name: Deploy app to GitHub Pages
       #   uses: JamesIves/github-pages-deploy-action@v4
       #   with:
