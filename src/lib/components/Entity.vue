@@ -158,7 +158,7 @@ function checkConformsTo() {
 
 function addConformTos(rTypes) {
   const entity = props.modelValue;
-  const newVal = entity.conformsTo ? entity.conformsTo.concat(rTypes) : [rTypes];
+  const newVal = entity.conformsTo ? entity.conformsTo.concat(rTypes) : rTypes;
   emit('update:modelValue', entity, 'conformsTo', newVal);
 }
 
