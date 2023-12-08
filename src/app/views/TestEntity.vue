@@ -6,10 +6,10 @@ import testData from '../../../test-data/sydney/ro-crate-metadata.json';
 import { $state } from '../../lib/components/keys';
 
 import { EditorState } from '../../lib/components/EditorState';
-import language_collection from 'ro-crate-editor-profiles/profiles/language-data-commons-collection-profile.json';
+import language_collection from 'ro-crate-editor-profiles/modes/language-data-commons.json';
 const data = reactive({
   entity: null,
-  profile: language_collection
+  mode: language_collection
 });
 
 const state = shallowReactive(new EditorState());
@@ -50,6 +50,6 @@ function showJson() {
 <template>
   <div class="container mx-auto px-4">
     <el-button @click="showJson">Show JSON</el-button>
-    <Entity v-if="data.entity && data.profile" v-model="data.entity" :profile="data.profile"></Entity>
+    <Entity v-if="data.entity && data.mode" v-model="data.entity" :mode="data.mode"></Entity>
   </div>
 </template>

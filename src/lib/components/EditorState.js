@@ -82,8 +82,8 @@ export class EditorState {
   crate;
   /** cache data type info of each actual value of properties */
   meta;
-  /** currently loaded profile */
-  profile;
+  /** currently loaded mode */
+  mode;
   /** cache of definition indexed by its type  */
   defByType;
   lookupPromises = {};
@@ -106,21 +106,21 @@ export class EditorState {
     return crate;
   }
 
-  setProfile(profile) {
-    this.profile = profile;
+  setMode(mode) {
+    this.mode = mode;
     this.meta = reactive({});
     this.defByType = {};
     // set select options for @type lookup
-    jsonldKeywords['@type'].props.options = profile.enabledClasses;
+    jsonldKeywords['@type'].props.options = mode.enabledClasses;
     // async load lookup modules
-    for (const type in profile.lookup) {
-      const l = profile.lookup[type];
+    for (const type in mode.lookup) {
+      const l = mode.lookup[type];
       const mod = l.module || "datapack";
       this.lookupPromises[type] = import(/* @vite-ignore */mod).catch((e) => { }).
         then(m => new (m?.default || lookupModules[mod])({ type, ...l })).
         catch(e => { });
     }
-    return profile;
+    return mode;
   }
 
   showEntity(e) {
@@ -133,14 +133,14 @@ export class EditorState {
   }
 
   /**
-   * Get property definitions based on type as defined in profile
+   * Get property definitions based on type as defined in mode
    * @param {string[]} types One or more (combined) types associated with an entity
    */
   getProfileDefinitions(types = []) {
-    const profile = this.profile;
+    const mode = this.mode;
     const defByType = this.defByType;
     const common = { ...jsonldKeywords };
-    if (!profile) return {};
+    if (!mode) return {};
     if (!types.length) return common;
     const typesId = types.join('|');
     if (!defByType[typesId]) {
@@ -149,7 +149,7 @@ export class EditorState {
       definitions['@id'].help = 'Unique ID.';
       definitions['@type'].required = true;
       definitions['@type'].help = 'The type of the entity.';
-      const classes = types.map(t => profile.classes[t]).filter(e => e);
+      const classes = types.map(t => mode.classes[t]).filter(e => e);
       for (const c of classes) {
         for (const input of (c.inputs || [])) {
           if (!definitions[input.id] || c.definition === 'override') {
@@ -176,7 +176,7 @@ export class EditorState {
     const crate = this.crate;
     const properties = new Map(Object.keys(entity).map(name => [crate?.resolveTerm(name) || name, name]));
 
-    // Find if a definition in profile has the same id already used in the data
+    // Find if a definition in mode has the same id already used in the data
     for (const id in definitions) {
       const def = definitions[id];
       const name = properties.get(id);
@@ -185,7 +185,7 @@ export class EditorState {
         if (def.name !== name) definitions[id] = { ...def, key: name };
         properties.delete(id);
       } else if (def.name in entity) {
-        // The property name defined in profile exists in the data, but the resolved id is different.
+        // The property name defined in mode exists in the data, but the resolved id is different.
         // Use the id instead of the name to access the property
         definitions[id] = { ...def, key: id };
       }
@@ -310,7 +310,7 @@ export class EditorState {
     if (types && Array.isArray(types)) {
       const context = {};
       for (const type of types) {
-        const c = this.profile.classes[type];
+        const c = this.mode.classes[type];
         if (c) {
           if (c.id && !this.crate.getTerm(c.id)) {
             context[type] = c.id;

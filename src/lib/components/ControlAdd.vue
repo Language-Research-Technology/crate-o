@@ -18,9 +18,9 @@ const types = computed(() => {
   if (props.definition?.type) {
     let types = [];
     for (let classType of props.definition.type || []) {
-      if (state.profile.classes[classType]) {
-        // console.log(state.profile.classes[classType]?.['hasSubclass'])
-        types = types.concat(state.profile.classes[classType]?.['hasSubclass'] || [])
+      if (state.mode.classes[classType]) {
+        // console.log(state.mode.classes[classType]?.['hasSubclass'])
+        types = types.concat(state.mode.classes[classType]?.['hasSubclass'] || [])
       }
     }
     return props.definition.type.concat(sortedUniq(sortBy(types)));

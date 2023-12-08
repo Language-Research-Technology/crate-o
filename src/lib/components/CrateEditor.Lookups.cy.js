@@ -1,9 +1,9 @@
 /// <reference types="Cypress" />
 
 import CrateEditor from './CrateEditor.vue';
-import base from 'ro-crate-editor-profiles/profiles/base-profile.json'
-import schema from 'ro-crate-editor-profiles/profiles/schema.json'
-import language_collection from 'ro-crate-editor-profiles/profiles/language-data-commons-collection-profile.json'
+import base from 'ro-crate-editor-profiles/modes/base.json'
+import schema from 'ro-crate-editor-profiles/modes/schema.json'
+import language_collection from 'ro-crate-editor-profiles/modes/language-data-commons.json'
 
 
 const MY_ORG = 'Australian National University';
@@ -16,14 +16,14 @@ describe('<CrateEditor /> Lookups', () => {
         cy.viewport(1024, 768);
     });
 
-    //We could loop all profiles, but we cannot because each profile might have a different UI
-    for (let profile of [language_collection, schema]) {
-        it.skip(`Finds an ROR using profile: ${profile.metadata.name}`, () => {
+    //We could loop all modes, but we cannot because each profile might have a different UI
+    for (let mode of [language_collection, schema]) {
+        it.skip(`Finds an ROR using mode: ${mode.metadata.name}`, () => {
             // see: https://on.cypress.io/mounting-vue
             cy.mount(CrateEditor, {
                 props: {
                     crate: {},
-                    profile: profile,
+                    mode: mode,
                     entityId: './'
                 },
                 ref: 'editor'
@@ -39,12 +39,12 @@ describe('<CrateEditor /> Lookups', () => {
     }
 
     // Skip because it was making me crazy
-    it.skip(`Finds an ROR using profile: ${base.metadata.name}`, () => {
+    it.skip(`Finds an ROR using mode: ${base.metadata.name}`, () => {
         // see: https://on.cypress.io/mounting-vue
         cy.mount(CrateEditor, {
             props: {
                 crate: {},
-                profile: base,
+                mode: base,
                 entityId: './'
             },
             ref: 'editor'
@@ -65,7 +65,7 @@ describe('<CrateEditor /> Lookups', () => {
         cy.mount(CrateEditor, {
             props: {
                 crate: {},
-                profile: language_collection,
+                mode: language_collection,
                 entityId: './'
             },
             ref: 'editor'

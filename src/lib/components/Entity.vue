@@ -1,8 +1,8 @@
 <script setup>
-import { computed, inject, onMounted, onUpdated, reactive, watch } from "vue";
-import { ElTabPane, ElTabs, ElTooltip, ElPopover, ElIcon, ElRow, ElForm, ElFormItem, ElButton } from 'element-plus';
-import { InfoFilled, Plus } from '@element-plus/icons-vue';
-import { $state } from './keys';
+import {computed, inject, onMounted, onUpdated, reactive, watch} from "vue";
+import {ElTabPane, ElTabs, ElTooltip, ElPopover, ElIcon, ElRow, ElForm, ElFormItem, ElButton} from 'element-plus';
+import {InfoFilled, Plus} from '@element-plus/icons-vue';
+import {$state} from './keys';
 import Property from './Property.vue';
 import defaultLayout from './default_layout.json';
 import MediaPreview from "./MediaPreview.vue";
@@ -29,10 +29,10 @@ const layouts = computed(() => {
   const definitions = state.getDefinitions(entity);
   /** @type {string[]} */
   const types = entity['@type'] || [];
-  const layoutsByType = state.profile?.layouts || {};
+  const layoutsByType = state.mode?.layouts || {};
   // handle the case of multiple types, pick the first one that specifies a layout
   /** @type {{ name: string, help: string, disabled: boolean, inputs: Array, definitions: Array }[]} */
-  let layouts = types.find(t => layoutsByType[t]) || state.profile?.inputGroups || defaultLayout;
+  let layouts = types.find(t => layoutsByType[t]) || state.mode?.inputGroups || defaultLayout;
 
   const othersProps = new Set(Object.keys(definitions));
   for (const l of layouts) {
@@ -48,12 +48,12 @@ const layouts = computed(() => {
   }
   // put the rest in others tab
   const inputs = Array.from(othersProps);
-  const others = { 
-    name: 'Others', 
-    description: '', 
-    inputs, 
+  const others = {
+    name: 'Others',
+    description: '',
+    inputs,
     definitions: inputs.map(id => definitions[id]),
-    disabled: !inputs.length 
+    disabled: !inputs.length
   };
 
   return layouts.concat(others);
@@ -74,14 +74,14 @@ watch(() => props.modelValue, async (entity) => {
   if (entity['@type'].includes('File') && props.getFile) {
     data.file = await props.getFile(props.modelValue['@id']);
   }
-}, { immediate: true });
+}, {immediate: true});
 
 watch(() => props.propertyId, (propertyId) => {
   if (propertyId) {
     const name = layouts.value.find(l => l.inputs.includes(propertyId))?.name;
     if (name) activeGroup.value = name;
   }
-}, { immediate: true });
+}, {immediate: true});
 
 //const definitions = computed(() => {console.log(props.modelValue['@id']); return state.getDefinitions(props.modelValue)});
 
@@ -116,8 +116,7 @@ function getComponents(def) {
   return state.getComponents(entity['@id'], def.id);
 }
 
-function checkRootTypes() {
-  const specialTypesExpected = state.profile?.rootDataset?.type
+function hasCorrectRootTypes(specialTypesExpected) {
   const extraTypesNeeded = [];
 
   if (specialTypesExpected) {
@@ -127,41 +126,49 @@ function checkRootTypes() {
       }
     }
   }
-  return extraTypesNeeded;
+  return extraTypesNeeded.length === 0;
 }
 
-
-function addRootTypes(rTypes) {
-  const entity = props.modelValue;
-  emit('update:modelValue', entity, '@type', entity['@type'].concat(rTypes));
-}
-
-function checkConformsTo() {
-  const specialConformsToExpected = state.profile?.conformsToUri || [];
+function hasCorrectConformsTos(specialConformsToExpected) {
   const extraConformsToNeeded = [];
 
   if (specialConformsToExpected) {
     const cT = [];
-    for (let c of state.crate.rootDataset["conformsTo"] || []) {
+    for (let c of [].concat(state.crate.rootDataset["conformsTo"])) {
       if (c && c['@id']) {
         cT.push(c['@id']);
       }
     }
     for (let conformsTo of specialConformsToExpected) {
       if (!cT.includes(conformsTo)) {
-        extraConformsToNeeded.push({ "@id": conformsTo });
+        extraConformsToNeeded.push({"@id": conformsTo});
       }
     }
   }
-  return extraConformsToNeeded;
+  return extraConformsToNeeded.length === 0;
 }
 
-function addConformTos(rTypes) {
+function checkRootDataEntity() {
+  const fixes = [];
+  for (let rde of [].concat(state.mode?.rootDataEntity)) {
+    if (!(hasCorrectRootTypes(rde?.type) && hasCorrectConformsTos(rde?.conformsToUri))) {
+      fixes.push({
+        types: rde?.type,
+        conformsTo: rde?.conformsToUri.map((c)=>({'@id': c})),
+        description: rde.description || rde.type.join(', ')
+      });
+    } else {
+      return [];
+    }
+  }
+  return fixes;
+}
+
+function fixRootDataEntity(fix) {
   const entity = props.modelValue;
-  const newVal = entity.conformsTo ? entity.conformsTo.concat(rTypes) : rTypes;
-  emit('update:modelValue', entity, 'conformsTo', newVal);
+  emit('update:modelValue', entity, '@type', fix.types);
+  emit('update:modelValue', entity, 'conformsTo', fix.conformsTo);
 }
-
 </script>
 
 <template>
@@ -169,7 +176,7 @@ function addConformTos(rTypes) {
     <ElTabPane v-for="(layout, i) in layouts" :label="layout.name" :name="layout.name" :disabled="layout.disabled">
       <template #label>
         <el-popover v-if="layout.disabled" placement="right-end" :title="layout.name" :width="300" trigger="hover"
-          content="There are no properties available in the profile for this type">
+                    content="There are no properties available in the mode for this type">
           <template #reference>
             {{ layout.name }}
           </template>
@@ -178,35 +185,28 @@ function addConformTos(rTypes) {
           {{ layout.name }}
           <el-tooltip v-if="layout.help" :content="layout.help" placement="bottom-start" effect="light">
             <el-icon>
-              <InfoFilled />
+              <InfoFilled/>
             </el-icon>
           </el-tooltip>
         </span>
       </template>
       <el-form id="#entityForm" label-width="auto" novalidate v-if="activeGroup === layout.name">
         <div v-if="state.crate.rootDataset['@id'] === props.modelValue['@id']">
-          <el-row v-if="checkRootTypes().length > 0"
-            class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4">
-            This dataset does not have all the types required in profile:
-            <el-button size="small" type="primary" :icon="Plus" @click="addRootTypes(checkRootTypes())">
-              Add the missing type(s): {{ checkRootTypes().join(", ") }}
-            </el-button>
-          </el-row>
-          <el-row v-if="checkConformsTo().length > 0"
-            class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4">
-            This dataset does not have all the conformsTos required in profile:&nbsp;
-            <el-button size="small" type="primary" :icon="Plus" @click="addConformTos(checkConformsTo())">
-              Add the missing conformsTos(s):&nbsp;<span v-for="c of checkConformsTo()">{{ c?.['@id'] }}</span>
+          <el-row v-if="checkRootDataEntity().length > 0"
+                  class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4">
+            This dataset does not comply with this mode: {{ state.mode.metadata.name }}. Apply mode
+            <el-button v-for="fix of checkRootDataEntity()" type="primary" :icon="Plus"
+                       @click="fixRootDataEntity(fix)">{{ fix.description }}
             </el-button>
           </el-row>
         </div>
 
         <Property v-for="def in layout.definitions" :key="def.id" :model-value="getProperty(def)"
-          :components="getComponents(def)" :definition="def" @update:model-value="v => updateProperty(def, v)">
+                  :components="getComponents(def)" :definition="def" @update:model-value="v => updateProperty(def, v)">
         </Property>
 
         <el-form-item label="Preview" class="pt-2" v-if="data.file">
-          <MediaPreview :file="data.file" />
+          <MediaPreview :file="data.file"/>
         </el-form-item>
       </el-form>
 

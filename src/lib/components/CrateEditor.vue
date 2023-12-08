@@ -18,8 +18,8 @@ const props = defineProps({
   //  modelValue: { type: ROCrate },
   /** RO Crate data in form of plain JSON object. */
   crate: { type: Object, default: {} },
-  /** RO Crate editor profile. */
-  profile: { type: Object, default: {} },
+  /** RO Crate editor mode. */
+  mode: { type: Object, default: {} },
   /** Identifier of the currently displayed entity. If empty, it will be set to the root dataset when the crate is loaded */
   entityId: { type: String },
   /** Property that needs to be specifically displayed. */
@@ -83,9 +83,9 @@ watch(() => props.crate, async crate => {
   emit('data', roc);
 }, { immediate: true });
 
-watch(() => props.profile, (profile) => {
-  //console.log('watch profile', profile);
-  state.setProfile(profile);
+watch(() => props.mode, (mode) => {
+  //console.log('watch mode', mode);
+  state.setMode(mode);
   //newEntityUpdate();
 }, { immediate: true });
 
@@ -147,7 +147,7 @@ defineExpose({
 
 // const value = computed(() => data.newEntityType);
 const newEntityTypes = computed(() => {
-  const classes = state.profile.enabledClasses || Object.keys(state.profile.classes) || [];
+  const classes = state.mode.enabledClasses || Object.keys(state.mode.classes) || [];
   return classes.map(k => ({ value: k, label: k }));
 });
 

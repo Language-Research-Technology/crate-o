@@ -36,12 +36,12 @@
     "name": "Structure",
     "help": "How the parts of this RO-Crate relate, such as collection and object relationships.",
     "inputs": [
-      "http://schema.org/memberOf",
-      "http://schema.org/hasMember",
+      "http://pcdm.org/models#memberOf",
+      "http://pcdm.org/models#hasMember",
       "http://schema.org/isPartOf",
       "http://schema.org/hasPart",
-      "http://schema.org/fileOf",
-      "http://schema.org/hasFile",
+      "http://pcdm.org/models#fileOf",
+      "http://pcdm.org/models#hasFile",
       "http://schema.org/inDefinedTermSet",
       "http://schema.org/hasDefinedTerm"
     ]

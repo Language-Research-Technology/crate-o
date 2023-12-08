@@ -19,7 +19,7 @@ const data = reactive({
 })
 
 watch(() => props.buffer, (buffer) => {
-  console.log('watch profile');
+  console.log('watch mode');
   data.log = {
     info: [],
     warning: [],

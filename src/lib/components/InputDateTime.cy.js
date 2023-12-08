@@ -1,8 +1,8 @@
 /// <reference types="Cypress" />
 
 import InputDateTime from './InputDateTime.vue';
-import software from 'ro-crate-editor-profiles/profiles/software-profile.json'
-import language_collection from 'ro-crate-editor-profiles/profiles/language-data-commons-collection-profile.json'
+import software from 'ro-crate-editor-profiles/modes/software-profile.json'
+import language_collection from 'ro-crate-editor-profiles/modes/language-data-commons-collection-profile.json'
 
 describe('<InputDateTime />', async () => {
 

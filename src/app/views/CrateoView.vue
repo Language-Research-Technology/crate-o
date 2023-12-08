@@ -1,10 +1,10 @@
 <script setup>
 import { shallowReactive, reactive, ref, computed, watch, watchEffect, nextTick } from 'vue';
-import { profiles } from '../../profiles';
+import { modes } from '../../modes';
 import Welcome from "../components/Welcome.vue";
 import Help from "../components/Help.vue";
 import SpreadSheet from "../components/SpreadSheet.vue";
-import { Validator } from "../utils/profileValidator.js";
+import { Validator } from "../utils/modeValidator.js";
 import { first, isEmpty, isUndefined } from "lodash";
 import { ROCrate } from "ro-crate";
 import { handleRoute } from '../../lib/DefaultRouteHandler.js'
@@ -20,7 +20,7 @@ const navigate = handleRoute((entityId, propertyId) => {
 //const $router = useRouter();
 
 const emit = defineEmits(['load:spreadsheet']);
-const defaultProfile = 0;
+const defaultMode = 0;
 
 const data = shallowReactive({
   /** @type {?FileSystemDirectoryHandle} */
@@ -30,43 +30,43 @@ const data = shallowReactive({
   crate: null,
   entityId: '',
   propertyId: '',
-  selectedProfile: defaultProfile,
-  profiles: shallowReactive(profiles),
+  selectedMode: defaultMode,
+  modes: shallowReactive(modes),
   spreadSheetBuffer: null,
   loading: false,
-  profileError: [],
-  profileErrorDialog: false,
+  modeError: [],
+  modeErrorDialog: false,
   validationResult: {},
   showWelcome: false,
   validationResultDialog: false
 });
 window.data = data;
-const profile = computed(() => data.profiles[data.selectedProfile]);
+const mode = computed(() => data.modes[data.selectedMode]);
 
 const editor = ref();
 
 const commands = {
-  async loadProfile() {
-    console.log('loading profile');
+  async loadMode() {
+    console.log('loading mode');
     try {
-      const [profileHandle] = await window.showOpenFilePicker();
-      let file = await profileHandle.getFile();
+      const [modeHandle] = await window.showOpenFilePicker();
+      let file = await modeHandle.getFile();
       const content = await file.text();
       const validator = new Validator();
       validator.errors = [];
       validator.loadAndCheck(content);
-      data.profileError = null;
-      data.profileErrorDialog = false;
+      data.modeError = null;
+      data.modeErrorDialog = false;
       if (validator.errors.length > 0) {
-        data.profileError = validator.errors;
-        data.profileErrorDialog = true;
+        data.modeError = validator.errors;
+        data.modeErrorDialog = true;
       } else {
-        //const profile = validator.profile;
-        //TODO: put it profiles removing it when fixing it
-        const newProfile = validator.profile;
-        data.profiles.unshift(newProfile);
-        data.selectedProfile = 0;
-        //profile = newProfile;
+        //const mode = validator.mode;
+        //TODO: put it modes removing it when fixing it
+        const newMode = validator.mode;
+        data.modes.unshift(newMode);
+        data.selectedMode = 0;
+        //mode = newMode;
       }
     } catch (error) {
       console.error(error);
@@ -135,7 +135,7 @@ const commands = {
       await writable.write(content);
       await writable.close();
       data.crate = crate;
-      data.validationResult = validate(data.crate, profile.value);
+      data.validationResult = validate(data.crate, mode.value);
       data.validationResultDialog = !isEmpty(data.validationResult);
     }
   },
@@ -172,17 +172,17 @@ const excludedFiles = {
   'node_modules': ''
 };
 
-function detectProfile(roc) {
+function detectMode(roc) {
   const conformsToCrate = roc.rootDataset['conformsTo'] || [];
-  const profileIndex = data.profiles.findIndex(p =>
+  const modeIndex = data.modes.findIndex(p =>
     conformsToCrate.some(ct => (p?.conformsToUri || []).includes(ct['@id'])));
-  data.selectedProfile = profileIndex >= 0 ? profileIndex : 0;
+  data.selectedMode = modeIndex >= 0 ? modeIndex : 0;
 }
 
 function resetData() {
   data.entityId = '';
-  data.selectedProfile = defaultProfile;
-  //data.profiles = shallowReactive(profiles);
+  data.selectedMode = defaultMode;
+  //data.modes = shallowReactive(modes);
   data.spreadSheetBuffer = null;
   data.validationResultDialog = false;
   data.validationResult = {};
@@ -229,21 +229,21 @@ async function collectFiles({ dirHandle, root }) {
 }
 
 // this is a workaround for el-select to revert the modelValue change to the valid option
-watch(() => data.selectedProfile, (v, pv) => {
+watch(() => data.selectedMode, (v, pv) => {
   if (v < 0) {
-    data.selectedProfile = pv;
-    commands.loadProfile();
+    data.selectedMode = pv;
+    commands.loadMode();
   }
 });
 
 
-const validate = function (json, profile) {
+const validate = function (json, mode) {
   const crate = new ROCrate(json, { array: true, link: true });
   let validationResult = {};
   for (let entity of crate.entities()) {
     if (entity["@id"] !== 'ro-crate-metadata.json') {
       for (let entityType of entity['@type']) {
-        const classDefinition = profile.classes[entityType];
+        const classDefinition = mode.classes[entityType];
         if (classDefinition) {
           for (let input of classDefinition.inputs) {
             if (input.required && (isUndefined(entity[input.name]) || entity[input.name][0] === '')) {
@@ -299,7 +299,6 @@ async function getFile(id) {
 }
 
 function updateCrate(raw, roc) {
-  console.log(raw);
   data.crate = raw;
 }
 
@@ -333,14 +332,14 @@ function updateCrate(raw, roc) {
       <el-col :xs="24" :sm="24" :md="14" :lg="10" :xl="8">
         <el-row class="w-full p-1">
           <span class="flex items-center">Mode:&nbsp;</span>
-          <el-select v-model="data.selectedProfile" placeholder="Select a mode" class="w-[30em]">
+          <el-select v-model="data.selectedMode" placeholder="Select a mode" class="w-[30em]">
             <el-option :value="-1">
               <p class="font-bold italic">Load and add a new mode from your computer ...</p>
             </el-option>
-            <el-option v-for="(profile, index) of data.profiles" :label="profile.metadata.name" :value="index">
+            <el-option v-for="(mode, index) of data.modes" :label="mode.metadata.name" :value="index">
               <div class="border-b-1 mb-2">
-                <p>{{ profile.metadata.name }}</p>
-                <p class="text-slate-500 text-xs">{{ profile.metadata.description }}</p>
+                <p>{{ mode.metadata.name }}</p>
+                <p class="text-slate-500 text-xs">{{ mode.metadata.description }}</p>
               </div>
             </el-option>
           </el-select>
@@ -379,20 +378,20 @@ function updateCrate(raw, roc) {
         </el-button>
       </span>
     </div>
-    <CrateEditor ref="editor" v-loading="data.loading" :crate="data.crate" :profile="profile" :entityId="data.entityId"
+    <CrateEditor ref="editor" v-loading="data.loading" :crate="data.crate" :mode="mode" :entityId="data.entityId"
       :propertyId="data.propertyId" :get-file="getFile" @update:entityId="updateEntityId" @update:crate="updateCrate"
-      @ready="data.loading = false" @data="detectProfile">
+      @ready="data.loading = false" @data="detectMode">
     </CrateEditor>
     <SpreadSheet v-model:crate="data.crate" :buffer="data.spreadSheetBuffer" />
   </template>
   <div v-else>
     <welcome />
   </div>
-  <el-dialog v-if="data.profileErrorDialog" v-model="data.profileError" :title="'Error when loading Profile'" width="50%">
+  <el-dialog v-if="data.modeErrorDialog" v-model="data.modeError" :title="'Error when loading Mode'" width="50%">
     <div class="overflow-x-scroll h-96">
-      {{ data.selectedProfile?.metadata }}
+      {{ data.selectedMode?.metadata }}
       <el-divider />
-      <div class="p-2" v-for="error of data.profileError">
+      <div class="p-2" v-for="error of data.modeError">
         <p>
           {{ error.instancePath }}
         </p>
@@ -404,7 +403,7 @@ function updateCrate(raw, roc) {
     </div>
     <template #footer>
       <span class="dialog-footer">
-        <el-button type="primary" @click="data.profileErrorDialog = false">Ok</el-button>
+        <el-button type="primary" @click="data.modeErrorDialog = false">Ok</el-button>
       </span>
     </template>
   </el-dialog>
