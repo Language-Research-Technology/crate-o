@@ -1,7 +1,7 @@
 
 # Crate-O?
 
-Status: Crate-O is now usable in Chromium-based browsers (Chrome, and Microsoft Edge work) - you can try it [here](language-research-technology.github.io/crate-o/), please let report bugs using Github issues in this repository.
+Status: Crate-O is now usable in Chromium-based browsers (Chrome, and Microsoft Edge work) - you can try it [here](https://language-research-technology.github.io/crate-o/), please let report bugs using Github issues in this repository.
 
 # BREAKING NEWS -- We are changing the term "Profile" in the context of Crate-O to the term "Mode File" -- changes will be made in early 2024 in all the repositories but there may be some inconsistencies for a while
 
