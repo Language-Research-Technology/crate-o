@@ -76,7 +76,7 @@ Others | [TODO: needs description]
 
 There are several compulsory metadata fields required for each collection. To view these, go to [TODO: add link].
 
-On the left-hand panel, there are some further options related to navigating and creating metadata entities:
+On the right-hand panel, there are some further options related to navigating and creating metadata entities:
 - __Create New Entity__: [TODO: Needs description].
 - __Links from__: When located in a sub-group, select to view the parent group(s).
 - __All Entities__: Select to view all metadata associated with your collection.
