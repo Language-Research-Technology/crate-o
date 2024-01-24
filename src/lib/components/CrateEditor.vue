@@ -182,7 +182,7 @@ function updateEntity(entity, prop, value) {
   }
 }
 
-function deleteEntity() {
+async function deleteEntity() {
   //delete
   //count the links
   const linksCount = countReverse(data.entity);
@@ -190,14 +190,12 @@ function deleteEntity() {
   if (linksCount === 0 || window.confirm(`This entity is referenced by ${linksCount} other ${entityMessage}. Are you sure you want to delete it?`)) {
     // const i = state.entities.findIndex(e => e['@id'] === data.entity['@id']);
     // if (i >= 0) state.entities.splice(i, 1);
-    state.entities.value.delete(data.entity['@id']);
-    nextTick(() => {
-      data.history.pop();
-      state.crate.deleteEntity(data.entity, { references: true });
-      const prevEntity = data.history[data.history.length - 1] ?? data.rootDataset;
-      emit("update:crate", props.crate);
-      emit("update:entityId", prevEntity['@id']);
-    })
+    const e = data.entity;
+    data.history.pop();
+    data.entity = data.history[data.history.length - 1] ?? data.rootDataset;
+    await state.deleteEntity(e);
+    emit("update:entityId", data.entity);
+    emit("update:crate", props.crate);
   }
 
 }

@@ -1,4 +1,4 @@
-import { ref, reactive, shallowReactive, isReactive } from 'vue';
+import { ref, reactive, shallowReactive, isReactive, nextTick } from 'vue';
 import { ROCrate } from 'ro-crate';
 import { ElCheckbox } from 'element-plus';
 import InputDateTime from '../components/InputDateTime.vue';
@@ -130,6 +130,12 @@ export class EditorState {
   refreshEntities() {
     const mid = this.metadataFileEntityId;
     this.entities.value = new Set(this.crate.entities({ filter: e => e['@id'] !== mid }));
+  }
+
+  async deleteEntity(e) {
+    this.entities.value.delete(e);
+    await nextTick();
+    this.crate.deleteEntity(e, { references: true });
   }
 
   /**
