@@ -94,14 +94,12 @@ function removeValue(i, value) {
     vals.splice(i, 1);
     props.components.splice(i, 1);
     if (typeof value === 'object' && value['@id']) {
-      if (!countReverse(toRaw(value))) {
+      let count = countReverse(toRaw(value));
+      if (count <= 1) {
         //todo: confirm to delete entity
         //const i = state.entities.findIndex(e => e['@id'] === value['@id']);
         //if (i >= 0) state.entities.splice(i, 1);
-        state.entities.value.delete(value)
-        nextTick(() => {
-          state.crate.deleteEntity(value);
-        });
+        state.deleteEntity(value);
       }
     }
     emit('update:modelValue', vals);
