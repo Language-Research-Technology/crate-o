@@ -176,6 +176,9 @@ function updateEntity(entity, prop, value) {
       entity[prop] = value;
       emit('update:crate', props.crate); // ,state.crate, diff
     }
+    if (prop === '@id' && value !== props.entityId) {
+      emit('update:entityId', value);
+    }
   } else {
     data.entity = entity;
     emit('update:crate', props.crate); // ,state.crate, diff
