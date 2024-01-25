@@ -135,6 +135,7 @@ const commands = {
       await writable.write(content);
       await writable.close();
       data.crate = crate;
+      data.entityId = '';
       data.validationResult = validate(data.crate, profile.value);
       data.validationResultDialog = !isEmpty(data.validationResult);
     }
@@ -333,7 +334,7 @@ function updateCrate(raw, roc) {
       <el-col :xs="24" :sm="24" :md="14" :lg="10" :xl="8">
         <el-row class="w-full p-1">
           <span class="flex items-center">Mode:&nbsp;</span>
-          <el-select v-model="data.selectedProfile" placeholder="Select a mode" class="w-[30em]">
+          <el-select v-model="data.selectedProfile" placeholder="Select a mode" class="w-[30em]" :disabled="!data.dirHandle">
             <el-option :value="-1">
               <p class="font-bold italic">Load and add a new mode from your computer ...</p>
             </el-option>
