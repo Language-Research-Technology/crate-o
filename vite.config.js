@@ -3,7 +3,7 @@ import { fileURLToPath, URL } from 'node:url'
 /// <reference types="vitest" />
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import { createHtmlPlugin } from 'vite-plugin-html'
+//import { createHtmlPlugin } from 'vite-plugin-html'
 // import AutoImport from 'unplugin-auto-import/vite'
 // import Components from 'unplugin-vue-components/vite'
 // import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
@@ -42,7 +42,7 @@ const build = {
 export default defineConfig(({mode}) => ({
   plugins: [
     vue(),
-    createHtmlPlugin({minify: true, entry: 'src/app/main.js'}),
+    //createHtmlPlugin({minify: true, entry: 'src/app/main.js'}),
     ElementPlus()
     // AutoImport({resolvers: [ElementPlusResolver()]}),
     // Components({resolvers: [ElementPlusResolver()]})
