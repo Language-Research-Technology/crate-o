@@ -1,5 +1,6 @@
 <script setup>
 import Help from "./Help.vue";
+import { ElRow, ElCol } from 'element-plus';
 
 //TODO: Insert code that will load the readme markdown into here as html
 </script>

@@ -1,6 +1,7 @@
 <script setup>
 import { reactive, computed, ref } from 'vue';
-import CrateEditor from '../../lib/components/CrateEditor.vue';
+import { ElButton } from 'element-plus';
+import { CrateEditor } from '../../lib'
 import testData2 from '../../../test-data/cooee/ro-crate-metadata.json' ;
 import testData from '../../../test-data/sydney/ro-crate-metadata.json' ;
 import computationalToolProfile from 'ro-crate-editor-profiles/profiles/software-profile.json';

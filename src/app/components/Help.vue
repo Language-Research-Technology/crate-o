@@ -1,5 +1,6 @@
 <script setup>
-//TODO: Insert code that will load the readme markdown into here as html
+import { ElRow, ElCol } from 'element-plus';
+
 </script>
 <template>
   <el-row :gutter="20" class="p-2">

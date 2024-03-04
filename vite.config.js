@@ -4,9 +4,13 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { createHtmlPlugin } from 'vite-plugin-html'
-import AutoImport from 'unplugin-auto-import/vite'
-import Components from 'unplugin-vue-components/vite'
-import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+// import AutoImport from 'unplugin-auto-import/vite'
+// import Components from 'unplugin-vue-components/vite'
+// import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import ElementPlus from 'unplugin-element-plus/vite'
+import tailwindcss from 'tailwindcss';
+import autoprefixer from 'autoprefixer';
+
 
 const build = {
   _all: {
@@ -20,17 +24,17 @@ const build = {
   library: {
     lib: {
       entry: fileURLToPath(new URL('./src/lib/index.js', import.meta.url)),
-      fileName: 'crate-o',
       formats: ['es']
     },
+    minify: false,
     rollupOptions: {
-      external: ['vue', /^element-plus/ ],
+      external: ['vue', 'element-plus' ],
       output: {
         globals: {
           vue: 'Vue',
+          "element-plus": "ElementPlus"
         },
       },
-      
     },
   }
 }
@@ -39,9 +43,15 @@ export default defineConfig(({mode}) => ({
   plugins: [
     vue(),
     createHtmlPlugin({minify: true, entry: 'src/app/main.js'}),
-    AutoImport({resolvers: [ElementPlusResolver()]}),
-    Components({resolvers: [ElementPlusResolver()]}),
+    ElementPlus()
+    // AutoImport({resolvers: [ElementPlusResolver()]}),
+    // Components({resolvers: [ElementPlusResolver()]})
   ],
+  css: {
+    postcss: {
+      plugins: [tailwindcss, autoprefixer],
+    },
+  },
   optimizeDeps: {
     include: ['ro-crate-excel','leaflet']
   },
@@ -54,7 +64,7 @@ export default defineConfig(({mode}) => ({
     drop: mode !== 'development' ? ['console', 'debugger'] : [],
   },
   base: './',
-  build: build[mode] ?? build._all,
+  build: build[mode],
   define: {
     __APP_VERSION__: JSON.stringify(process.env.npm_package_version)
   },

@@ -1,4 +1,8 @@
 //import "./component.css";
+import './tailwind.css';
+//import "@element-plus/theme-chalk/dist/index.css";
+//import 'element-plus/dist/index.css';
+
 import CrateEditor from './components/CrateEditor.vue';
 //import { handleRoute } from './DefaultRouteHandler.js'
 //export { CrateEditor, handleRoute }

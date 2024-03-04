@@ -3,6 +3,7 @@
 import {Workbook} from 'ro-crate-excel';
 import {ROCrate} from "ro-crate";
 import {reactive, watch, ref} from "vue";
+import { ElRow, ElCol, ElDialog, ElCollapse, ElCollapseItem, ElButton } from 'element-plus';
 
 const props = defineProps(['buffer', 'crate']);
 const emit = defineEmits(['update:crate']);

@@ -93,7 +93,7 @@ export class EditorState {
   rootDatasetId;
 
   constructor(opt) {
-    this._showEntity = opt.showEntity;
+    this._showEntity = opt?.showEntity;
   }
 
   async setCrate(rawCrate) {
@@ -124,7 +124,7 @@ export class EditorState {
   }
 
   showEntity(e) {
-    return this._showEntity(e);
+    if (this._showEntity) return this._showEntity(e);
   }
 
   refreshEntities() {

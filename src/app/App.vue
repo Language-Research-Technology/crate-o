@@ -1,7 +1,8 @@
 <script setup>
-import {RouterLink, RouterView} from 'vue-router';
+import { RouterLink, RouterView } from 'vue-router';
+import { ElRow, ElCol, ElDialog, ElButton } from 'element-plus';
 
-import {reactive} from "vue";
+import { reactive } from "vue";
 
 const version = __APP_VERSION__;
 const data = reactive({
@@ -19,7 +20,7 @@ if (!window.showDirectoryPicker) {
     <el-row :gutter="10" class="flex items-center justify-center min-w-md">
       <el-col :span="8">
         <span class="flex flex-col justify-center items-center ml-2">
-          <img alt="Crate-O an RO-Crate Editor" class="logo min-h-full p-0" src="/logo.svg" width="60"/>
+          <img alt="Crate-O an RO-Crate Editor" class="logo min-h-full p-0" src="/logo.svg" width="60" />
         </span>
       </el-col>
       <el-col :span="16">
@@ -34,7 +35,7 @@ if (!window.showDirectoryPicker) {
       <RouterLink to="/describo">Describo</RouterLink>
     </nav> -->
   </header>
-  <RouterView/>
+  <RouterView />
 
   <el-dialog v-model="data.noBrowserSupport" title="Browser Not Supported" width="50%">
     <el-row class="p-2">

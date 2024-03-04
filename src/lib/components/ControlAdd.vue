@@ -96,7 +96,7 @@ function addNewEntity() {
 }
 
 function search(query) {
-  //console.log(query);
+  console.log(query);
   if (!query) {
     data.options[0].options = [];
     data.options[1].options = [];
@@ -138,8 +138,8 @@ function typeLabel(type) {
 <template>
   <div v-if="!definition.max || !modelValue.length || definition.max > 1">
     <!-- Add buttons -->
-    <el-select v-if="types.length > 1" :modelValue="data.selectedType" @clear="data.selectedType = ''" placeholder="..."
-      size="small" clearable filterable>
+    <el-select v-if="types.length > 1" :modelValue="data.selectedType" @clear="data.selectedType = ''" placeholder="Choose a type"
+      size="small" clearable filterable style="--el-select-width: 200px;">
       <template #prefix>
         <el-icon>
           <Plus />
@@ -156,7 +156,7 @@ function typeLabel(type) {
     <!-- search input -->
     <template v-if="data.selectedType">
       <el-select v-focus class="flex-grow min-w-[100px]" filterable remote clearable v-model="data.entity" value-key="@id"
-        :loading="data.loading" @change="addEntity" :filter-method="v => true" :remote-method="search" size="small"
+        :loading="data.loading" @change="addEntity" :remote-method="search" size="small"
         @keyup.enter="addNewEntity">
         <template v-for="group in data.options" :key="group.value">
           <el-option-group v-if="group.options.length" :label="group.label">
@@ -187,4 +187,5 @@ function typeLabel(type) {
   overflow: hidden;
   display: inline;
 }
+
 </style>

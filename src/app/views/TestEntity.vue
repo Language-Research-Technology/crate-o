@@ -4,7 +4,7 @@ import Entity from '../../lib/components/Entity.vue';
 //import testData from '../../test-data/cooee/ro-crate-metadata.json' ;
 import testData from '../../../test-data/sydney/ro-crate-metadata.json';
 import { $state } from '../../lib/components/keys';
-
+import { ElButton } from 'element-plus';
 import { EditorState } from '../../lib/components/EditorState';
 import language_collection from 'ro-crate-editor-profiles/profiles/language-data-commons-collection-profile.json';
 const data = reactive({

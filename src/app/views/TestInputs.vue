@@ -1,6 +1,7 @@
 <script setup>
 import { reactive, computed } from 'vue';
 import { Delete } from '@element-plus/icons-vue';
+import { ElContainer, ElHeader, ElMain, ElForm, ElFormItem, ElSelect, ElOption, ElButton } from 'element-plus';
 
 import InputDateTime from '../../lib/components/InputDateTime.vue';
 import InputGeo from '../../lib/components/InputGeo.vue';

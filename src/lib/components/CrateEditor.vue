@@ -19,7 +19,7 @@ const props = defineProps({
   /** RO Crate data in form of plain JSON object. */
   crate: { type: Object, default: {} },
   /** RO Crate editor profile. */
-  profile: { type: Object, default: {} },
+  profile: { type: Object, default: { classes: {} } },
   /** Identifier of the currently displayed entity. If empty, it will be set to the root dataset when the crate is loaded */
   entityId: { type: String },
   /** Property that needs to be specifically displayed. */
@@ -147,7 +147,7 @@ defineExpose({
 
 // const value = computed(() => data.newEntityType);
 const newEntityTypes = computed(() => {
-  const classes = state.profile.enabledClasses || Object.keys(state.profile.classes) || [];
+  const classes = state.profile.enabledClasses || Object.keys(state.profile.classes);
   return classes.map(k => ({ value: k, label: k }));
 });
 
@@ -285,3 +285,26 @@ function truncate(text) {
     </el-row>
   </div>
 </template>
+
+<style>
+.el-input.is-error .el-input__wrapper {
+  box-shadow: 0 0 0 1px var(--el-color-danger) inset;
+}
+.el-input.is-error .el-input__wrapper {
+  box-shadow: 0 0 0 1px var(--el-color-danger) inset;
+}
+.el-form-item.is-changed .el-input__wrapper, el-form-item.is-changed .el-checkbox.is_bordered {
+  box-shadow: 0 0 0 1px var(--el-color-success) inset;
+}
+
+label.el-form-item__label, div.el-form-item__label {
+  align-items: center;
+}
+
+.el-button.active {
+  color: var(--el-button-active-text-color);
+  border-color: var(--el-button-active-border-color);
+  background-color: var(--el-button-active-bg-color);
+  outline: 0;
+}
+</style>

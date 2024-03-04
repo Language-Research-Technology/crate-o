@@ -7,6 +7,7 @@ import SpreadSheet from "../components/SpreadSheet.vue";
 import { Validator } from "../utils/profileValidator.js";
 import { first, isEmpty, isUndefined } from "lodash";
 import { ROCrate } from "ro-crate";
+import { ElRow, ElCol, ElMenu, ElMenuItem, ElDivider, ElSelect, ElOption, ElDialog, ElButton } from 'element-plus';
 import { handleRoute } from '../../lib/DefaultRouteHandler.js'
 import { CrateEditor } from '../../lib'
 
@@ -331,10 +332,12 @@ function updateCrate(raw, roc) {
       </el-menu-item>
     </el-menu>
     <el-row class="text-large p-3" :gutter="10">
-      <el-col :xs="24" :sm="24" :md="14" :lg="10" :xl="8">
+      <el-col :xs="24" :sm="24" :md="12" :lg="12">
         <el-row class="w-full p-1">
-          <span class="flex items-center">Mode:&nbsp;</span>
           <el-select v-model="data.selectedProfile" placeholder="Select a mode" class="w-[30em]" :disabled="!data.dirHandle">
+            <template #prefix>
+              <span class="font-bold">Mode:</span>
+            </template>
             <el-option :value="-1">
               <p class="font-bold italic">Load and add a new mode from your computer ...</p>
             </el-option>
@@ -347,7 +350,7 @@ function updateCrate(raw, roc) {
           </el-select>
         </el-row>
       </el-col>
-      <el-col v-if="data.dirHandle" :xs="24" :sm="24" :md="10" :lg="14" :xl="16">
+      <el-col v-if="data.dirHandle" :xs="24" :sm="24" :md="12" :lg="12">
         <el-row class="p-1">
           <span class="flex items-center">
             Selected Directory:&nbsp;<span class="font-bold">{{ data.dirHandle.name }}</span>

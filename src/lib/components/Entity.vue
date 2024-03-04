@@ -32,9 +32,10 @@ const layouts = computed(() => {
   const layoutsByType = state.profile?.layouts || {};
   // handle the case of multiple types, pick the first one that specifies a layout
   /** @type {{ name: string, help: string, disabled: boolean, inputs: Array, definitions: Array }[]} */
-  let layouts = types.find(t => layoutsByType[t]) || state.profile?.inputGroups || defaultLayout;
+  let layouts = layoutsByType[types.find(t => layoutsByType[t])] || state.profile?.inputGroups || defaultLayout;
 
   const othersProps = new Set(Object.keys(definitions));
+  console.log(layouts);
   for (const l of layouts) {
     const defs = l.definitions = [];
     for (const id of (l.inputs ?? [])) {
@@ -165,8 +166,8 @@ function addConformTos(rTypes) {
 </script>
 
 <template>
-  <ElTabs tab-position="left" v-model="activeGroup">
-    <ElTabPane v-for="(layout, i) in layouts" :label="layout.name" :name="layout.name" :disabled="layout.disabled">
+  <el-tabs tab-position="left" v-model="activeGroup">
+    <el-tab-pane v-for="(layout, i) in layouts" :label="layout.name" :name="layout.name" :disabled="layout.disabled">
       <template #label>
         <el-popover v-if="layout.disabled" placement="right-end" :title="layout.name" :width="300" trigger="hover"
           content="There are no properties available in the profile for this type">
@@ -211,6 +212,6 @@ function addConformTos(rTypes) {
       </el-form>
 
 
-    </ElTabPane>
-  </ElTabs>
+    </el-tab-pane>
+  </el-tabs>
 </template>
