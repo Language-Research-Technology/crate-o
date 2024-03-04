@@ -66,7 +66,7 @@ To start with a simple example, simplify the `App.vue` file:
 
 Continue to edit other files accordingly. Either use local import as needed or add the component globally.
 
-* **Example of using local import**
+* **Using crate-editor with local import**
 
 `src/main.js`:
 ```js
@@ -94,7 +94,7 @@ import 'crate-o/css'
 ```
 
 
-* **Example of using global import**
+* **Using crate-editor with global import**
 
 `src/main.js`:
 ```js
@@ -123,5 +123,48 @@ import crate from "../crate.json"
 ```
 
 
-Test the project by running `npm run dev`
+Test the project by running `npm run dev`.
 
+## Working with vue-router
+The CrateEditor component can show an entity specified in the URL query parameter and set the correct URL when navigating to the a different entity. See how it works in the `src/app` as an example.
+To use the simple default route handling import the `handleRoute` from `DefaultRouteHandler`.
+
+`src/views/HomeView.vue`:
+```Vue
+<script setup>
+import profile from 'ro-crate-editor-profiles/profiles/language-data-commons-collection-profile.json'
+import crate from "../crate.json"
+
+import { CrateEditor } from 'crate-o'
+import 'crate-o/css'
+
+import { reactive } from 'vue';
+import { handleRoute } from 'crate-o/DefaultRouteHandler'
+
+const navigate = handleRoute(entityId => {
+  data.entityId = entityId;
+});
+
+const data = reactive({
+  entityId: ''
+});
+
+</script>
+
+<template>
+  <crate-editor :crate="crate" :profile="profile" 
+    :entityId="data.entityId" @update:entityId="id => navigate(id)">
+  </crate-editor>
+</template>
+```
+
+The example only works with web hash history at the momment, so edit `src/router/index.js` and use `createWebHashHistory`:
+
+```js 
+import { createRouter, createWebHashHistory } from 'vue-router'
+import HomeView from '../views/HomeView.vue'
+
+const router = createRouter({
+  history: createWebHashHistory(),
+  routes: [...]
+```
