@@ -51,7 +51,7 @@ const data = reactive({
   rootDataset: null,
   loading: false,
   history: [],
-  activeTab: 'reverse',
+  activeTab: 'all',
   newEntityType: null,
 });
 
@@ -260,16 +260,6 @@ function truncate(text) {
 
       <el-col :span="6" class="h-screen p-2">
         <el-tabs class="w-full" v-model="data.activeTab">
-          <el-tab-pane label="Links from" name="reverse">
-            <section v-for="[prop, entities] in Object.entries(data.entity?.['@reverse'] || {})">
-              <template v-if="data.entity !== data.rootDataset || prop !== 'about'">
-                <h1>{{ prop }}:</h1>
-                <FilteredPaged :modelValue="entities" v-slot="{ value, index }">
-                  <LinkEntity :modelValue="value" :icon="ArrowLeftBold"></LinkEntity>
-                </FilteredPaged>
-              </template>
-            </section>
-          </el-tab-pane>
           <el-tab-pane label="All Entities" name="all" lazy>
             <FilteredPaged :modelValue="Array.from(state.entities.value)" v-slot="{ value, index }">
               <LinkEntity :modelValue="value"></LinkEntity>
