@@ -35,3 +35,6 @@ jobs:
           folder: dist
           single-commit: true
           clean: true
+      - run: npm run build:library
+      - name: Publish package on NPM
+        run: npm publish --access public
