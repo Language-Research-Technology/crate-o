@@ -1,11 +1,10 @@
 <script setup>
 import { shallowReactive, reactive, ref, computed, watch, watchEffect, nextTick } from 'vue';
-import { profiles } from '../../profiles';
+import { profiles, profilesPromise } from '../utils/profiles.js';
 import Welcome from "../components/Welcome.vue";
 import Help from "../components/Help.vue";
 import SpreadSheet from "../components/SpreadSheet.vue";
 import { Validator } from "../utils/profileValidator.js";
-import { first, isEmpty, isUndefined } from "lodash";
 import { ROCrate } from "ro-crate";
 import { ElRow, ElCol, ElMenu, ElMenuItem, ElDivider, ElSelect, ElOption, ElDialog, ElButton } from 'element-plus';
 import { handleRoute } from '../../lib/DefaultRouteHandler.js'
@@ -21,7 +20,7 @@ const navigate = handleRoute((entityId, propertyId) => {
 //const $router = useRouter();
 
 const emit = defineEmits(['load:spreadsheet']);
-const defaultProfile = 0;
+const defaultProfile = undefined;
 
 const data = shallowReactive({
   /** @type {?FileSystemDirectoryHandle} */
@@ -81,6 +80,7 @@ const commands = {
       data.dirHandle = await window.showDirectoryPicker();
       // reset crate
       resetData();
+      data.loading = true;
       try {
         data.metadataHandle = await data.dirHandle.getFileHandle('ro-crate-metadata.json');
       } catch (error) {
@@ -90,20 +90,21 @@ const commands = {
           //No metadataHandle found start a new Crate
         }
       }
+      let crate = {};
       if (data.metadataHandle) {
-        data.loading = true;
         let file = await data.metadataHandle.getFile();
         const content = await file.text();
-        data.crate = JSON.parse(content);
-      } else {
-        data.crate = {};
+        crate = JSON.parse(content);
       }
+      await profilesPromise;
+      data.crate = crate;
       //navigate();
       //data.loading = false;
       console.log('end open')
     } catch (error) {
       console.error(error);
       window.alert(error);
+      resetData();
     }
   },
 
@@ -138,7 +139,7 @@ const commands = {
       data.crate = crate;
       data.entityId = '';
       data.validationResult = validate(data.crate, profile.value);
-      data.validationResultDialog = !isEmpty(data.validationResult);
+      data.validationResultDialog = !!data.validationResult;
     }
   },
 
@@ -230,15 +231,6 @@ async function collectFiles({ dirHandle, root }) {
   return files;
 }
 
-// this is a workaround for el-select to revert the modelValue change to the valid option
-watch(() => data.selectedProfile, (v, pv) => {
-  if (v < 0) {
-    data.selectedProfile = pv;
-    commands.loadProfile();
-  }
-});
-
-
 const validate = function (json, profile) {
   const crate = new ROCrate(json, { array: true, link: true });
   let validationResult = {};
@@ -248,7 +240,7 @@ const validate = function (json, profile) {
         const classDefinition = profile.classes[entityType];
         if (classDefinition) {
           for (let input of classDefinition.inputs) {
-            if (input.required && (isUndefined(entity[input.name]) || entity[input.name][0] === '')) {
+            if (input.required && !(entity[input.name]?.[0])) {
               //TODO: check that the input value is valid
               if (!validationResult[entity['@id']]) {
                 validationResult[entity['@id']] = { 'name': entity['name'], props: {} };
@@ -305,10 +297,18 @@ function updateCrate(raw, roc) {
   data.crate = raw;
 }
 
+function selectProfile(v) {
+  if (v < 0) {
+    commands.loadProfile();
+  } else {
+    data.selectedProfile = v;
+  }
+}
+
 </script>
 
 <template>
-  <div class="bg-slate-200">
+  <div class="bg-slate-200" v-loading.fullscreen="data.loading">
     <el-menu default-active="-1" class="" background-color="#ecf5ff" text-color="#000" mode="horizontal"
       @select="(key) => commands[key]()">
       <el-menu-item index="open">
@@ -334,14 +334,14 @@ function updateCrate(raw, roc) {
     <el-row class="text-large p-3" :gutter="10">
       <el-col :xs="24" :sm="24" :md="12" :lg="12">
         <el-row class="w-full p-1">
-          <el-select v-model="data.selectedProfile" placeholder="Select a mode" class="w-[30em]" :disabled="!data.dirHandle">
+          <el-select :model-value="data.selectedProfile" @update:model-value="selectProfile" placeholder="Open a directory first to select a mode" class="w-[30em]" :disabled="!data.dirHandle">
             <template #prefix>
               <span class="font-bold">Mode:</span>
             </template>
             <el-option :value="-1">
               <p class="font-bold italic">Load and add a new mode from your computer ...</p>
             </el-option>
-            <el-option v-for="(profile, index) of data.profiles" :label="profile.metadata.name" :value="index">
+            <el-option v-for="(profile, index) of data.profiles" v-if="profile" :label="profile.metadata.name" :value="index">
               <div class="border-b-1 mb-2">
                 <p>{{ profile.metadata.name }}</p>
                 <p class="text-slate-500 text-xs">{{ profile.metadata.description }}</p>
@@ -364,7 +364,7 @@ function updateCrate(raw, roc) {
       <strong class="block sm:inline font-bold">Saved with warnings</strong>
       <div class="p-2" v-for="(obj, key) in data.validationResult">
         <p>Entity:
-          <el-button size="small" type="default" @click="goTo({ id: key })"> {{ first(obj?.name) || key }}</el-button>
+          <el-button size="small" type="default" @click="goTo({ id: key })"> {{ obj?.name?.[0] || key }}</el-button>
         </p>
         Property(s) :
         <p v-for="(prop, keyProp) in obj.props" class="ml-5 py-1">
@@ -383,14 +383,14 @@ function updateCrate(raw, roc) {
         </el-button>
       </span>
     </div>
-    <CrateEditor ref="editor" v-loading="data.loading" :crate="data.crate" :profile="profile" :entityId="data.entityId"
+    <CrateEditor ref="editor" :crate="data.crate" :profile="profile" :entityId="data.entityId"
       :propertyId="data.propertyId" :get-file="getFile" @update:entityId="updateEntityId" @update:crate="updateCrate"
-      @ready="data.loading = false" @data="detectProfile">
+      @ready="() => data.loading = false" @data="detectProfile">
     </CrateEditor>
     <SpreadSheet v-model:crate="data.crate" :buffer="data.spreadSheetBuffer" />
   </template>
   <div v-else>
-    <welcome />
+    <welcome/>
   </div>
   <el-dialog v-if="data.profileErrorDialog" v-model="data.profileError" :title="'Error when loading Profile'" width="50%">
     <div class="overflow-x-scroll h-96">

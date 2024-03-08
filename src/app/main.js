@@ -4,6 +4,7 @@ import { createApp } from 'vue';
 
 //import "@element-plus/theme-chalk/dist/index.css";
 import '../lib/tailwind.css';
+//import 'element-plus/es/components/loading';
 //import 'element-plus/dist/index.css';
 //import 'element-plus/theme-chalk/base.css';
 import { ElLoading } from 'element-plus';

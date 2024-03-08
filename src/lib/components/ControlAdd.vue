@@ -2,7 +2,6 @@
 import { reactive, computed, markRaw, inject } from "vue";
 import { Plus, Close } from '@element-plus/icons-vue';
 import { $state } from './keys';
-import { sortedUniq, sortBy } from 'lodash';
 import { ElSelect, ElOption, ElOptionGroup, ElButton, ElIcon } from 'element-plus';
 
 const props = defineProps({
@@ -20,10 +19,11 @@ const types = computed(() => {
     for (let classType of props.definition.type || []) {
       if (state.profile.classes[classType]) {
         // console.log(state.profile.classes[classType]?.['hasSubclass'])
-        types = types.concat(state.profile.classes[classType]?.['hasSubclass'] || [])
+        types = types.concat(state.profile.classes[classType]?.['hasSubclass'] || []);
       }
     }
-    return props.definition.type.concat(sortedUniq(sortBy(types)));
+    if (types.length) types = Array.from(new Set(types)).sort();
+    return props.definition.type.concat(types);
   }
   return ['Text', 'Number', 'Entity'];
 });
