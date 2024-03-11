@@ -1,6 +1,7 @@
 const timeRegex = /^([01]\d|2[0-3])\:([0-5]\d)(?:\:([0-5]\d)(?:[\.](\d+))?)?(?:[zZ]|([\+\-])([01]\d|2[0-3])\:?([0-5]\d)?)?$/;
 const dateRegex = /^(?:([\+\-]\d+)|(\d{4}))(\-\d{2})?(\-\d{2})?$/;
 const dateTimeRegex = new RegExp('^('+dateRegex.source.slice(1,-1) + ')(?:T(' + timeRegex.source.slice(1,-1) + '))?$');
+
 export const utilsByType = {
   time: {
     dateTo(val) {
@@ -8,24 +9,31 @@ export const utilsByType = {
       return '';
     },
     /**
-     * Convert a string value to date
+     * Convert a string value that represent a time to a Date object
      * @param {string} val New value
-     * @param {Date} mval existing data value
+     * @param {Date} mval existing time value
      */
     dateFrom(val, mval) {
       let m;
+      let d = new Date(0);
+      let hh = 0, mm = 0, ss = 0, ms = 0, offset = 0;
       if (val && (m = val.match(timeRegex))) {
-        let d = mval instanceof Date ? new Date(mval) : new Date(0);
-        let [hh, mm, ss, ms] = m.slice(1, 5).map(e => parseInt(e) || 0);
-        d.setUTCHours(hh, mm, ss, ms);
+        if (mval instanceof Date) d = new Date(mval);
+        [hh, mm, ss, ms] = m.slice(1, 5).map(e => parseInt(e) || 0);
         if (m[5]) { //adjust timezone offset
           let [tzh, tzm] = [6, 7].map((i) => parseInt(m[i] || 0));
-          let offset = parseInt(m[5] + ((tzh * 60 + tzm) * 60 * 1000));
-          d.setTime(d.getTime() + offset);
+          offset = parseInt(m[5] + ((tzh * 60 + tzm) * 60 * 1000));
         }
-        return d;
       }
+      d.setUTCHours(hh, mm, ss, ms);
+      d.setTime(d.getTime() + offset);
+      return d;
     },
+    /**
+     * 
+     * @param {*} val time in string eg 10:12:15.003
+     * @returns 
+     */
     toNative(val) {
       var m;
       if (val && (m = val.match(/^([01]\d|2[0-3])(?:\:([0-5]\d))?(?:\:([0-5]\d))?(?:\.(\d{1,3}))?/))) {
@@ -46,7 +54,8 @@ export const utilsByType = {
      * @param {string} val 
      */
     dateFrom(val) {
-      if (val && val.match(dateRegex)) return new Date(val);
+      if (!val) return new Date();
+      else if (val.match(dateRegex)) return new Date(val);
     },
     toNative(val) {
       if (val) {
@@ -66,8 +75,14 @@ export const utilsByType = {
     },
     /** @param {string} val */
     dateFrom(val) {
-      if (val && val.match(dateTimeRegex)) return new Date(val);
+      if (!val) return new Date();
+      else if (val.match(dateTimeRegex)) return new Date(val);
     },
+    /**
+     * Convert any ISO8601 format to the full form
+     * @param {*} val data time in string eg: 2024, 2024-12-21, 2024-12-21T10:11
+     * @returns full form of ISO8601 date time format without the timezone, eg: 2024-12-21T11:12:13.123
+     */
     toNative(val) {
       if (!val) return '';
       var v = val;

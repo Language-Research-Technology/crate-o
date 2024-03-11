@@ -10,7 +10,7 @@ import vue from '@vitejs/plugin-vue'
 import ElementPlus from 'unplugin-element-plus/vite'
 import tailwindcss from 'tailwindcss';
 import autoprefixer from 'autoprefixer';
-
+import { visualizer } from "rollup-plugin-visualizer";
 
 const build = {
   _all: {
@@ -41,6 +41,7 @@ const build = {
 // https://vitejs.dev/config/
 export default defineConfig(({mode}) => ({
   plugins: [
+    visualizer(),
     vue(),
     //createHtmlPlugin({minify: true, entry: 'src/app/main.js'}),
     ElementPlus()
