@@ -6,7 +6,8 @@ import Help from "../components/Help.vue";
 import SpreadSheet from "../components/SpreadSheet.vue";
 import { Validator } from "../utils/profileValidator.js";
 import { ROCrate } from "ro-crate";
-import { ElRow, ElCol, ElMenu, ElMenuItem, ElDivider, ElSelect, ElOption, ElDialog, ElButton } from 'element-plus';
+import { ElRow, ElCol, ElMenu, ElMenuItem, ElDivider, ElSelect, ElOption, 
+  ElDialog, ElButton, ElCollapse, ElCollapseItem, ElAlert } from 'element-plus';
 import { handleRoute } from '../../lib/DefaultRouteHandler.js'
 import { CrateEditor } from '../../lib'
 
@@ -78,8 +79,6 @@ const commands = {
     console.log('open');
     try {
       data.dirHandle = await window.showDirectoryPicker();
-      // reset crate
-      resetData();
       data.loading = true;
       try {
         data.metadataHandle = await data.dirHandle.getFileHandle('ro-crate-metadata.json');
@@ -100,12 +99,13 @@ const commands = {
       data.crate = crate;
       //navigate();
       //data.loading = false;
-      console.log('end open')
+      // reset crate
+      resetData();
     } catch (error) {
       console.error(error);
       window.alert(error);
-      resetData();
     }
+    console.log('end open')
   },
 
   async addFiles() {
@@ -115,6 +115,7 @@ const commands = {
   },
 
   async save() {
+    console.log('save!!!!!!!!!!!');
     if (data.dirHandle) {
       // create new crate metadata
       data.metadataHandle = await data.dirHandle.getFileHandle('ro-crate-metadata.json', { create: true });
@@ -136,9 +137,9 @@ const commands = {
       const content = JSON.stringify(crate, null, 2);
       await writable.write(content);
       await writable.close();
-      data.crate = crate;
-      data.entityId = '';
-      data.validationResult = validate(data.crate, profile.value);
+      //data.crate = crate;
+      //data.entityId = '';
+      data.validationResult = validate(crate, profile.value);
       data.validationResultDialog = !!data.validationResult;
     }
   },
@@ -304,7 +305,7 @@ function selectProfile(v) {
     data.selectedProfile = v;
   }
 }
-
+const activeNames = ref(['1']);
 </script>
 
 <template>
@@ -326,22 +327,23 @@ function selectProfile(v) {
       <el-menu-item index="close" :disabled="!data.dirHandle">
         ⓧ Close
       </el-menu-item>
-
       <el-menu-item index="help" title="Help">
-        ﹖
+        ﹖ Help
       </el-menu-item>
     </el-menu>
     <el-row class="text-large p-3" :gutter="10">
       <el-col :xs="24" :sm="24" :md="12" :lg="12">
         <el-row class="w-full p-1">
-          <el-select :model-value="data.selectedProfile" @update:model-value="selectProfile" placeholder="Open a directory first to select a mode" class="w-[30em]" :disabled="!data.dirHandle">
+          <el-select :model-value="data.selectedProfile" @update:model-value="selectProfile"
+            placeholder="Open a directory first to select a mode" class="w-[30em]" :disabled="!data.dirHandle">
             <template #prefix>
               <span class="font-bold">Mode:</span>
             </template>
             <el-option :value="-1">
               <p class="font-bold italic">Load and add a new mode from your computer ...</p>
             </el-option>
-            <el-option v-for="(profile, index) of data.profiles" v-if="profile" :label="profile.metadata.name" :value="index">
+            <el-option v-for="(profile, index) of data.profiles" v-if="profile" :label="profile.metadata.name"
+              :value="index">
               <div class="border-b-1 mb-2">
                 <p>{{ profile.metadata.name }}</p>
                 <p class="text-slate-500 text-xs">{{ profile.metadata.description }}</p>
@@ -353,26 +355,32 @@ function selectProfile(v) {
       <el-col v-if="data.dirHandle" :xs="24" :sm="24" :md="12" :lg="12">
         <el-row class="p-1">
           <span class="flex items-center">
-            Selected Directory:&nbsp;<span class="font-bold">{{ data.dirHandle.name }}</span>
+            <span class="font-bold text-slate-500">Selected Directory:</span>&nbsp;<span>{{ data.dirHandle.name
+              }}</span>
           </span>
         </el-row>
       </el-col>
     </el-row>
   </div>
   <template v-if="data.crate">
-    <div v-if="data.validationResultDialog" class="bg-orange-100 text-orange-700 px-4 py-3 relative" role="alert">
-      <strong class="block sm:inline font-bold">Saved with warnings</strong>
-      <div class="p-2" v-for="(obj, key) in data.validationResult">
-        <p>Entity:
-          <el-button size="small" type="default" @click="goTo({ id: key })"> {{ obj?.name?.[0] || key }}</el-button>
-        </p>
-        Property(s) :
-        <p v-for="(prop, keyProp) in obj.props" class="ml-5 py-1">
-          <el-button size="small" @click="goTo({ id: key, prop: keyProp })">{{ prop.name }}</el-button>
-          <span class="text-red-700">&nbsp;is {{ prop['type'] }}</span>
-        </p>
-      </div>
-      <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+    <el-alert class="validation-warnings" v-if="data.validationResultDialog" type="warning" @close="data.validationResultDialog = false">
+      <el-collapse class="ml-5 mr-10 min-w-96" role="alert">
+        <el-collapse-item title="Saved with warnings" name="validation-warnings">
+          <div class="p-2" v-for="(obj, key) in data.validationResult">
+            <p>Entity:
+              <el-button size="small" type="default" @click="goTo({ id: key })"> {{ obj?.name?.[0] || key }}</el-button>
+            </p>
+            Property(s) :
+            <p v-for="(prop, keyProp) in obj.props" class="ml-5 py-1">
+              <el-button size="small" @click="goTo({ id: key, prop: keyProp })">{{ prop.name }}</el-button>
+              <span class="text-red-700">&nbsp;is {{ prop['type'] }}</span>
+            </p>
+          </div>
+        </el-collapse-item>
+      </el-collapse>
+    </el-alert>
+      <!-- <strong class="block sm:inline font-bold">Saved with warnings</strong> -->
+      <!-- <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
         <el-button type="text" @click="data.validationResultDialog = false">
           <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20">
@@ -381,8 +389,7 @@ function selectProfile(v) {
               d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
           </svg>
         </el-button>
-      </span>
-    </div>
+      </span> -->
     <CrateEditor ref="editor" :crate="data.crate" :profile="profile" :entityId="data.entityId"
       :propertyId="data.propertyId" :get-file="getFile" @update:entityId="updateEntityId" @update:crate="updateCrate"
       @ready="() => data.loading = false" @data="detectProfile">
@@ -390,9 +397,10 @@ function selectProfile(v) {
     <SpreadSheet v-model:crate="data.crate" :buffer="data.spreadSheetBuffer" />
   </template>
   <div v-else>
-    <welcome/>
+    <welcome />
   </div>
-  <el-dialog v-if="data.profileErrorDialog" v-model="data.profileError" :title="'Error when loading Profile'" width="50%">
+  <el-dialog v-if="data.profileErrorDialog" v-model="data.profileError" :title="'Error when loading Mode'"
+    width="50%">
     <div class="overflow-x-scroll h-96">
       {{ data.selectedProfile?.metadata }}
       <el-divider />
@@ -428,5 +436,15 @@ function selectProfile(v) {
 <style>
 .el-select-dropdown__item {
   height: auto;
+}
+/* .validation-warnings .el-alert__content {
+  flex-grow: 1;
+} */
+.validation-warnings .el-collapse {
+  --el-collapse-header-bg-color: transparent;
+  --el-collapse-content-bg-color: transparent;
+  --el-collapse-header-font-size: 14px;
+  --el-collapse-header-text-color: inherit;
+  --el-collapse-content-text-color: inherit;
 }
 </style>

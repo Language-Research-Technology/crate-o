@@ -118,7 +118,7 @@ function removeValue(i, value) {
     <template #label>
       <el-tooltip v-if="definition?.required" content="Property Required" placement="bottom-start" effect="light">
         <el-icon>
-          <WarningFilled class="text-red-600" />
+          <WarningFilled class="text-gray-500" />
         </el-icon>
       </el-tooltip>
       <span class="mx-1" :title="definition.id">{{ label }} </span>
@@ -149,13 +149,14 @@ function removeValue(i, value) {
         </template>
         <div class="pl-2 flex flex-nowrap" v-if="!isReverse">
           <!-- Delete Button -->
-          <el-tooltip v-if="definition?.min >= values.length" content="This property is required and cannot be deleted"
-            placement="bottom-start" effect="light">
-            <el-button :disabled="true" @click="removeValue(index, value)" type="default" plain :icon="Delete"
-              size="small"></el-button>
+          <el-tooltip placement="bottom-start" effect="light">
+            <template #content>
+              <span v-if="definition?.min >= values.length">This property is required and cannot be deleted</span>
+              <span v-else>Delete the property value</span>
+            </template>
+            <el-button :disabled="definition?.min >= values.length" @click="removeValue(index, value)" 
+              type="danger" plain :icon="Delete"></el-button>
           </el-tooltip>
-          <el-button v-else @click="removeValue(index, value)" type="danger" plain :icon="Delete"
-            size="small"></el-button>
         </div>
       </FilteredPaged>
 

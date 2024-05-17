@@ -43,10 +43,10 @@ import { ElRow, ElCol } from 'element-plus';
           Closes without saving.
         </p>
         <h4 class="text-gray-500 dark:text-gray-400">
-          Profile
+          Mode
         </h4>
         <p class="text-gray-500 dark:text-gray-400">
-          Select a predefined profile or load one from your computer.
+          Select a predefined mode or load one from your computer.
         </p>
       </div>
     </el-col>

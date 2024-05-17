@@ -4,7 +4,7 @@ import { ref, shallowReactive, reactive, watch, computed, provide, onUpdated, ne
 import { HomeFilled, ArrowLeftBold, Delete } from '@element-plus/icons-vue';
 import {
   ElRow, ElCol, ElBreadcrumb, ElBreadcrumbItem, ElTabs, ElTabPane,
-  ElPageHeader, ElTooltip, ElLink, ElSelectV2, ElButton, ElLoading
+  ElPageHeader, ElTooltip, ElLink, ElSelectV2, ElButton, ElLoading, ElTag, ElIcon
 } from 'element-plus';
 import { $state } from './keys';
 import { EditorState } from './EditorState';
@@ -96,6 +96,7 @@ watch(() => props.entityId, entityId => {
 
 function initEntity(entityId) {
   var id = entityId || data.rootDataset?.['@id'];
+  console.log('entityId=', entityId, ' id=', id);
   if (state.crate) {
     if (data.entity?.['@id'] !== id) {
       const entity = state.crate.getEntity(id);
@@ -104,7 +105,8 @@ function initEntity(entityId) {
         if (i > -1) data.history.splice(i + 1);
         else data.history.push(entity);
         data.entity = entity;
-        console.log(data.history);
+        //console.log(data.history);
+        //console.log('initEntity');
         if (entityId !== id) emit('update:entityId', id);
       }
     }
@@ -212,53 +214,55 @@ function truncate(text) {
 
 <template>
   <div :key="forceKey">
-    <el-row class="bg-slate-300 p-2" v-if="data.rootDataset">
-      <el-col :span="17" class="p-2 flex items-center">
-        <el-breadcrumb separator="/">
-          <el-breadcrumb-item v-for="e, i in data.history">
-            <el-link :disabled="i === data.history.length - 1" :icon="i ? null : HomeFilled" href="/"
-              @click.prevent="showEntity(e)" :title="e.name?.[0] || e['@id']">
-              <span v-html="truncate(e.name?.[0] || (i ? e['@id'] : 'Root Dataset'))"></span>
-            </el-link>
-          </el-breadcrumb-item>
-        </el-breadcrumb>
-      </el-col>
-      <el-col :span="5" class="pt-1 pr-3">
-        <el-select-v2 placeholder="Create New Entity" class="flex-grow" filterable clearable :allow-create="false"
-          v-model="data.newEntityType" :options="newEntityTypes" @change="onSelectNewEntity"></el-select-v2>
-      </el-col>
-    </el-row>
-
     <el-row v-loading="data.loading" class="crate-o">
-      <el-col :span="18" class="p-2">
-        <template v-if="data.entity">
-          <el-page-header :icon="null" class="bg-blue-100 border-t border-b border-blue-500 text-blue-700 px-4 py-3"
-            role="alert">
-            <template #title>
-              <span class="text-large font-600 mr-3"> {{ data.entity['name']?.[0] || data.entity['@id'] }} </span>
-            </template>
-            <template #content>
-            </template>
-            <template #extra>
-              <div class="flex items-center">
+      <el-col :span="18" class="p-2" id="currentEntity">
+        <el-row class="py-3 px-2 items-center bg-slate-200" v-if="data.rootDataset">
+          <el-col>
+            <div class="mb-3">
+              <el-breadcrumb separator=">">
+                <template v-for="e, i in data.history">
+                  <el-breadcrumb-item>
+                    <el-link :icon="i ? null : HomeFilled" href="/"
+                      @click.prevent="showEntity(e)" :title="e.name?.[0] || e['@id']">
+                      <span v-html="truncate(e.name?.[0] || (i ? e['@id'] : 'Root Dataset'))"></span>
+                    </el-link>
+                  </el-breadcrumb-item>
+                </template>
+              </el-breadcrumb>
+            </div>
+            <el-row v-if="data.entity">
+              <el-col :sm="24" :md="18" :lg="20">
+                <h2 class="text-2xl mr-3"> 
+                  <span class="text-2xl font-bold text-slate-500">Current Entity: </span>
+                  <el-icon style="font-size: 30px; top:4px;" v-if="data.rootDataset === data.entity"><HomeFilled/></el-icon>
+                  {{ data.entity['name']?.[0] || data.entity['@id'] }} 
+                </h2>
+              </el-col>
+              <el-col :sm="24" :md="6" :lg="4">
                 <el-tooltip v-if="data.rootDataset !== data.entity"
                   :content="'Delete entity ' + data.entity['name']?.[0] || data.entity['@id']" placement="bottom-start"
                   effect="light">
-                  <el-button @click="deleteEntity" type="danger" plain :icon="Delete">Remove</el-button>
+                  <el-button class="float-right" @click="deleteEntity" type="danger" plain :icon="Delete">Remove Entity</el-button>
                 </el-tooltip>
-              </div>
-            </template>
-          </el-page-header>
+              </el-col>
+            </el-row>
+          </el-col>
+        </el-row>
+        <el-row class="mt-3">
+          <template v-if="data.entity">
+            <Entity :model-value="data.entity" @update:model-value="updateEntity" :getFile="getFile"
+              :propertyId="propertyId">
+            </Entity>
 
-          <Entity :model-value="data.entity" @update:model-value="updateEntity" :getFile="getFile"
-            :propertyId="propertyId">
-          </Entity>
-
-        </template>
-        <div v-else="">Entity with id `{{ entityId }}` does not exist in the crate.</div>
+          </template>
+          <div v-else="">Entity with id `{{ entityId }}` does not exist in the crate.</div>
+        </el-row>
       </el-col>
 
-      <el-col :span="6" class="h-screen p-2">
+      <el-col :span="6" class="h-screen p-2" id="entityNavigator">
+        <el-select-v2 placeholder="Create New Entity" class="flex-grow" filterable clearable :allow-create="false"
+          v-model="data.newEntityType" :options="newEntityTypes" @change="onSelectNewEntity"></el-select-v2>
+
         <el-tabs class="w-full" v-model="data.activeTab">
           <el-tab-pane label="All Entities" name="all" lazy>
             <FilteredPaged :modelValue="Array.from(state.entities.value)" v-slot="{ value, index }">
@@ -293,5 +297,11 @@ el-form-item.is-changed .el-checkbox.is_bordered {
 label.el-form-item__label,
 div.el-form-item__label {
   align-items: center;
+}
+
+.el-breadcrumb .el-link {
+  color: #626aef;
+  font-weight: 600;
+  font-size: 90%;
 }
 </style>

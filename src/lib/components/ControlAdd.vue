@@ -139,7 +139,7 @@ function typeLabel(type) {
   <div v-if="!definition.max || !modelValue.length || definition.max > 1">
     <!-- Add buttons -->
     <el-select v-if="types.length > 1" :modelValue="data.selectedType" @clear="data.selectedType = ''"
-      placeholder="Choose a type" size="small" clearable filterable style="--el-select-width: 200px;">
+      placeholder="Choose a type" clearable filterable style="--el-select-width: 200px;">
       <template #prefix>
         <el-icon>
           <Plus />
@@ -149,14 +149,14 @@ function typeLabel(type) {
         {{ typeLabel(t) }}
       </el-option>
     </el-select>
-    <el-button v-else v-for="t of types" size="small" type="primary" :icon="data.selectedType === t ? Close : Plus"
+    <el-button v-else v-for="t of types" type="primary" :icon="data.selectedType === t ? Close : Plus"
       :class="{ active: data.selectedType === t }" @click="add(t)">
       {{ typeLabel(t) }}
     </el-button>
     <!-- search input -->
     <template v-if="data.selectedType">
       <el-select v-focus class="flex-grow min-w-[100px]" filterable remote clearable v-model="data.entity" value-key="@id"
-        :loading="data.loading" @change="addEntity" :remote-method="search" size="small" @keyup.enter="addNewEntity">
+        :loading="data.loading" @change="addEntity" :remote-method="search" @keyup.enter="addNewEntity">
         <template v-for="group in data.options" :key="group.value">
           <el-option-group v-if="group.options.length" :label="group.label">
             <el-option v-for="item in group.options" :key="item['@id']" :label="createLabel(item)" :value="item">
@@ -166,7 +166,7 @@ function typeLabel(type) {
           </el-option-group>
         </template>
       </el-select>
-      <el-button class="add-new-entity" size="small" type="success" @click="addNewEntity">
+      <el-button class="add-new-entity" type="success" @click="addNewEntity">
         Create new {{ typeLabel(data.selectedType) }}<span v-if="data.keyword">:&nbsp;</span>
         {{ data.keyword }}</el-button>
     </template>

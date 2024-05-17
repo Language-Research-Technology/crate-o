@@ -4,7 +4,7 @@ export default class Lookup {
   constructor(opt) {
 
   }
-  async search({ query, limit = 10 }) {
+  async search({ query, limit = 20 }) {
     let response = await fetch(`${api}?query.advanced=${query}`);
     if (response.status === 200) {
       response = await response.json();

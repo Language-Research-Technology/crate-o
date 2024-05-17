@@ -49,12 +49,12 @@ const layouts = computed(() => {
   }
   // put the rest in others tab
   const inputs = Array.from(othersProps);
-  const others = { 
-    name: 'Others', 
-    description: '', 
-    inputs, 
+  const others = {
+    name: 'Others',
+    description: '',
+    inputs,
     definitions: inputs.map(id => definitions[id]),
-    disabled: !inputs.length 
+    disabled: !inputs.length
   };
 
   return layouts.concat(others);
@@ -72,6 +72,7 @@ const activeGroup = computed({
 });
 
 watch(() => props.modelValue, async (entity) => {
+  data.file = null;
   if (entity['@type'].includes('File') && props.getFile) {
     data.file = await props.getFile(props.modelValue['@id']);
   }
@@ -169,33 +170,32 @@ function addConformTos(rTypes) {
   <el-tabs tab-position="left" v-model="activeGroup">
     <el-tab-pane v-for="(layout, i) in layouts" :label="layout.name" :name="layout.name" :disabled="layout.disabled">
       <template #label>
-        <el-popover v-if="layout.disabled" placement="right-end" :title="layout.name" :width="300" trigger="hover"
-          content="There are no properties available in the profile for this type">
-          <template #reference>
-            {{ layout.name }}
+        <el-tooltip placement="right-end" effect="light">
+          <template #content>
+            <div class="text-slate-700">
+              <h4 class="text-base">{{ layout.name }}</h4>
+              <p v-if="layout.help">{{ layout.help }}</p>
+              <p class="font-semibold" v-if="layout.disabled">There are no properties available in the mode for this type
+              </p>
+            </div>
           </template>
-        </el-popover>
-        <span v-else>
-          {{ layout.name }}
-          <el-tooltip v-if="layout.help" :content="layout.help" placement="bottom-start" effect="light">
-            <el-icon>
-              <InfoFilled />
-            </el-icon>
-          </el-tooltip>
-        </span>
+          <div>
+            {{ layout.name }}
+          </div>
+        </el-tooltip>
       </template>
       <el-form id="#entityForm" label-width="auto" novalidate v-if="activeGroup === layout.name">
         <div v-if="state.crate.rootDataset['@id'] === props.modelValue['@id']">
           <el-row v-if="checkRootTypes().length > 0"
             class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4">
-            This dataset does not have all the types required in profile:
+            This dataset does not have all the types required in the selected Mode:
             <el-button size="small" type="primary" :icon="Plus" @click="addRootTypes(checkRootTypes())">
               Add the missing type(s): {{ checkRootTypes().join(", ") }}
             </el-button>
           </el-row>
           <el-row v-if="checkConformsTo().length > 0"
             class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4">
-            This dataset does not have all the conformsTos required in profile:&nbsp;
+            This dataset does not have all the conformsTos required in the selected Mode:&nbsp;
             <el-button size="small" type="primary" :icon="Plus" @click="addConformTos(checkConformsTo())">
               Add the missing conformsTos(s):&nbsp;<span v-for="c of checkConformsTo()">{{ c?.['@id'] }}</span>
             </el-button>
@@ -206,12 +206,12 @@ function addConformTos(rTypes) {
           :components="getComponents(def)" :definition="def" @update:model-value="v => updateProperty(def, v)">
         </Property>
 
-        <el-form-item label="Preview" class="pt-2" v-if="data.file">
-          <MediaPreview :file="data.file" />
-        </el-form-item>
       </el-form>
-
-
     </el-tab-pane>
+
+    <el-tab-pane v-if="data.file" label="Preview" name="Preview">
+      <MediaPreview :file="data.file" />
+    </el-tab-pane>
+
   </el-tabs>
 </template>

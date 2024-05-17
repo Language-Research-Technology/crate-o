@@ -44,6 +44,7 @@ const help = {
     <el-col :xs="24" :sm="24" :md="14" :lg="14" :xl="14">
       <LeafletMap class="h-72 flex grow min-w-[200px] mr-4" :modelValue="modelValue"
         @update:modelValue="(v) => $emit('update:modelValue', v)" :transformer="transformer"></LeafletMap>
+      <div class="text-xs italic">* This map is not suitable for native title or other land claims.</div>
     </el-col>
     <el-col :xs="24" :sm="24" :md="10" :lg="10" :xl="10">
       <el-form label-width="auto">

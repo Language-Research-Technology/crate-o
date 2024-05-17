@@ -46,7 +46,10 @@ function openUrl() {
       <component :is="icon"></component>
     </el-icon>
     <span class="flex mr-2">
-      <el-tag class="mr-1 font-bold" size="small" plain v-for="t of modelValue['@type']">{{ t }}</el-tag>
+      <!-- <el-tag class="mr-1 font-bold" size="small" plain type="info" v-for="t of modelValue['@type']">{{ t }}</el-tag> -->
+      <template v-for="t of modelValue['@type']">
+        <span class="type-tag" v-if="t">{{ t }}</span>
+      </template>
     </span>
     <slot> {{ label }} </slot>
   </el-button>
@@ -79,5 +82,16 @@ function openUrl() {
   row-gap: 0.5em;
   white-space: normal;
   text-align: left;
+}
+
+.type-tag {
+  margin-right: 0.25rem;
+  font-weight: 600;
+  background: #8295fb;
+  padding: 0.25rem;
+  border-radius: 3px;
+  /* border: 1px solid var(--el-button-border-color); */
+  font-size: 75%;
+  color: white;
 }
 </style>
