@@ -213,50 +213,47 @@ function truncate(text) {
 
 
 <template>
-  <div :key="forceKey">
+  <div class="crate-editor" :key="forceKey">
     <el-row v-loading="data.loading" class="crate-o">
       <el-col :span="18" class="p-2" id="currentEntity">
-        <el-row class="py-3 px-2 items-center bg-slate-200" v-if="data.rootDataset">
-          <el-col>
-            <div class="mb-3">
-              <el-breadcrumb separator=">">
-                <template v-for="e, i in data.history">
-                  <el-breadcrumb-item>
-                    <el-link :icon="i ? null : HomeFilled" href="/"
-                      @click.prevent="showEntity(e)" :title="e.name?.[0] || e['@id']">
-                      <span v-html="truncate(e.name?.[0] || (i ? e['@id'] : 'Root Dataset'))"></span>
-                    </el-link>
-                  </el-breadcrumb-item>
-                </template>
-              </el-breadcrumb>
-            </div>
-            <el-row v-if="data.entity">
-              <el-col :sm="24" :md="18" :lg="20">
-                <h2 class="text-2xl mr-3"> 
-                  <span class="text-2xl font-bold text-slate-500">Current Entity: </span>
-                  <el-icon style="font-size: 30px; top:4px;" v-if="data.rootDataset === data.entity"><HomeFilled/></el-icon>
-                  {{ data.entity['name']?.[0] || data.entity['@id'] }} 
-                </h2>
-              </el-col>
-              <el-col :sm="24" :md="6" :lg="4">
-                <el-tooltip v-if="data.rootDataset !== data.entity"
-                  :content="'Delete entity ' + data.entity['name']?.[0] || data.entity['@id']" placement="bottom-start"
-                  effect="light">
-                  <el-button class="float-right" @click="deleteEntity" type="danger" plain :icon="Delete">Remove Entity</el-button>
-                </el-tooltip>
-              </el-col>
-            </el-row>
-          </el-col>
-        </el-row>
-        <el-row class="mt-3">
-          <template v-if="data.entity">
-            <Entity :model-value="data.entity" @update:model-value="updateEntity" :getFile="getFile"
-              :propertyId="propertyId">
-            </Entity>
+        <div class="current-entity-heading py-3 px-2 mb-3 items-center bg-slate-200" v-if="data.rootDataset">
+          <el-breadcrumb class="mb-3" separator=">">
+            <template v-for="e, i in data.history">
+              <el-breadcrumb-item>
+                <el-link :icon="i ? null : HomeFilled" href="/" @click.prevent="showEntity(e)"
+                  :title="e.name?.[0] || e['@id']">
+                  <span v-html="truncate(e.name?.[0] || (i ? e['@id'] : 'Root Dataset'))"></span>
+                </el-link>
+              </el-breadcrumb-item>
+            </template>
+          </el-breadcrumb>
+          <el-row v-if="data.entity">
+            <el-col :sm="24" :md="18" :lg="20">
+              <h2 class="text-2xl mr-3">
+                <span class="text-2xl font-bold text-slate-500">Current Entity: </span>
+                <el-icon style="font-size: 30px; top:4px;" v-if="data.rootDataset === data.entity">
+                  <HomeFilled />
+                </el-icon>
+                {{ data.entity['name']?.[0] || data.entity['@id'] }}
+              </h2>
+            </el-col>
+            <el-col :sm="24" :md="6" :lg="4">
+              <el-tooltip v-if="data.rootDataset !== data.entity"
+                :content="'Delete entity ' + data.entity['name']?.[0] || data.entity['@id']" placement="bottom-start"
+                effect="light">
+                <el-button class="float-right" @click="deleteEntity" type="danger" plain :icon="Delete">Remove
+                  Entity</el-button>
+              </el-tooltip>
+            </el-col>
+          </el-row>
+        </div>
+        <template v-if="data.entity">
+          <Entity :model-value="data.entity" @update:model-value="updateEntity" :getFile="getFile"
+            :propertyId="propertyId">
+          </Entity>
 
-          </template>
-          <div v-else="">Entity with id `{{ entityId }}` does not exist in the crate.</div>
-        </el-row>
+        </template>
+        <div v-else="">Entity with id `{{ entityId }}` does not exist in the crate.</div>
       </el-col>
 
       <el-col :span="6" class="h-screen p-2" id="entityNavigator">

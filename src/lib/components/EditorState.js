@@ -152,7 +152,7 @@ export class EditorState {
     if (!defByType[typesId]) {
       let definitions = common;
       definitions['@id'].required = true;
-      definitions['@id'].help = 'Unique ID.';
+      definitions['@id'].help = 'Persistent, managed unique ID in URL format (if available), for example a DOI for a collection or an ORCID, personal home page URL or email address for a person';
       definitions['@type'].required = true;
       definitions['@type'].help = 'The type of the entity.';
       const classes = types.map(t => profile.classes[t]).filter(e => e);

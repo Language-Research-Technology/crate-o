@@ -7,7 +7,7 @@ import SpreadSheet from "../components/SpreadSheet.vue";
 import { Validator } from "../utils/profileValidator.js";
 import { ROCrate } from "ro-crate";
 import { ElRow, ElCol, ElMenu, ElMenuItem, ElDivider, ElSelect, ElOption, 
-  ElDialog, ElButton, ElCollapse, ElCollapseItem, ElAlert } from 'element-plus';
+  ElDialog, ElButton, ElCollapse, ElCollapseItem, ElAlert, ElNotification  } from 'element-plus';
 import { handleRoute } from '../../lib/DefaultRouteHandler.js'
 import { CrateEditor } from '../../lib'
 
@@ -81,6 +81,7 @@ const commands = {
       data.dirHandle = await window.showDirectoryPicker();
       data.loading = true;
       try {
+        data.metadataHandle = null;
         data.metadataHandle = await data.dirHandle.getFileHandle('ro-crate-metadata.json');
       } catch (error) {
         try {
@@ -96,7 +97,9 @@ const commands = {
         crate = JSON.parse(content);
       }
       await profilesPromise;
+      console.log(crate);
       data.crate = crate;
+      console.log(data.crate);
       //navigate();
       //data.loading = false;
       // reset crate
@@ -115,7 +118,7 @@ const commands = {
   },
 
   async save() {
-    console.log('save!!!!!!!!!!!');
+    console.log('save start');
     if (data.dirHandle) {
       // create new crate metadata
       data.metadataHandle = await data.dirHandle.getFileHandle('ro-crate-metadata.json', { create: true });
@@ -140,7 +143,9 @@ const commands = {
       //data.crate = crate;
       //data.entityId = '';
       data.validationResult = validate(crate, profile.value);
-      data.validationResultDialog = !!data.validationResult;
+      console.log(data.validationResult);
+      data.validationResultDialog = !!Object.keys(data.validationResult).length;
+      ElNotification({ title: 'Data successfully saved in ro-crate-metadata.json', type: 'success', duration: 3000 });
     }
   },
 
@@ -294,6 +299,7 @@ async function getFile(id) {
 }
 
 function updateCrate(raw, roc) {
+  console.log('updateCrate');
   console.log(raw);
   data.crate = raw;
 }

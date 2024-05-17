@@ -197,7 +197,7 @@ function addConformTos(rTypes) {
             class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4">
             This dataset does not have all the conformsTos required in the selected Mode:&nbsp;
             <el-button size="small" type="primary" :icon="Plus" @click="addConformTos(checkConformsTo())">
-              Add the missing conformsTos(s):&nbsp;<span v-for="c of checkConformsTo()">{{ c?.['@id'] }}</span>
+              Add the missing conformsTo(s):&nbsp;<span v-for="c of checkConformsTo()">{{ c?.['@id'] }}</span>
             </el-button>
           </el-row>
         </div>

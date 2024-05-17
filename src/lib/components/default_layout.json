@@ -7,6 +7,8 @@
       "@type",
       "http://purl.org/dc/terms/conformsTo",
       "http://schema.org/name",
+      "http://schema.org/familyName",
+      "http://schema.org/givenName",
       "http://schema.org/description",
       "http://schema.org/conformsTo",
       "http://schema.org/datePublished",
