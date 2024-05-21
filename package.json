@@ -59,8 +59,7 @@
     "leaflet-gesture-handling": "^1.2.2",
     "leaflet.path.drag": "^0.0.6",
     "mime": "^4.0.1",
-    "moment": "^2.30.1",
-    "ro-crate": "^3.3.5"
+    "ro-crate": "^3.3.8"
   },
   "peerDependencies": {
     "element-plus": "^2.6.0",

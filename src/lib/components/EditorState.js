@@ -338,9 +338,7 @@ export class EditorState {
       return;
     }
     if (def.id && !this.crate.getTerm(def.id)) {
-      const newDef = {};
-      newDef[def.name] = def.id;
-      this.crate.addContext(newDef);
+      this.crate.addTermDefinition(def.name, def.id);
     }
   }
 }
