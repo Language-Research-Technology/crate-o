@@ -3,7 +3,6 @@
 
 Status: Crate-O is now usable in Chromium-based browsers (Chrome, and Microsoft Edge work) - you can try it [here](https://language-research-technology.github.io/crate-o/), please let report bugs using Github issues in this repository.
 
-# BREAKING NEWS -- We are changing the term "Profile" in the context of Crate-O to the term "Mode File" -- changes will be made in early 2024 in all the repositories but there may be some inconsistencies for a while
 
 Crate-O is a  browser-based editor for  Research Object Crates  ([RO-Crate]). RO-Crate is a flexible, developer-friendly approach to linked-data description and packaging . Crate-O is designed to:
 - describe files on a user’s computer and to add contextual information about those files
@@ -28,9 +27,8 @@ Crate-O was is a rewrite of a tool called [Describo]. Though members of the Crat
 
 Crate-O is designed to be a general-purpose RO-Crate editor that will work in a number of contexts with or without a server to store Crates. Because RO-Crate is built on JSON-LD, Crate-O can also be used as a simple general-purpose linked data editor, provided the use case aligns with the main constraints imposed by RO-Crate; that entities have to be serialized to JSON-LD in a  particular way, with a flattened @graph array of all entities.
 
-# Configuring with Mode Files (previously known as RO-Crate Editor Profiles)
-
-Crate-O uses [RO-Crate Editor ~~Profiles~~ Mode Files](https://github.com/Language-Research-Technology/ro-crate-editor-profiles) which were based on Describo Profiles as an initial starting point. These are are DEFINITELY no longer Describo compatible, Describo users might be interested in this [page on the differences](https://github.com/Language-Research-Technology/ro-crate-editor-profiles/blob/main/docs/describo-diffs.md).
+# Configuring with Mode Files 
+Crate-O uses [Mode Files](https://github.com/Language-Research-Technology/ro-crate-editor-profiles) to configure its behavious.
 
 There are [command line tools available](https://github.com/Language-Research-Technology/ro-crate-schema-tools) to create Mode Files from Schema.org style Schemas ([SoSS]s). In future we may also support [OWL] ontologies, SHACL specifications and other RDF approaches.
 
@@ -47,7 +45,7 @@ Progress has been made on integration with [RO-Crate-Excel], for hybrid Crate-O 
 
 There are a number of ways that linked-data groups are using to describe profiles for RO-Crate and similar linked data projects. On our radar at the moment are:
 
-- Done -- see the [RO-Crate Editor Modes~~Profiles~~](https://github.com/Language-Research-Technology/ro-crate-editor-profiles/blob/main/docs/soss-profiles.md):
+- Done -- see the [RO-Crate Editor Modes](https://github.com/Language-Research-Technology/ro-crate-editor-profiles/blob/main/docs/soss-profiles.md):
   -  Use Schema.org - style “Schemas” which describe linked-data entities; Classes, Properties and DefinedTerms in a simple structural way. As these entities are a packaged in a flat JSON-LD graph, they can be distributed as RO-Crates and edited directly using Crate-O or other RO-Crate tools. (This is now implemented an explained here)
 
   -  Schema.org style schemas (SoSS)s to be maintained in RO-Crate using Crate-O. This is already working for the [Language Data Commons Vocabulary].
