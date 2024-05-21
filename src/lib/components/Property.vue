@@ -112,9 +112,8 @@ function removeValue(i, value) {
 
 <template>
   <!-- <el-form-item class="hover:bg-violet-100 px-2 p-2"> -->
-  <!-- TODO: !!! remove hack of checking the ro-crate-metadata.json-->
   <el-form-item
-    :class="[isReverse ? 'bg-teal-100 border-1 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md' : 'px-2 p-2', 'px-2 p-2']">
+    :class="[isReverse ? 'bg-teal-100 border-1 border-teal-500 rounded-b text-teal-900 shadow-md pt-3 !mb-5' : '', 'mb-2']">
     <template #label>
       <el-tooltip v-if="definition?.required" content="Property Required" placement="bottom-start" effect="light">
         <el-icon>
@@ -161,9 +160,9 @@ function removeValue(i, value) {
       </FilteredPaged>
 
       <ControlAdd v-if="!isReverse" :modelValue="values" :definition="definition"
-        class="flex flex-col md:flex-row gap-1 flex-nowrap" @add="add">
+        class="flex flex-col md:flex-row gap-1 flex-nowrap mb-3" @add="add">
       </ControlAdd>
-      <div v-if="definition.help" class="flex items-center text-sm text-indigo-400 py-3 mt-2" role="alert">
+      <div v-if="definition.help" class="flex items-center text-xs text-indigo-400 mb-3" role="alert">
         <el-icon>
           <InfoFilled />
         </el-icon>&nbsp;<p>{{ definition.help }}</p>
@@ -173,7 +172,7 @@ function removeValue(i, value) {
 </template>
 
 <style scoped>
-.el-form-item {
+/* .el-form-item {
   margin-bottom: 0px;
-}
+} */
 </style>

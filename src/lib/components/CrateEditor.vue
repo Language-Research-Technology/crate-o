@@ -215,7 +215,7 @@ function truncate(text) {
 <template>
   <div class="crate-editor" :key="forceKey">
     <el-row v-loading="data.loading" class="crate-o">
-      <el-col :span="18" class="p-2" id="currentEntity">
+      <el-col :span="18" class="p-2 pr-3" id="currentEntity">
         <div class="current-entity-heading py-3 px-2 mb-3 items-center bg-slate-200" v-if="data.rootDataset">
           <el-breadcrumb class="mb-3" separator=">">
             <template v-for="e, i in data.history">

@@ -1,13 +1,15 @@
 <script setup>
-import { shallowReactive, reactive, ref, computed, watch, watchEffect, nextTick } from 'vue';
-import { profiles, profilesPromise } from '../utils/profiles.js';
+import { shallowReactive, ref, computed } from 'vue';
+import { profilesPromise } from '../utils/profiles.js';
 import Welcome from "../components/Welcome.vue";
 import Help from "../components/Help.vue";
 import SpreadSheet from "../components/SpreadSheet.vue";
 import { Validator } from "../utils/profileValidator.js";
 import { ROCrate } from "ro-crate";
-import { ElRow, ElCol, ElMenu, ElMenuItem, ElDivider, ElSelect, ElOption, 
-  ElDialog, ElButton, ElCollapse, ElCollapseItem, ElAlert, ElNotification  } from 'element-plus';
+import {
+  ElRow, ElCol, ElMenu, ElMenuItem, ElDivider, ElSelectV2, ElOption,
+  ElDialog, ElButton, ElCollapse, ElCollapseItem, ElAlert, ElNotification
+} from 'element-plus';
 import { handleRoute } from '../../lib/DefaultRouteHandler.js'
 import { CrateEditor } from '../../lib'
 
@@ -32,7 +34,7 @@ const data = shallowReactive({
   entityId: '',
   propertyId: '',
   selectedProfile: defaultProfile,
-  profiles: shallowReactive(profiles),
+  profiles: [],
   spreadSheetBuffer: null,
   loading: false,
   profileError: [],
@@ -43,6 +45,8 @@ const data = shallowReactive({
 });
 window.data = data;
 const profile = computed(() => data.profiles[data.selectedProfile]);
+const profileOptions = computed(() => data.profiles.flatMap((p, value) =>
+  p ? [{ value, label: p.metadata.name, description: p.metadata.description }] : []));
 
 const editor = ref();
 
@@ -70,8 +74,10 @@ const commands = {
         //profile = newProfile;
       }
     } catch (error) {
-      console.error(error);
-      window.alert(error);
+      if (error.name !== 'AbortError') {
+        console.error(error);
+        window.alert(error);
+      }
     }
   },
 
@@ -96,8 +102,9 @@ const commands = {
         const content = await file.text();
         crate = JSON.parse(content);
       }
-      await profilesPromise;
-      console.log(crate);
+      const profiles = (await profilesPromise).map(p => p.value);
+      data.profiles = shallowReactive(profiles)
+      //console.log(crate);
       data.crate = crate;
       console.log(data.crate);
       //navigate();
@@ -105,8 +112,10 @@ const commands = {
       // reset crate
       resetData();
     } catch (error) {
-      console.error(error);
-      window.alert(error);
+      if (error.name !== 'AbortError') {
+        console.error(error);
+        window.alert(error);
+      }
     }
     console.log('end open')
   },
@@ -304,13 +313,6 @@ function updateCrate(raw, roc) {
   data.crate = raw;
 }
 
-function selectProfile(v) {
-  if (v < 0) {
-    commands.loadProfile();
-  } else {
-    data.selectedProfile = v;
-  }
-}
 const activeNames = ref(['1']);
 </script>
 
@@ -337,39 +339,33 @@ const activeNames = ref(['1']);
         ﹖ Help
       </el-menu-item>
     </el-menu>
-    <el-row class="text-large p-3" :gutter="10">
-      <el-col :xs="24" :sm="24" :md="12" :lg="12">
-        <el-row class="w-full p-1">
-          <el-select :model-value="data.selectedProfile" @update:model-value="selectProfile"
-            placeholder="Open a directory first to select a mode" class="w-[30em]" :disabled="!data.dirHandle">
-            <template #prefix>
-              <span class="font-bold">Mode:</span>
-            </template>
-            <el-option :value="-1">
-              <p class="font-bold italic">Load and add a new mode from your computer ...</p>
-            </el-option>
-            <el-option v-for="(profile, index) of data.profiles" v-if="profile" :label="profile.metadata.name"
-              :value="index">
-              <div class="border-b-1 mb-2">
-                <p>{{ profile.metadata.name }}</p>
-                <p class="text-slate-500 text-xs">{{ profile.metadata.description }}</p>
-              </div>
-            </el-option>
-          </el-select>
-        </el-row>
+    <el-row class="text-large py-3">
+      <el-col :xs="24" :sm="24" :md="12" :lg="12" class="pl-3">
+        <el-select-v2 v-model="data.selectedProfile" class="w-[30em]" :disabled="!data.dirHandle" scrollbar-always-on
+          placeholder="Open a directory first to select a mode" :options="profileOptions" :height="290" :item-height="58">
+          <template #prefix>
+            <span class="font-bold">Mode:</span>
+          </template>
+          <template #footer>
+            <el-button size="small" @click="commands.loadProfile()">Load and add a new mode from your computer
+              ...</el-button>
+          </template>
+          <template #default="{ item }">
+            <div class="border-b-1 mb-2" v-if="item">
+              <p>{{ item.label }}</p>
+              <p class="text-slate-500 text-xs">{{ item.description }}</p>
+            </div>
+          </template>
+        </el-select-v2>
       </el-col>
-      <el-col v-if="data.dirHandle" :xs="24" :sm="24" :md="12" :lg="12">
-        <el-row class="p-1">
-          <span class="flex items-center">
-            <span class="font-bold text-slate-500">Selected Directory:</span>&nbsp;<span>{{ data.dirHandle.name
-              }}</span>
-          </span>
-        </el-row>
+      <el-col v-if="data.dirHandle" :xs="24" :sm="24" :md="12" :lg="12" class="content-center pl-3">
+        <span class="font-bold text-slate-500">Selected Directory:</span>&nbsp;<span>{{ data.dirHandle.name }}</span>
       </el-col>
     </el-row>
   </div>
   <template v-if="data.crate">
-    <el-alert class="validation-warnings" v-if="data.validationResultDialog" type="warning" @close="data.validationResultDialog = false">
+    <el-alert class="validation-warnings" v-if="data.validationResultDialog" type="warning"
+      @close="data.validationResultDialog = false">
       <el-collapse class="ml-5 mr-10 min-w-96" role="alert">
         <el-collapse-item title="Saved with warnings" name="validation-warnings">
           <div class="p-2" v-for="(obj, key) in data.validationResult">
@@ -385,8 +381,8 @@ const activeNames = ref(['1']);
         </el-collapse-item>
       </el-collapse>
     </el-alert>
-      <!-- <strong class="block sm:inline font-bold">Saved with warnings</strong> -->
-      <!-- <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+    <!-- <strong class="block sm:inline font-bold">Saved with warnings</strong> -->
+    <!-- <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
         <el-button type="text" @click="data.validationResultDialog = false">
           <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20">
@@ -405,8 +401,7 @@ const activeNames = ref(['1']);
   <div v-else>
     <welcome />
   </div>
-  <el-dialog v-if="data.profileErrorDialog" v-model="data.profileError" :title="'Error when loading Mode'"
-    width="50%">
+  <el-dialog v-if="data.profileErrorDialog" v-model="data.profileError" :title="'Error when loading Mode'" width="50%">
     <div class="overflow-x-scroll h-96">
       {{ data.selectedProfile?.metadata }}
       <el-divider />
@@ -443,6 +438,7 @@ const activeNames = ref(['1']);
 .el-select-dropdown__item {
   height: auto;
 }
+
 /* .validation-warnings .el-alert__content {
   flex-grow: 1;
 } */
