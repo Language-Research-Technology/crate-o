@@ -40,24 +40,6 @@ Mode | Select a predefined mode or load one from your computer.
 
 <br>
 
-## RO-Crate Collection Hierarchy
-
-The diagram below shows the hierarchical relationship between collections, objects and files in a corpus, together with the metadata that these relationships are organised by.
-
-![Self-contained corpus crate with all resources](image.png)
-
-The metadata is organised by the various kinds of entities recognised in the ontology documented at schema.org at least partly based on the RDF framework.
-
-Entity | Definition
---- | ---
-Class | (rdfs: Class) Used to classify resources. An instance of an rdfs: Class is defined using the predicate rdf: type. Classes in Language Data Commons include CollectionEvent, CollectionProtocol, DataDepositLicense, DataLicense and DataReuseLicense.
-Property | (rdfs: Property) are used to add attributes to classes. Similar to how we define classes, we can define instances of properties to add attributes to statements.
-DefinedTerm | A 'word, name, acronym, phrase, etc. with a formal definition' and they are 'often used in the context of category or subject classification.' DefinedTerms allow us a) to have accurate definitions of the values we want to give to properties and b) to group such definitions in DefinedTermSets which can function as controlled vocabularies.
-
-For more details on these entities and their related metadata, see [Metadata for Language Data](https://ldaca.gitbook.io/metadata-for-language-data/).
-
-<br>
-
 ## General Navigation
 
 - __Selected Directory__ shows the directory or folder you currently have open.
@@ -74,10 +56,8 @@ Space & Time | Where and when the data was collected; the times and places it me
 Software & Hardware | For computer programs and execution environments that could be used to create data, have created data, or are being packaged and described.
 Others | Other properties not in the above categories. Note if you find a property in `Other` that should be in one of the above groups or have other suggestions please raise an issue here on github
 
-There are several compulsory metadata fields required for each collection. To view these, go to [TODO: add link].
-
-On the right-hand panel, there are some further options related to navigating and creating metadata entities:
-- __Create New Entity__: [TODO: Needs description].
+On the Entities panel, there are some further options related to navigating and creating metadata entities:
+- __Create New Entity__: Create a new metadata entity, such as a provenance action such as CreateAction, which describes how a work is created with more precision than a property like `author`.
 - __Links from__: When located in a sub-group, select to view the parent group(s).
-- __All Entities__: Select to view all metadata associated with your collection.
-- __Unlinked Entities__: Select to view all metadata that currently is not linked to any properties.
+- __All Entities__: Select to view all metadata entities associated with your collection.
+- __Unlinked Entities__: Select to view all metadata entitues that are currentl not linked to other entities by properties.
