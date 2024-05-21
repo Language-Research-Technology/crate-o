@@ -72,7 +72,7 @@ Structure | How the parts of this RO-Crate relate, such as collection and object
 Provenance | Detailed description of how entities were created, by whom and with which tools.
 Space & Time | Where and when the data was collected; the times and places it mentions or describes.
 Software & Hardware | For computer programs and execution environments that could be used to create data, have created data, or are being packaged and described.
-Others | [TODO: needs description]
+Others | Other properties not in the above categories. Note if you find a property in `Other` that should be in one of the above groups or have other suggestions please raise an issue here on github
 
 There are several compulsory metadata fields required for each collection. To view these, go to [TODO: add link].
 
