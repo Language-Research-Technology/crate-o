@@ -1,4 +1,4 @@
-import schema from "ro-crate-editor-profiles/src/ro-crate-editor-profile-schema.json";
+import schema from "ro-crate-modes/src/ro-crate-editor-profile-schema.json";
 
 import Ajv from 'ajv/dist/2019';
 

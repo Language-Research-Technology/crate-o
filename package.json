@@ -59,7 +59,7 @@
     "leaflet-gesture-handling": "^1.2.2",
     "leaflet.path.drag": "^0.0.6",
     "mime": "^4.0.1",
-    "ro-crate": "^3.3.8"
+    "ro-crate": "^3.3.9"
   },
   "peerDependencies": {
     "element-plus": "^2.6.0",
@@ -74,10 +74,12 @@
     "ajv": "^8.12.0",
     "autoprefixer": "^10.4.18",
     "cypress": "^13.1.0",
+    "ejs": "^3.1.10",
     "jsdom": "^24.0.0",
     "postcss": "^8.4.21",
-    "ro-crate-editor-profiles": "github:Language-Research-Technology/ro-crate-editor-profiles",
     "ro-crate-excel": "^1.0.19",
+    "ro-crate-html": "^0.1.4",
+    "ro-crate-modes": "github:Language-Research-Technology/ro-crate-modes",
     "rollup-plugin-visualizer": "^5.12.0",
     "tailwindcss": "^3.4.1",
     "to-arraybuffer": "^1.0.1",

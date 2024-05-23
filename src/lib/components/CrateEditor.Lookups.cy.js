@@ -1,9 +1,9 @@
 /// <reference types="Cypress" />
 
 import CrateEditor from './CrateEditor.vue';
-import base from 'ro-crate-editor-profiles/profiles/base-profile.json'
-import schema from 'ro-crate-editor-profiles/profiles/schema.json'
-import language_collection from 'ro-crate-editor-profiles/profiles/language-data-commons-collection-profile.json'
+import base from 'ro-crate-modes/modes/base.json'
+import schema from 'ro-crate-modes/modes/schema.json'
+import language_collection from 'ro-crate-modes/modes/language-data-commons-collection.json'
 
 
 const MY_ORG = 'Australian National University';

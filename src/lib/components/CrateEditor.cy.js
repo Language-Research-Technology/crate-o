@@ -1,8 +1,8 @@
 /// <reference types="Cypress" />
 
 import CrateEditor from './CrateEditor.vue';
-import software from 'ro-crate-editor-profiles/profiles/software-profile.json'
-import language_collection from 'ro-crate-editor-profiles/profiles/language-data-commons-collection-profile.json'
+import software from 'ro-crate-modes/modes/software.json'
+import language_collection from 'ro-crate-modes/modes/language-data-commons-collection.json'
 
 describe('<CrateEditor />', async () => {
 

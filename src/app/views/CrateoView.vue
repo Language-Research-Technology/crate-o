@@ -10,8 +10,10 @@ import {
   ElRow, ElCol, ElMenu, ElMenuItem, ElDivider, ElSelectV2, ElOption,
   ElDialog, ElButton, ElCollapse, ElCollapseItem, ElAlert, ElNotification
 } from 'element-plus';
-import { handleRoute } from '../../lib/DefaultRouteHandler.js'
-import { CrateEditor } from '../../lib'
+import { handleRoute } from '../../lib/DefaultRouteHandler.js';
+import { CrateEditor } from '../../lib';
+import { Preview } from 'ro-crate-html';
+import renderTemplate from 'virtual:ejs';
 
 const navigate = handleRoute((entityId, propertyId) => {
   if (data.metadataHandle) {
@@ -144,17 +146,27 @@ const commands = {
       }
     }
     if (data.metadataHandle) {
-      const crate = editor.value.crate;
-      const writable = await data.metadataHandle.createWritable();
-      const content = JSON.stringify(crate, null, 2);
+      const rawCrate = editor.value.crate;
+      let writable = await data.metadataHandle.createWritable();
+      let content = JSON.stringify(rawCrate, null, 2);
       await writable.write(content);
       await writable.close();
       //data.crate = crate;
       //data.entityId = '';
-      data.validationResult = validate(crate, profile.value);
+      data.validationResult = validate(rawCrate, profile.value);
       console.log(data.validationResult);
       data.validationResultDialog = !!Object.keys(data.validationResult).length;
       ElNotification({ title: 'Data successfully saved in ro-crate-metadata.json', type: 'success', duration: 3000 });
+
+      // save preview
+      const crate = new ROCrate(rawCrate, {array: true, link: true});
+      await crate.resolveContext();
+      const preview = new Preview(crate);
+      content = renderTemplate(preview.templateParams());
+      const previewHandle = await data.dirHandle.getFileHandle('ro-crate-preview.html', { create: true });
+      writable = await previewHandle.createWritable();
+      await writable.write(content);
+      await writable.close(); 
     }
   },
 

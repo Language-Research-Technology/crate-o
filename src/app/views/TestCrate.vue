@@ -4,8 +4,8 @@ import { ElButton } from 'element-plus';
 import { CrateEditor } from '../../lib'
 import testData2 from '../../../test-data/cooee/ro-crate-metadata.json' ;
 import testData from '../../../test-data/sydney/ro-crate-metadata.json' ;
-import computationalToolProfile from 'ro-crate-editor-profiles/profiles/software-profile.json';
-import language_collection from "ro-crate-editor-profiles/profiles/language-data-commons-collection-profile.json";
+import computationalToolProfile from 'ro-crate-modes/modes/software.json';
+import language_collection from "ro-crate-modes/modes/language-data-commons-collection.json";
 
 const data = reactive({
   crate: testData,
