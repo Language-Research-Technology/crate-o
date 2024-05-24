@@ -1,7 +1,7 @@
 <script setup>
 import { shallowReactive, ref, computed } from 'vue';
 import { profilesPromise } from '../utils/profiles.js';
-import Welcome from "../components/Welcome.vue";
+import About from "../components/About.vue";
 import Help from "../components/Help.vue";
 import SpreadSheet from "../components/SpreadSheet.vue";
 import { Validator } from "../utils/profileValidator.js";
@@ -39,10 +39,11 @@ const data = shallowReactive({
   profiles: [],
   spreadSheetBuffer: null,
   loading: false,
-  profileError: [],
-  profileErrorDialog: false,
+  modeError: [],
   validationResult: {},
-  showWelcome: false,
+  showDialog: false,
+  dialogTitle: '',
+  dialogContent: null,
   validationResultDialog: false
 });
 window.data = data;
@@ -62,11 +63,13 @@ const commands = {
       const validator = new Validator();
       validator.errors = [];
       validator.loadAndCheck(content);
-      data.profileError = null;
-      data.profileErrorDialog = false;
+      data.modeError = null;
+      //data.profileErrorDialog = false;
       if (validator.errors.length > 0) {
-        data.profileError = validator.errors;
-        data.profileErrorDialog = true;
+        data.modeError = validator.errors;
+        data.showDialog = true;
+        data.dialogContent = null;
+        data.dialogTitle = 'Error when loading Mode';
       } else {
         //const profile = validator.profile;
         //TODO: put it profiles removing it when fixing it
@@ -159,14 +162,14 @@ const commands = {
       ElNotification({ title: 'Data successfully saved in ro-crate-metadata.json', type: 'success', duration: 3000 });
 
       // save preview
-      const crate = new ROCrate(rawCrate, {array: true, link: true});
+      const crate = new ROCrate(rawCrate, { array: true, link: true });
       await crate.resolveContext();
       const preview = new Preview(crate);
       content = renderTemplate(preview.templateParams());
       const previewHandle = await data.dirHandle.getFileHandle('ro-crate-preview.html', { create: true });
       writable = await previewHandle.createWritable();
       await writable.write(content);
-      await writable.close(); 
+      await writable.close();
     }
   },
 
@@ -193,7 +196,14 @@ const commands = {
   },
 
   help() {
-    data.showWelcome = true;
+    data.dialogTitle = 'Help';
+    data.dialogContent = Help;
+    data.showDialog = true;
+  },
+  about() {
+    data.dialogTitle = 'About';
+    data.dialogContent = About;
+    data.showDialog = true;
   }
 };
 
@@ -345,16 +355,21 @@ const activeNames = ref(['1']);
         💾 Save
       </el-menu-item>
       <el-menu-item index="close" :disabled="!data.dirHandle">
-        ⓧ Close
+        ❌ Close
       </el-menu-item>
       <el-menu-item index="help" title="Help">
-        ﹖ Help
+        ❓Help
       </el-menu-item>
+      <el-menu-item index="about" title="About">
+        🛈 About
+      </el-menu-item>
+
     </el-menu>
     <el-row class="text-large py-3">
       <el-col :xs="24" :sm="24" :md="12" :lg="12" class="pl-3">
         <el-select-v2 v-model="data.selectedProfile" class="w-[30em]" :disabled="!data.dirHandle" scrollbar-always-on
-          placeholder="Open a directory first to select a mode" :options="profileOptions" :height="290" :item-height="58">
+          placeholder="Open a directory first to select a mode" :options="profileOptions" :height="290"
+          :item-height="58">
           <template #prefix>
             <span class="font-bold">Mode:</span>
           </template>
@@ -411,36 +426,28 @@ const activeNames = ref(['1']);
     <SpreadSheet v-model:crate="data.crate" :buffer="data.spreadSheetBuffer" />
   </template>
   <div v-else>
-    <welcome />
-  </div>
-  <el-dialog v-if="data.profileErrorDialog" v-model="data.profileError" :title="'Error when loading Mode'" width="50%">
-    <div class="overflow-x-scroll h-96">
-      {{ data.selectedProfile?.metadata }}
-      <el-divider />
-      <div class="p-2" v-for="error of data.profileError">
-        <p>
-          {{ error.instancePath }}
-        </p>
-        <p>
-          {{ error.message }}
-        </p>
-        <el-divider />
-      </div>
-    </div>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button type="primary" @click="data.profileErrorDialog = false">Ok</el-button>
-      </span>
-    </template>
-  </el-dialog>
-
-  <el-dialog v-if="data.showWelcome" v-model="data.showWelcome" title="Help" width="50%">
-    <div class="overflow-x-scroll h-96">
+    <div class="p-5 lg:p-20 lg:max-w-[75%]">
+      <about />
       <help />
     </div>
+  </div>
+
+  <el-dialog v-model="data.showDialog" :title="data.dialogTitle" width="800" align-center>
+    <div class="dialog-content">
+      <component v-if="data.dialogContent" :is="data.dialogContent" />
+      <template v-else-if="data.modeError">
+        {{ data.selectedProfile?.metadata }}
+        <el-divider />
+        <div class="p-2" v-for="error of data.modeError">
+          <p>{{ error.instancePath }}</p>
+          <p>{{ error.message }}</p>
+          <el-divider />
+        </div>
+      </template>
+    </div>
     <template #footer>
       <span class="dialog-footer">
-        <el-button type="primary" @click="data.showWelcome = false">Close</el-button>
+        <el-button type="primary" @click="data.showDialog = false">Close</el-button>
       </span>
     </template>
   </el-dialog>
@@ -460,5 +467,15 @@ const activeNames = ref(['1']);
   --el-collapse-header-font-size: 14px;
   --el-collapse-header-text-color: inherit;
   --el-collapse-content-text-color: inherit;
+}
+
+.el-dialog {
+  width: unset;
+  max-width: var(--el-dialog-width);
+}
+
+.el-dialog .el-dialog__body {
+  max-height: calc(100svh - 200px);
+  overflow: auto;
 }
 </style>

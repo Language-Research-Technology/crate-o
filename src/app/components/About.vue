@@ -1,12 +1,10 @@
 <script setup>
-import Help from "./Help.vue";
-import { ElRow, ElCol } from 'element-plus';
 
 //TODO: Insert code that will load the readme markdown into here as html
 </script>
 <template>
-  <div class="grid gap-6 p-5 lg:p-20 lg:max-w-[75%] text-gray-500 dark:text-gray-400">
-    <h2 class="mb-3 text-lg md:text-xl">What is Crate-O?</h2>
+  <div class="grid gap-2 text-gray-500 dark:text-gray-400">
+    <h2 class="mb-3 text-lg md:text-xl">About Crate-O</h2>
     <p class="">
       Crate-O is a browser-based editor for <a class="text-blue-600 dark:text-blue-500 hover:underline"
         href="https://www.researchobject.org/ro-crate" target="_blank" rel="noopener noreferrer">Research Object Crates
@@ -14,15 +12,14 @@ import { ElRow, ElCol } from 'element-plus';
       RO-Crate is a flexible,
       developer-friendly approach to linked-data description and packaging.
     </p>
-    <p class="">
-      Crate-O is designed to:
+    <p class="">Crate-O is designed to:</p>
     <ul class="list-disc list-inside">
       <li>describe files on a user’s computer and to add contextual information about those files,</li>
       <li>skip the files and describe abstract contextual entities such as in a Cultural Collection or an encyclopaedia,
         or</li>
       <li>annotate existing resources elsewhere on the web.</li>
     </ul>
-    </p>
+    
     <p class="">
       Crate-O works only with <a class="text-blue-600 dark:text-blue-500 hover:underline"
         href="https://google.com/chrome" target="_blank" rel="noopener noreferrer">Google
@@ -49,6 +46,5 @@ import { ElRow, ElCol } from 'element-plus';
       Peter Sefton as technical lead. If the tool is adopted in other contexts (we are in talks with a few groups
       about this) then we aim to establish a steering committee/reference group to help guide development.
     </p>
-    <help />
   </div>
 </template>
