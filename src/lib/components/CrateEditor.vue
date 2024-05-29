@@ -1,6 +1,6 @@
 <script setup>
 
-import { ref, shallowReactive, reactive, watch, computed, provide, onUpdated, nextTick } from "vue";
+import { ref, shallowReactive, reactive, watch, computed, provide } from "vue";
 import { HomeFilled, ArrowLeftBold, Delete } from '@element-plus/icons-vue';
 import {
   ElRow, ElCol, ElBreadcrumb, ElBreadcrumbItem, ElTabs, ElTabPane,
@@ -18,13 +18,13 @@ const props = defineProps({
   //  modelValue: { type: ROCrate },
   /** RO Crate data in form of plain JSON object. */
   crate: { type: Object, default: {} },
-  /** RO Crate editor profile. */
-  profile: { type: Object, default: { classes: {} } },
+  /** RO Crate editor mode. */
+  mode: { type: Object, default: { classes: {} } },
   /** Identifier of the currently displayed entity. If empty, it will be set to the root dataset when the crate is loaded */
   entityId: { type: String },
   /** Property that needs to be specifically displayed. */
   propertyId: { type: String },
-  getFile: { type: Function, default: null }
+  loadFile: { type: Function, default: null }
 });
 
 const emit = defineEmits({
@@ -38,9 +38,7 @@ const emit = defineEmits({
   remove: null,
   /** Triggered when changing a value */
   change: null,
-  /** Triggered when the internal data of ROCrate instance is created */
-  data: null,
-  /** Triggered when data is rendered */
+  /** Triggered when data is ready to be displayed */
   ready: null
 });
 
@@ -58,15 +56,6 @@ const data = reactive({
 const state = shallowReactive(new EditorState({ showEntity }));
 provide($state, state);
 
-//var historyStart = window.history.length;
-
-onUpdated(() => {
-  console.log('crate updated');
-  data.loading = false;
-  emit('ready');
-});
-
-
 
 watch(() => props.crate, async crate => {
   console.log('watch crate', props.crate);
@@ -80,10 +69,11 @@ watch(() => props.crate, async crate => {
   data.rootDataset = roc.rootDataset;
   //state.dirHandle = toRaw(props.dirHandle);
   initEntity(props.entityId);
-  emit('data', roc);
+  data.loading = false;
+  emit('ready', roc, refresh);
 }, { immediate: true });
 
-watch(() => props.profile, (profile) => {
+watch(() => props.mode, (profile) => {
   //console.log('watch profile', profile);
   state.setProfile(profile);
   //newEntityUpdate();
@@ -127,24 +117,26 @@ const unlinkedEntities = computed(() => Array.from(state.entities.value).filter(
 //const reverseEntities = computed(() => Object.values(data.entity?.['@reverse'] || {}).reduce((a, e) => a.concat(e), []).filter(e => e !== state.crate.metadataFileEntity));
 
 const forceKey = ref(0);
+/** Refresh the UI after making internal changes directly */
+function refresh() {
+  state.refreshEntities();
+  forceKey.value++;
+}
+/** Manually update the editor's internal representation of the ro-crate data */
+function setProperty(entity, propName, values) {
+  state.crate.setProperty(entity, propName, values);
+  refresh();
+}
+
 defineExpose({
   get rootDatasetId() {
-    return data.rootDataset['@id'];
+    return data.rootId;
   },
   get crate() {
     return state.crate.toJSON();
   },
-  setProperty(entity, propName, values) {
-    state.crate.setProperty(entity, propName, values);
-    state.refreshEntities();
-    forceKey.value++;
-  },
-  /** Manually update the editor's internal representation of the ro-crate data */
-  updateCrate(cb) {
-    cb(state.crate);
-    state.refreshEntities();
-    forceKey.value++;
-  }
+  setProperty,
+  refresh
 });
 
 // const value = computed(() => data.newEntityType);
@@ -248,7 +240,7 @@ function truncate(text) {
           </el-row>
         </div>
         <template v-if="data.entity">
-          <Entity :model-value="data.entity" @update:model-value="updateEntity" :getFile="getFile"
+          <Entity :model-value="data.entity" @update:model-value="updateEntity" :getFile="loadFile"
             :propertyId="propertyId">
           </Entity>
 

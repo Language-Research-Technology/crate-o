@@ -1,22 +1,21 @@
 
-# Crate-O?
+# Crate-O
 
 Status: Crate-O is now usable in Chromium-based browsers (Chrome, and Microsoft Edge work) - you can try it [here](https://language-research-technology.github.io/crate-o/), please let report bugs using Github issues in this repository.
 
-
-Crate-O is a  browser-based editor for  Research Object Crates  ([RO-Crate]). RO-Crate is a flexible, developer-friendly approach to linked-data description and packaging . Crate-O is designed to:
+Crate-O is a browser-based editor for  Research Object Crates  ([RO-Crate]). RO-Crate is a flexible, developer-friendly approach to linked-data description and packaging. Crate-O is designed to:
 - describe files on a user’s computer and to add contextual information about those files
 - optionally skip the files and describe abstract contextual entities such as in a Cultural Collection or an encyclopaedia
 - annotate existing resources elsewhere on the web
 - import bulk metadata from an Excel spreadsheet
+
+For more technical information on Crate-O, refer to the [Developer Documentation page](./docs)
 
 NOTE: Crate-O is for Google Chrome and related browsers ONLY at this stage as it describes files on the users computer, and saves RO-Crate metadata there. We will be releasing a version that can be deployed as part of a service that accesses online resources directly, which will be compatible with other browsers (see the [Roadmap]).
 
 While the current version of Crate-O  is designed for editing self-contained RO-Crates (and works fine with crates containing tens of thousands of entities) - our roadmap includes editing fragments of larger linked-data resources, and integration with Arkisto repositories such as the [Oni] repository, data API & search portal.
 
 Crate-O is currently developed by the Language Data Commons of Australia ([LDaCA]), under the guidance of Peter Sefton as technical lead. If the tool is adopted in other contexts (we are in talks with a few groups about this)  then we aim to establish a steering committee / reference group to help guide development.
-
-
 
 # History
 

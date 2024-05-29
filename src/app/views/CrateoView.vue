@@ -51,7 +51,8 @@ const profile = computed(() => data.profiles[data.selectedProfile]);
 const profileOptions = computed(() => data.profiles.flatMap((p, value) =>
   p ? [{ value, label: p.metadata.name, description: p.metadata.description }] : []));
 
-const editor = ref();
+//const editor = ref();
+const editor = { crate: {}, refresh: ()=>{} }; 
 
 const commands = {
   async loadProfile() {
@@ -128,7 +129,8 @@ const commands = {
   async addFiles() {
     const dirHandle = data.dirHandle;
     const files = await collectFiles({ dirHandle, root: '' });
-    editor.value.setProperty(editor.value.rootDatasetId, 'hasPart', files);
+    editor.crate.setProperty(editor.crate.rootId, 'hasPart', files);
+    editor.refresh();
   },
 
   async save() {
@@ -149,7 +151,7 @@ const commands = {
       }
     }
     if (data.metadataHandle) {
-      const rawCrate = editor.value.crate;
+      const rawCrate = editor.crate.toJSON();
       let writable = await data.metadataHandle.createWritable();
       let content = JSON.stringify(rawCrate, null, 2);
       await writable.write(content);
@@ -191,7 +193,7 @@ const commands = {
     });
     let file = await excelHandle.getFile();
     const buffer = await file.arrayBuffer();
-    data.crate = editor.value.crate;
+    data.crate = editor.crate;
     data.spreadSheetBuffer = buffer;
   },
 
@@ -329,10 +331,15 @@ async function getFile(id) {
   }
 }
 
-function updateCrate(raw, roc) {
-  console.log('updateCrate');
-  console.log(raw);
-  data.crate = raw;
+function ready(roc, refresh) {
+  const conformsToCrate = roc.rootDataset['conformsTo'] || [];
+  const profileIndex = data.profiles.findIndex(p =>
+    conformsToCrate.some(ct => (p?.conformsToUri || []).includes(ct['@id'])));
+  data.selectedProfile = profileIndex >= 0 ? profileIndex : 0;
+  data.loading = false;
+  console.log('ready');
+  editor.crate = roc;
+  editor.refresh = refresh;
 }
 
 const activeNames = ref(['1']);
@@ -366,7 +373,7 @@ const activeNames = ref(['1']);
 
     </el-menu>
     <el-row class="text-large py-3">
-      <el-col :xs="24" :sm="24" :md="12" :lg="12" class="pl-3">
+      <el-col :sm="24" :md="18" class="pl-3">
         <el-select-v2 v-model="data.selectedProfile" class="w-[30em]" :disabled="!data.dirHandle" scrollbar-always-on
           placeholder="Open a directory first to select a mode" :options="profileOptions" :height="290"
           :item-height="58">
@@ -378,15 +385,16 @@ const activeNames = ref(['1']);
               ...</el-button>
           </template>
           <template #default="{ item }">
-            <div class="border-b-1 mb-2" v-if="item">
+            <div class="border-b-1 mb-2" v-if="item" :title="item.description">
               <p>{{ item.label }}</p>
-              <p class="text-slate-500 text-xs">{{ item.description }}</p>
+              <p class="text-slate-500 text-xs truncate">{{ item.description }}</p>
             </div>
           </template>
         </el-select-v2>
       </el-col>
-      <el-col v-if="data.dirHandle" :xs="24" :sm="24" :md="12" :lg="12" class="content-center pl-3">
-        <span class="font-bold text-slate-500">Selected Directory:</span>&nbsp;<span>{{ data.dirHandle.name }}</span>
+      <el-col v-if="data.dirHandle" :sm="24" :md="6" class="content-center pl-3">
+        <span class="font-bold text-slate-500">Selected Directory: </span> 
+        <span class="truncate" :title="data.dirHandle.name">{{ data.dirHandle.name }}</span>
       </el-col>
     </el-row>
   </div>
@@ -419,9 +427,8 @@ const activeNames = ref(['1']);
           </svg>
         </el-button>
       </span> -->
-    <CrateEditor ref="editor" :crate="data.crate" :profile="profile" :entityId="data.entityId"
-      :propertyId="data.propertyId" :get-file="getFile" @update:entityId="updateEntityId" @update:crate="updateCrate"
-      @ready="() => data.loading = false" @data="detectProfile">
+    <CrateEditor :crate="data.crate" :mode="profile" :entity-id="data.entityId"
+      :property-id="data.propertyId" :load-file="getFile" @update:entity-id="updateEntityId" @ready="ready">
     </CrateEditor>
     <SpreadSheet v-model:crate="data.crate" :buffer="data.spreadSheetBuffer" />
   </template>

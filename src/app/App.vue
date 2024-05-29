@@ -39,7 +39,7 @@ if (!window.showDirectoryPicker) {
 
   <el-dialog v-model="data.noBrowserSupport" title="Browser Not Supported" width="50%">
     <el-row class="p-2">
-      This Browser is not supported, please use the latest version of:
+      This browser is not supported, please use the latest version of:
     </el-row>
     <el-row class="p-2">
       <p>
@@ -53,7 +53,7 @@ if (!window.showDirectoryPicker) {
     </el-row>
     <el-row class="p-2">
       <p>
-        You can continue to the page in this browser, however Crate-O will not work.
+        You can continue to view the page in this browser, however Crate-O will not work.
       </p>
     </el-row>
     <template #footer>
