@@ -58,7 +58,6 @@
     "leaflet-editable": "^1.2.0",
     "leaflet-gesture-handling": "^1.2.2",
     "leaflet.path.drag": "^0.0.6",
-    "marked": "^12.0.2",
     "mime": "^4.0.1",
     "ro-crate": "^3.3.9"
   },
