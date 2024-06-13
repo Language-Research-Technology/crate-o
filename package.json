@@ -1,6 +1,6 @@
 {
   "name": "crate-o",
-  "version": "0.3.12",
+  "version": "0.3.13",
   "description": "A VueJS UI component to create and edit Research Object Crate (RO-Crate) metadata",
   "keywords": [
     "RO-Crate",
@@ -43,7 +43,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && cp README.md dist",
     "build:library": "vite build --mode library",
     "preview": "vite preview --port 5000",
     "test": "cypress run --component --headless",
@@ -58,11 +58,12 @@
     "leaflet-editable": "^1.2.0",
     "leaflet-gesture-handling": "^1.2.2",
     "leaflet.path.drag": "^0.0.6",
+    "marked": "^13.0.0",
     "mime": "^4.0.1",
     "ro-crate": "^3.3.9"
   },
   "peerDependencies": {
-    "element-plus": "^2.6.0",
+    "element-plus": "^2.7.5",
     "vue": "^3.4.21"
   },
   "devDependencies": {
