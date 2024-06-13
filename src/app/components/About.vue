@@ -24,7 +24,6 @@ function slice_anchors(markdown) {
   var md_sliced = "";
   try {
     for (let i = 0; i < starts.length; i++) {
-      console.log("md slice from ", starts[i], " to ", ends[i], ": ", markdown.slice(starts[i], ends[i]))
       md_sliced += markdown.slice(starts[i], ends[i]);
     }
     return md_sliced;
