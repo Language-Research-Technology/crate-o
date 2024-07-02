@@ -28,6 +28,7 @@
       "http://schema.org/author",
       "http://schema.org/creator",
       "http://schema.org/publisher",
+      "http://schema.org/accountablePerson",
       "http://schema.org/funder",
       "http://schema.org/affiliation",
       "http://schema.org/citation"
