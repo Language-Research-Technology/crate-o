@@ -28,6 +28,7 @@
       "http://schema.org/author",
       "http://schema.org/creator",
       "http://schema.org/publisher",
+      "http://schema.org/accountablePerson",
       "http://schema.org/funder",
       "http://schema.org/affiliation",
       "http://schema.org/citation"
@@ -38,12 +39,12 @@
     "name": "Structure",
     "help": "How the parts of this RO-Crate relate, such as collection and object relationships.",
     "inputs": [
-      "http://pcdm.org/memberOf",
-      "http://pcdm.org/hasMember",
+      "http://pcdm.org/models#memberOf",
+      "http://pcdm.org/models#hasMember",
       "http://schema.org/isPartOf",
       "http://schema.org/hasPart",
-      "http://pcdm.org/fileOf",
-      "http://pcdm.org/hasFile",
+      "http://pcdm.org/models#fileOf",
+      "http://pcdm.org/models#hasFile",
       "http://schema.org/inDefinedTermSet",
       "http://schema.org/hasDefinedTerm"
     ]
