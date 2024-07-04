@@ -1,6 +1,6 @@
 {
   "name": "crate-o",
-  "version": "0.3.14",
+  "version": "0.3.15",
   "description": "A VueJS UI component to create and edit Research Object Crate (RO-Crate) metadata",
   "keywords": [
     "RO-Crate",
@@ -18,7 +18,7 @@
     "Alvin Sebastian (https://orcid.org/0000-0002-9086-1722)",
     "Moises Sacal Bonequi (https://orcid.org/0000-0002-4438-2755)",
     "Peter Sefton (https://orcid.org/0000-0002-3545-944X)",
-    "Rosanna Smith"
+    "Rosanna Smith (https://orcid.org/0009-0006-2241-3377)"
   ],
   "files": [
     "dist",
