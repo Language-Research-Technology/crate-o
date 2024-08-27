@@ -52,7 +52,7 @@ const profileOptions = computed(() => data.profiles.flatMap((p, value) =>
   p ? [{ value, label: p.metadata.name, description: p.metadata.description }] : []));
 
 //const editor = ref();
-const editor = { crate: {}, refresh: ()=>{} }; 
+const editor = { crate: {}, refresh: () => { } };
 
 const commands = {
   async loadProfile() {
@@ -365,7 +365,7 @@ const activeNames = ref(['1']);
         ❌ Close
       </el-menu-item>
       <el-menu-item index="help" title="Help">
-        ❓Help
+        ❓ Help
       </el-menu-item>
       <el-menu-item index="about" title="About">
         🛈 About
@@ -393,7 +393,7 @@ const activeNames = ref(['1']);
         </el-select-v2>
       </el-col>
       <el-col v-if="data.dirHandle" :sm="24" :md="6" class="content-center pl-3">
-        <span class="font-bold text-slate-500">Selected Directory: </span> 
+        <span class="font-bold text-slate-500">Selected Directory: </span>
         <span class="truncate" :title="data.dirHandle.name">{{ data.dirHandle.name }}</span>
       </el-col>
     </el-row>
@@ -427,8 +427,8 @@ const activeNames = ref(['1']);
           </svg>
         </el-button>
       </span> -->
-    <CrateEditor :crate="data.crate" :mode="profile" :entity-id="data.entityId"
-      :property-id="data.propertyId" :load-file="getFile" @update:entity-id="updateEntityId" @ready="ready">
+    <CrateEditor :crate="data.crate" :mode="profile" :entity-id="data.entityId" :property-id="data.propertyId"
+      :load-file="getFile" @update:entity-id="updateEntityId" @ready="ready">
     </CrateEditor>
     <SpreadSheet v-model:crate="data.crate" :buffer="data.spreadSheetBuffer" />
   </template>
