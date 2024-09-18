@@ -4,7 +4,7 @@
 
 <!---End--->
 
-Status: Crate-O is now usable in Chromium-based browsers (Chrome, and Microsoft Edge work) - you can try it [here](https://language-research-technology.github.io/crate-o/), please let report bugs using Github issues in this repository.
+Status: Crate-O is now usable in Chromium-based browsers (Chrome, and Microsoft Edge work) - you can try it [here](https://language-research-technology.github.io/crate-o/), please report bugs using GitHub issues in this repository.
 
 <!---Start--->
 
@@ -13,7 +13,7 @@ Crate-O is a browser-based editor for Research Object Crates [(RO-Crate)](https:
 - describe files on a user’s computer and add contextual information about those files
 - optionally skip the files and describe abstract contextual entities such as in a Cultural Collection or an encyclopaedia
 - annotate existing resources elsewhere on the web
-- import bulk metadata from an Excel spreadsheet
+- import bulk metadata from an Excel spreadsheet.
 <!---End--->
 
 <!---Start--->
@@ -22,7 +22,7 @@ NOTE: Crate-O is for Google Chrome and related browsers ONLY at this stage as it
 
 While the current version of Crate-O is designed for editing self-contained RO-Crates (and works fine with crates containing tens of thousands of entities) - our roadmap includes editing fragments of larger linked-data resources, and integration with Arkisto repositories such as the [Oni](https://github.com/Language-Research-Technology/oni) repository, data API & search portal.
 
-Crate-O is currently developed by the Language Data Commons of Australia [(LDaCA)](https://www.ldaca.edu.au/), under the guidance of Peter Sefton as technical lead. If the tool is adopted in other contexts (we are in talks with a few groups about this) then we aim to establish a steering committee / reference group to help guide development.
+Crate-O is currently developed by the Language Data Commons of Australia ([LDaCA](https://www.ldaca.edu.au/)), under the guidance of Peter Sefton as technical lead. If the tool is adopted in other contexts (we are in talks with a few groups about this) then we aim to establish a steering committee / reference group to help guide development.
 
 <!---End--->
 
@@ -34,7 +34,7 @@ For more technical information on Crate-O processes, refer to the [Developer Doc
 
 # History
 
-Crate-O was is a rewrite of a tool called [Describo]. Though members of the Crate-O tool were involved in its conception, funding and development we are no longer associated with that line of development.
+Crate-O is a rewrite of a tool called [Describo]. Though members of the Crate-O tool were involved in its conception, funding and development are no longer associated with that line of development.
 
 ## Crate-O aims to be a general purpose tool
 
@@ -42,7 +42,7 @@ Crate-O is designed to be a general-purpose RO-Crate editor that will work in a 
 
 # Configuring with Mode Files
 
-Crate-O uses [Mode Files](https://github.com/Language-Research-Technology/ro-crate-editor-profiles) to configure its behavious.
+Crate-O uses [Mode Files](https://github.com/Language-Research-Technology/ro-crate-editor-profiles) to configure its behaviours.
 
 There are [command line tools available](https://github.com/Language-Research-Technology/ro-crate-schema-tools) to create Mode Files from Schema.org style Schemas ([SoSS]s). In future we may also support [OWL] ontologies, SHACL specifications and other RDF approaches.
 
@@ -85,21 +85,21 @@ The Language Data Commons of Australia ([LDaCA]) project is committed to develop
 
 The initial use-case is to allow Indigenous communities to identify resources held in institutional collections and describe:
 
-- The languages that resources contain, and the languages that they describe.
-- Context around collections and resources – what is known about the resources that is not in the archive.
+- The languages that resources contain, and the languages that they describe
+- Context around collections and resources – what is known about the resources that is not in the archive
 - Veracity determinations of data including cultural and community veracity
 - Traditional knowledges , further content and community perspectives
 - Assertions about appropriate data-management e.g. by suggesting [TK Labels] as appropriate.
 
-Annotation data objects will be made in a secure environment available to a selected cohorts of people, and when complete may go through a curation and publishing process. They will be made be made available either publicly or with restricted access via granting of an appropriate license. This publishing follows the principles we are using for all data - every data object has a license to be determined by the data steward and rights holder (in this case the cohort of annotators and/or the project for which they are working)
+Annotation data objects will be made in a secure environment available to a selected cohorts of people, and when complete may go through a curation and publishing process. They will be made available either publicly or with restricted access via granting of an appropriate license. This publishing follows the principles we are using for all data - every data object has a license to be determined by the data steward and rights holder (in this case the cohort of annotators and/or the project for which they are working).
 
 LDaCA plans to make suitable annotations available as part of the language-data portals we are building – they will act as a catalogue or directory of language resources. The hard social and technical work of getting these descriptions back into the source repositories and archives can take place on a different time-scale and this stand-off approach allows for communities to be data stewards of their own annotations and to work outside of colonial institutions.
 
-This approach can potentially be used by any agent, to maintain their view of one or more collections, with additional context, errata or refutation and unlike centralized services like HuNI (1) will allow for individuals to create their own linked-data documents and datasets and to publish them anywhere (e.g. Github or Zenodo).
+This approach can potentially be used by any agent, to maintain their view of one or more collections, with additional context, errata or refutation and unlike centralized services like HuNI (1) will allow for individuals to create their own linked-data documents and datasets and to publish them anywhere (e.g. GitHub or Zenodo).
 
 ## Cultural Collections (Potential – no work yet scheduled)
 
-Crate-O has been tested on cultural data collections, incidentally to an [ARDC] funded project to extract data from the OHRM, a legacy application for maintaining collections (the project was presented the project at [this event](https://ardc.edu.au/article/advancing-hass-and-indigenous-research-infrastructure-a-symposium/).
+Crate-O has been tested on cultural data collections, incidentally to an [ARDC] funded project to extract data from the OHRM, a legacy application for maintaining collections (the project was presented the project at [this event](https://ardc.edu.au/article/advancing-hass-and-indigenous-research-infrastructure-a-symposium/)).
 
 Potential work on Cultural collections will be enabled by the other functions we are planning to implement, such as; being able to add to name-authorities (such as adding new entities to a historically-focussed database or an encyclopedia), the ability to publish crates or fragments of crates and pathways for managing schemas, and maintenance of domain-specific schemas using Crate-O itself.
 
