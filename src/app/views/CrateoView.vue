@@ -361,13 +361,6 @@ const savedProfileValue = ref(null); // reactive reference for the saved profile
 const profileIndex = ref(-1); // default value for profileIndex, set to -1 initially
 
 onMounted(() => {
-  // // Check if it's the first page load or a new session
-  // if (!sessionStorage.getItem('sessionInitialized')) {
-  //   // If not already set, initialize the session
-  //   sessionStorage.setItem('sessionInitialized', 'true');
-  //   // Clear localStorage on first load (new tab/window)
-  //   localStorage.clear();
-  // }
   // Retrieve the saved profile from localStorage
   savedProfileValue.value = localStorage.getItem('selectedProfile');
 
