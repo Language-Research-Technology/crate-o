@@ -16,7 +16,8 @@ const data = reactive({
     error: []
   },
   wb: {},
-  crate: null
+  crate: null,
+  loading: false
 })
 
 watch(() => props.buffer, (buffer) => {
