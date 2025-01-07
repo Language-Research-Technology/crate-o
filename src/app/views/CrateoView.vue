@@ -25,7 +25,7 @@ const navigate = handleRoute((entityId, propertyId) => {
 //const $router = useRouter();
 
 const emit = defineEmits(['load:spreadsheet']);
-const defaultProfile = undefined;
+const defaultProfile = 0;
 
 const data = shallowReactive({
   /** @type {?FileSystemDirectoryHandle} */
