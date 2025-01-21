@@ -4,7 +4,9 @@ import { Workbook } from 'ro-crate-excel';
 import { ROCrate } from "ro-crate";
 import { reactive, watch, ref } from "vue";
 import { ElRow, ElCol, ElDialog, ElCollapse, ElCollapseItem, ElButton } from 'element-plus';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const props = defineProps(['buffer', 'crate']);
 const emit = defineEmits(['update:crate']);
 
@@ -60,6 +62,7 @@ function scrollTopDialog() {
 
 function updateCrate() {
   emit('update:crate', data.crate);
+  router.push({path: "/"}); // in case you updated the root id!
   data.dialogVisible = false;
 }
 
