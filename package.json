@@ -78,7 +78,7 @@
     "ejs": "^3.1.10",
     "jsdom": "^24.0.0",
     "postcss": "^8.4.21",
-    "ro-crate-excel": "^1.1.1",
+    "ro-crate-excel": "^1.1.2",
     "ro-crate-html": "^0.1.4",
     "ro-crate-modes": "github:Language-Research-Technology/ro-crate-modes",
     "rollup-plugin-visualizer": "^5.12.0",
