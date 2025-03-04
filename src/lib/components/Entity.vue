@@ -94,7 +94,7 @@ watch(() => props.propertyId, (propertyId) => {
 
 
 function updateProperty(def, value) {
-  state.ensurePropertyContext(def);
+  state.ensureContextHasTerm(def);
   const entity = props.modelValue;
   const key = def.key || def.name;
   emit('update:modelValue', entity, key, value);

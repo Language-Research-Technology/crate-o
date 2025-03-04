@@ -1,13 +1,17 @@
 <script setup>
+import { ref } from 'vue';
 import { marked } from 'marked';
 
-fetch('./README.md')
-      .then(response => response.text())
-      .then(markdown => {
-        const htmlContent = marked(slice_anchors(markdown));
-        document.getElementById("about_html_content").innerHTML = htmlContent;
-      })
-      .catch(error => console.error('Error fetching the Markdown file:', error))
+const aboutContent = ref();
+(async function(){
+  try {
+    const markdown = await (await fetch('./README.md')).text();
+    aboutContent.value = marked(slice_anchors(markdown));  
+  } catch (error) {
+    console.error('Error fetching the Markdown file:', error);
+  }
+})();
+
 
 // Finds indexes of substrings in string
 function indexes(substring, string){
@@ -35,27 +39,27 @@ function slice_anchors(markdown) {
 //TODO: Insert code that will load the readme markdown into here as html
 </script>
 <style>
-  #about_html_content h1 {
+  .about h1 {
     @apply mb-3 text-xl md:text-xl text-gray-500
   }
-  #about_html_content h2 {
+  .about h2 {
     @apply mb-3 text-lg md:text-xl text-gray-500
   }
-  #about_html_content div {
+  .about div {
     @apply grid gap-2 text-gray-500 dark:text-gray-400 grid gap-2
   }
-  #about_html_content a {
+  .about a {
     @apply text-blue-600 dark:text-blue-500 hover:underline
   }
-  #about_html_content ul {
+  .about ul {
     @apply list-disc list-inside text-gray-500
   }
-  #about_html_content p {
+  .about p {
     @apply text-gray-500
   }
 </style>
 <template>
-  <div class="grid gap-2 text-gray-500 dark:text-gray-400" id="about_html_content"></div>
+  <div class="grid gap-2 text-gray-500 dark:text-gray-400 about" v-html="aboutContent"></div>
   <div class="grid gap-2 text-gray-500 dark:text-gray-400">
     <br>
     <p class="">
