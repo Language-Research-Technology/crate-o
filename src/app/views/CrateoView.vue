@@ -11,7 +11,7 @@ import {
   ElDialog, ElButton, ElCollapse, ElCollapseItem, ElAlert, ElNotification
 } from 'element-plus';
 import { handleRoute } from '../../lib/DefaultRouteHandler.js';
-import { CrateEditor } from '../../lib';
+import { CrateEditor, cacheLabel } from '../../lib';
 import { Preview } from 'ro-crate-html';
 import renderTemplate from 'virtual:ejs';
 
@@ -284,7 +284,7 @@ const validate = function (json, profile) {
               if (!validationResult[entity['@id']]) {
                 validationResult[entity['@id']] = { 'name': entity['name'], props: {} };
               }
-              validationResult[entity["@id"]].props[input.id] = { name: input.name, type: 'required' };
+              validationResult[entity["@id"]].props[input.id] = { name: cacheLabel(input), type: 'required' };
             }
           }
         }
@@ -331,6 +331,11 @@ async function getFile(id) {
   }
 }
 
+/**
+ * 
+ * @param {ROCrate} roc 
+ * @param {function} refresh 
+ */
 function ready(roc, refresh) {
   const conformsToCrate = roc.rootDataset['conformsTo'] || [];
   const profileIndex = data.profiles.findIndex(p =>
@@ -351,6 +356,8 @@ function ready(roc, refresh) {
   console.log('ready');
   editor.crate = roc;
   editor.refresh = refresh;
+  // console.log(data.profiles[data.selectedProfile])
+  //roc.compactProperties({});
 }
 
 const activeNames = ref(['1']);
@@ -460,7 +467,7 @@ watch(() => data.selectedProfile, (newValue) => {
             Property(s) :
             <p v-for="(prop, keyProp) in obj.props" class="ml-5 py-1">
               <el-button size="small" @click="goTo({ id: key, prop: keyProp })">{{ prop.name }}</el-button>
-              <span class="text-red-700">&nbsp;is {{ prop['type'] }}</span>
+              <span class="text-red-700">&nbsp;is {{ prop.type }}</span>
             </p>
           </div>
         </el-collapse-item>

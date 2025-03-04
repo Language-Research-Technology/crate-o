@@ -7,6 +7,7 @@ import ControlAdd from "./ControlAdd.vue";
 import { $state } from './keys';
 import { countReverse } from './utils.js'
 import FilteredPaged from "./FilteredPaged.vue";
+import { cacheLabel } from './utils.js';
 
 const state = inject($state);
 const pageSize = 10; //Later do in conf the page size
@@ -21,26 +22,7 @@ const props = defineProps({
 });
 const emit = defineEmits(['update:modelValue']);
 
-const label = computed(() => {
-  var label = props.definition.label || props.definition.name || props.definition.id;
-  if (typeof label !== 'string') label = 'error';
-  var namespace;
-  var isUrl;
-  try {
-    const url = new URL(label);
-    if (url.host) {
-      label = url.pathname.split('/').pop();
-      isUrl = true;
-    }
-  } catch (error) {
-  }
-  if (!isUrl) {
-    let m = label.match(/(.+):(.+)/);
-    if (m) [, namespace, label] = m;
-  }
-  label = label.charAt(0).toUpperCase() + label.slice(1);
-  return label.replace(/([a-z])([A-Z])/g, '$1 $2');
-});
+const label = computed(() => cacheLabel(props.definition));
 
 const isReverse = computed(() => {
   if (props.definition.isReverse) {
@@ -153,8 +135,8 @@ function removeValue(i, value) {
               <span v-if="definition?.min >= values.length">This property is required and cannot be deleted</span>
               <span v-else>Delete the property value</span>
             </template>
-            <el-button :disabled="definition?.min >= values.length" @click="removeValue(index, value)" 
-              type="danger" plain :icon="Delete"></el-button>
+            <el-button :disabled="definition?.min >= values.length" @click="removeValue(index, value)" type="danger"
+              plain :icon="Delete"></el-button>
           </el-tooltip>
         </div>
       </FilteredPaged>

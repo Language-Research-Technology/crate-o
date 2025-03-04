@@ -6,12 +6,13 @@ import './tailwind.css';
 import CrateEditor from './components/CrateEditor.vue';
 //import { handleRoute } from './DefaultRouteHandler.js'
 //export { CrateEditor, handleRoute }
+import { cacheLabel } from './components/utils';
 
 CrateEditor.install = function(Vue, options) {
   Vue.component("CrateEditor", CrateEditor);
 }
 
-export { CrateEditor, CrateEditor as default }
+export { cacheLabel, CrateEditor, CrateEditor as default }
 
 // Automatic installation if Vue has been added to the global scope.
 if (window && window.Vue) {

@@ -314,31 +314,27 @@ export class EditorState {
    */
   ensureContext(types) {
     if (types && Array.isArray(types)) {
-      const context = {};
       for (const type of types) {
         const c = this.profile.classes[type];
         if (c) {
-          if (c.id && !this.crate.getTerm(c.id)) {
-            context[type] = c.id;
-          }
+          this.ensureContextHasTerm({id: c.id, name: type});
           for (const prop of c.inputs) {
-            if (prop.id && !this.crate.getTerm(prop.id)) {
-              context[prop.name] = prop.id;
-            }
+            this.ensureContextHasTerm({id: prop.id, name: prop.name});
           }
         }
       }
-      if (Object.keys(context).length) {
-        this.crate.addContext(context);
-      }
     }
   }
-  ensurePropertyContext(def) {
-    if(def.name === '@type' || def.name === '@id') {
+
+  ensureContextHasTerm({id, name}) {
+    //console.log(JSON.stringify(this.crate.__context))
+    //console.log(id, name);
+    if(name === '@type' || name === '@id') {
       return;
     }
-    if (def.id && !this.crate.getTerm(def.id)) {
-      this.crate.addTermDefinition(def.name, def.id);
+    if (id && !this.crate.getTerm(id)) {
+      this.crate.addTermDefinition(name, id);
     }
+    //console.log(JSON.stringify(this.crate.__context))
   }
 }
