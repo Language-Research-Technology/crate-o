@@ -1,6 +1,6 @@
 {
   "name": "crate-o",
-  "version": "0.3.25",
+  "version": "0.4.0",
   "description": "A VueJS UI component to create and edit Research Object Crate (RO-Crate) metadata",
   "keywords": [
     "RO-Crate",
@@ -45,7 +45,7 @@
     "dev": "vite",
     "build": "vite build && cp README.md dist",
     "build:library": "vite build --mode library",
-    "preview": "vite preview --port 5000",
+    "preview": "vite preview --port 5173",
     "test": "cypress run --component --headless",
     "test:ui": "cypress run --component --browser chrome",
     "test:unit": "npm test -- --record --spec ",
@@ -60,7 +60,7 @@
     "leaflet.path.drag": "^0.0.6",
     "marked": "^15.0.7",
     "mime": "^4.0.1",
-    "ro-crate": "^3.4.6"
+    "ro-crate": "^3.5.1"
   },
   "peerDependencies": {
     "element-plus": "^2.7.5",
@@ -79,7 +79,7 @@
     "jsdom": "^26.0.0",
     "postcss": "^8.4.21",
     "ro-crate-excel": "^1.1.2",
-    "ro-crate-html": "^0.1.4",
+    "ro-crate-html": "^0.1.5",
     "ro-crate-modes": "github:Language-Research-Technology/ro-crate-modes",
     "rollup-plugin-visualizer": "^5.12.0",
     "tailwindcss": "^3.4.17",
@@ -87,7 +87,7 @@
     "unplugin-auto-import": "^0.17.5",
     "unplugin-element-plus": "^0.9.1",
     "unplugin-vue-components": "^28.4.1",
-    "vite": "^6.2.0",
+    "vite": "^6.3.5",
     "vue-router": "^4.5.0"
   }
 }
