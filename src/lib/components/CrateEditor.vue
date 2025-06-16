@@ -51,6 +51,7 @@ const data = reactive({
   history: [],
   activeTab: 'all',
   newEntityType: null,
+  refreshUnlinked: 0
 });
 
 const state = shallowReactive(new EditorState({ showEntity }));
@@ -113,7 +114,44 @@ function showEntity(e) {
   }
 }
 
-const unlinkedEntities = computed(() => Array.from(state.entities.value).filter(e => !countReverse(e)));
+const entities = computed(() => {
+  return Array.from(state.entities.value);
+});
+
+const unlinkedEntities = computed(() => {
+  data.refreshUnlinked;
+  // find unlinked entities from the root
+  // use id here because each entity is vue proxy object
+  const unvisited = new Map(entities.value.filter(e => e['@type'].some(t => t.match(/^rdfs?:/))).map((e) => [e['@id'], e]));
+  // do DFS traversal
+  const crate = state.crate;
+  const stack = [crate.rootId];
+  while (stack.length > 0) {
+    const eid = stack.pop();
+    const e = unvisited.get(eid);
+    if (e) {
+      unvisited.delete(eid);
+      function handleValues(values) {
+        for (const val of values) {
+          const id = val['@id'];
+          if (id && unvisited.has(id)) {
+            stack.push(id);
+          }
+        }
+      }
+      for (const propName of ['isPartOf', 'pcdm:memberOf', 'memberOf']) {
+        handleValues(e['@reverse'][propName]);
+      }
+      for (const propName in e) {
+        if (!propName.startsWith('@')) {
+          handleValues(e[propName]);
+        }
+      }
+    }
+  }
+  //return entities.value.filter(e => unvisited.has(e['@id']));
+  return Array.from(unvisited.values());
+});
 //const reverseEntities = computed(() => Object.values(data.entity?.['@reverse'] || {}).reduce((a, e) => a.concat(e), []).filter(e => e !== state.crate.metadataFileEntity));
 
 const forceKey = ref(0);
@@ -130,6 +168,9 @@ function setProperty(entity, propName, values) {
 
 defineExpose({
   get rootDatasetId() {
+    return data.rootId;
+  },
+  get rootId() {
     return data.rootId;
   },
   get crate() {
@@ -167,8 +208,10 @@ function onSelectNewEntity(type) {
 function updateEntity(entity, prop, value) {
   if (data.entity === entity) {
     if (data.entity[prop] !== value) {
-      entity[prop] = value;
+      data.entity[prop] = value;
+      //console.log('updateEntity', prop, value);
       emit('update:crate', props.crate); // ,state.crate, diff
+      if ([].concat(value).some(v => v['@id'])) data.refreshUnlinked++;
     }
     if (prop === '@id' && value !== props.entityId) {
       emit('update:entityId', value);
@@ -254,7 +297,7 @@ function truncate(text) {
 
         <el-tabs class="w-full" v-model="data.activeTab">
           <el-tab-pane label="All Entities" name="all" lazy>
-            <FilteredPaged :modelValue="Array.from(state.entities.value)" v-slot="{ value, index }">
+            <FilteredPaged :modelValue="entities" v-slot="{ value, index }">
               <LinkEntity :modelValue="value"></LinkEntity>
             </FilteredPaged>
           </el-tab-pane>

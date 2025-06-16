@@ -35,7 +35,7 @@ const data = shallowReactive({
   crate: null,
   entityId: '',
   propertyId: '',
-  selectedProfile: defaultProfile,
+  selectedProfile: null,
   profiles: [],
   spreadSheetBuffer: null,
   loading: false,
@@ -214,16 +214,9 @@ const excludedFiles = {
   'node_modules': ''
 };
 
-function detectProfile(roc) {
-  const conformsToCrate = roc.rootDataset['conformsTo'] || [];
-  const profileIndex = data.profiles.findIndex(p =>
-    conformsToCrate.some(ct => (p?.conformsToUri || []).includes(ct['@id'])));
-  data.selectedProfile = profileIndex >= 0 ? profileIndex : 0;
-}
-
 function resetData() {
   data.entityId = '';
-  data.selectedProfile = defaultProfile;
+  //data.selectedProfile = defaultProfile;
   //data.profiles = shallowReactive(profiles);
   data.spreadSheetBuffer = null;
   data.validationResultDialog = false;
@@ -331,26 +324,26 @@ async function getFile(id) {
   }
 }
 
+function detectProfile(roc) {
+  const selectedProfileName = localStorage.getItem('selectedProfileName');
+  const savedProfileIndex = data.profiles.findIndex(p => p.metadata?.name === selectedProfileName);
+  console.log('--detectProfile--');
+  console.log(selectedProfileName);
+  console.log(savedProfileIndex);
+  const conformsToCrate = roc.rootDataset['conformsTo'] || [];
+  const profileIndex = data.profiles.findIndex(p =>
+    conformsToCrate.some(ct => (p?.conformsToUri || []).includes(ct['@id'])));
+  data.selectedProfile = profileIndex >= 0 ? profileIndex : (savedProfileIndex >= 0 ? savedProfileIndex : defaultProfile);
+  console.log(data.selectedProfile);
+}
+
 /**
  * 
  * @param {ROCrate} roc 
  * @param {function} refresh 
  */
 function ready(roc, refresh) {
-  const conformsToCrate = roc.rootDataset['conformsTo'] || [];
-  const profileIndex = data.profiles.findIndex(p =>
-    conformsToCrate.some(ct => (p?.conformsToUri || []).includes(ct['@id'])));
-  console.log('Profile Index:', profileIndex); // Accessing profileIndex here
-
-  if (profileIndex.value >= 0) {
-    const selectedProfile = profileOptions.value[profileIndex.value];
-    data.selectedProfile = selectedProfile?.value || profileOptions.value[0]?.value;
-  } else {
-    // If profileIndex is invalid, fallback only if no savedProfileValue is found
-    if (!savedProfileValue.value) {
-      data.selectedProfile = profileOptions.value[0]?.value;  // Fallback to the first profile if no saved profile exists
-    }
-  }
+  detectProfile(roc);
 
   data.loading = false;
   console.log('ready');
@@ -364,40 +357,10 @@ const activeNames = ref(['1']);
 
 import { onMounted, watch } from 'vue';
 
-const savedProfileValue = ref(null); // reactive reference for the saved profile value
-const profileIndex = ref(-1); // default value for profileIndex, set to -1 initially
-
-onMounted(() => {
-  // Retrieve the saved profile from localStorage
-  savedProfileValue.value = localStorage.getItem('selectedProfile');
-
-  // Use the computed profileOptions value to get the options
-  const options = profileOptions.value;
-  // Try to load the saved profile from localStorage if it exists
-  if (savedProfileValue.value) {
-    const savedProfile = options.find(option => option.value === savedProfileValue.value);
-    if (savedProfile) {
-      // If a valid saved profile is found, set it as the selected profile
-      data.selectedProfile = savedProfile.value;
-    } else {
-      // If the saved profile is no longer valid, fallback to profileIndex or default to 0
-      data.selectedProfile = profileIndex.value >= 0 ? options[profileIndex.value]?.value : options[0]?.value;
-    }
-  } else {
-    // No saved profile found in localStorage, fallback to profileIndex or default to 0
-    data.selectedProfile = profileIndex.value >= 0 ? options[profileIndex.value]?.value : options[0]?.value;
-  }
-  // If no profile has been selected and no valid profile is found, default to the first profile
-  if (!data.selectedProfile) {
-    data.selectedProfile = options[0]?.value; // Default to the first profile in options
-  }
-});
-
 // Watch for changes in selectedProfile and update localStorage
 watch(() => data.selectedProfile, (newValue) => {
-  if (newValue) {
-    localStorage.setItem('selectedProfile', newValue);
-  }
+  localStorage.setItem('selectedProfileName', profile.value?.metadata?.name);
+  console.log(localStorage.getItem('selectedProfileName'));
 });
 
 </script>

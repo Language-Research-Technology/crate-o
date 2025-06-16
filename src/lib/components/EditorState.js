@@ -87,10 +87,9 @@ export class EditorState {
   /** cache of definition indexed by its type  */
   defByType;
   lookupPromises = {};
-  /** cache array of entities */
+  /** cache array of entities @type {import('vue').Ref<Set<object>>} */
   entities = ref({});
   metadataFileEntityId;
-  rootDatasetId;
 
   constructor(opt) {
     this._showEntity = opt?.showEntity;
@@ -99,7 +98,6 @@ export class EditorState {
   async setCrate(rawCrate) {
     const crate = this.crate = new ROCrate(rawCrate, { array: true, link: true });
     this.metadataFileEntityId = crate.metadataFileEntity['@id'];
-    this.rootDatasetId = crate.rootDataset['@id'];
     this.meta = reactive({});
     this.refreshEntities();
     await crate.resolveContext();
@@ -204,9 +202,10 @@ export class EditorState {
 
     for (const name in entity['@reverse']) {
       const id = crate?.resolveTerm(name);
-      if (entity['@id'] !== this.rootDatasetId || id !== "http://schema.org/about") {
-        definitions[id] = {id, name, key: name, isReverse: true};
-      }
+      definitions[id] = {id, name, key: name, isReverse: true};
+    }
+    if (entity['@id'] === this.crate.rootId) {
+      definitions['http://schema.org/about'] = null;
     }
     //console.log(isReactive(definitions));
     //sort here
