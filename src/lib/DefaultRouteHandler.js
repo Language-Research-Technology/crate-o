@@ -1,13 +1,13 @@
-import {useRoute, useRouter, onBeforeRouteUpdate } from 'vue-router';
+import { useRoute, useRouter, onBeforeRouteUpdate } from 'vue-router';
 //const {useRoute, useRouter, onBeforeRouteUpdate } = await import('vue-router');
 
 export function handleRoute(onUpdate) {
   const $router = useRouter();
   const $route = useRoute();
-  var pushPromise;
-  
+  let pushPromise;
+
   onBeforeRouteUpdate((to, from) => {
-    const id = decodeURIComponent([].concat(to.query?.id)[0]  || '');
+    const id = decodeURIComponent([].concat(to.query?.id)[0] || '');
     const prop = decodeURIComponent([].concat(to.query?.prop)[0] || '');
     //console.log('onBeforeRouteUpdate', id, prop)
     onUpdate(id, prop);
@@ -16,7 +16,7 @@ export function handleRoute(onUpdate) {
   return function navigate(entityId, propertyId) {
     //console.log('navigate', entityId, propertyId);
     //let r = (Math.random() + 1).toString(36).substring(7);
-    const param = { };
+    const param = {};
     if (entityId) {
       param.query = { id: encodeURIComponent(entityId) };
       if (propertyId) {
@@ -31,6 +31,5 @@ export function handleRoute(onUpdate) {
     if (pushPromise) pushPromise.then(p);
     else pushPromise = p;
     return pushPromise;
-  }
-  
+  };
 }
