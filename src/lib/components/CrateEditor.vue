@@ -86,13 +86,13 @@ watch(() => props.entityId, entityId => {
 });
 
 function initEntity(entityId) {
-  var id = entityId || data.rootDataset?.['@id'];
+  const id = entityId || data.rootDataset?.['@id'];
   console.log('entityId=', entityId, ' id=', id);
   if (state.crate) {
     if (data.entity?.['@id'] !== id) {
       const entity = state.crate.getEntity(id);
       if (entity) {
-        let i = data.history.findIndex(e => e['@id'] === id);
+        const i = data.history.findIndex(e => e['@id'] === id);
         if (i > -1) data.history.splice(i + 1);
         else data.history.push(entity);
         data.entity = entity;
@@ -107,7 +107,7 @@ function initEntity(entityId) {
 function showEntity(e) {
   if (data.entity !== e) {
     let pages; // the number of pages to go back to
-    let i = data.history.findIndex(e2 => e['@id'] === e2['@id']);
+    const i = data.history.findIndex(e2 => e['@id'] === e2['@id']);
     if (i > -1) pages = data.history.length - i - 1;
     initEntity(e['@id']);
     emit('update:entityId', e['@id'], pages);
@@ -122,7 +122,8 @@ const unlinkedEntities = computed(() => {
   data.refreshUnlinked;
   // find unlinked entities from the root
   // use id here because each entity is vue proxy object
-  const unvisited = new Map(entities.value.filter(e => e['@type'].some(t => t.match(/^rdfs?:/))).map((e) => [e['@id'], e]));
+  const unvisited = new Map(entities.value.filter(e => !e['@type'].some(t => t.match(/^rdfs?:/))).map((e) => [e['@id'], e]));
+  //const unvisited = new Map(entities.value.map((e) => [e['@id'], e]));
   // do DFS traversal
   const crate = state.crate;
   const stack = [crate.rootId];
@@ -209,7 +210,7 @@ function updateEntity(entity, prop, value) {
   if (data.entity === entity) {
     if (data.entity[prop] !== value) {
       data.entity[prop] = value;
-      //console.log('updateEntity', prop, value);
+      console.log('updateEntity', prop, value, data.entity[prop]);
       emit('update:crate', props.crate); // ,state.crate, diff
       if ([].concat(value).some(v => v['@id'])) data.refreshUnlinked++;
     }
@@ -248,8 +249,8 @@ function truncate(text) {
 
 
 <template>
-  <div class="crate-editor" :key="forceKey">
-    <el-row v-loading="data.loading" class="crate-o">
+  <div class="crate-editor" :key="forceKey" v-loading="data.loading">
+    <el-row class="crate-o" v-show="!data.loading">
       <el-col :span="18" class="p-2 pr-3" id="currentEntity">
         <div class="current-entity-heading py-3 px-2 mb-3 items-center bg-slate-200" v-if="data.rootDataset">
           <el-breadcrumb class="mb-3" separator=">">
@@ -296,12 +297,18 @@ function truncate(text) {
           v-model="data.newEntityType" :options="newEntityTypes" @change="onSelectNewEntity"></el-select-v2>
 
         <el-tabs class="w-full" v-model="data.activeTab">
-          <el-tab-pane label="All Entities" name="all" lazy>
+          <el-tab-pane name="all" lazy>
+            <template #label>
+              <span title="All metadata entities associated with your collection.">All Entities</span>
+            </template>
             <FilteredPaged :modelValue="entities" v-slot="{ value, index }">
               <LinkEntity :modelValue="value"></LinkEntity>
             </FilteredPaged>
           </el-tab-pane>
-          <el-tab-pane label="Unlinked Entities" name="unlinked" lazy>
+          <el-tab-pane name="unlinked" lazy>
+            <template #label>
+              <span title="Metadata entities that are not currently referenced by properties on the Root dataset or other entities">Unlinked Entities</span>
+            </template>
             <FilteredPaged :modelValue="unlinkedEntities" v-slot="{ value, index }">
               <LinkEntity :modelValue="value"></LinkEntity>
             </FilteredPaged>

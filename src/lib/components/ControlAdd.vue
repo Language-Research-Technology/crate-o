@@ -63,19 +63,21 @@ function add(type) {
   }
 }
 
+const nestedTypes = {
+  geometry: 1,
+  geocoordinates: 1,
+  geoshape: 1
+};
+
 function createEntity(type, name) {
   console.log('createEntity');
-  let id = '';
-  let cleanName = '';
-  if (!name) {
-    name = type;
-  }
-  cleanName = name.replace(/\W/g, "_");
-  id = state.crate.uniqueId(`#${cleanName}-`);
+  const prefix = nestedTypes[type.toLowerCase()] ? '_:' : '#';
+  const cleanName = (name || type).replace(/\W/g, "_");
+  const id = state.crate.uniqueId(`${prefix}${cleanName}-`);
   return {
     "@id": id,
     "@type": type,
-    name: id.substring(1)
+    name: id.substring(prefix.length)
   };
 }
 
