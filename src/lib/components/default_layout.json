@@ -32,7 +32,6 @@
       "http://schema.org/funder",
       "http://schema.org/affiliation",
       "http://schema.org/citation"
-
     ]
   },
   {
@@ -77,7 +76,7 @@
   {
     "name": "Software & Hardware",
     "help": "For computer programs and execution environments that could be used to create data, have created data, or are being packaged and described.",
-      "inputs": [
+    "inputs": [
       "http://schema.org/availableOnDevice",
       "http://schema.org/downloadUrl",
       "http://schema.org/installUrl",

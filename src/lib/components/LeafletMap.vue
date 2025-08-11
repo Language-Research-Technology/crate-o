@@ -5,7 +5,7 @@ import * as L from "leaflet";
 import "leaflet.path.drag";
 import "leaflet-editable";
 import { GestureHandling } from "leaflet-gesture-handling";
-import { reactive, computed, ref, onMounted, watch, onBeforeUnmount, nextTick } from "vue";
+import { reactive, computed, ref, onMounted, watchEffect, onBeforeUnmount, nextTick, watch } from "vue";
 
 const mapRef = ref();
 //const tooltipRef = ref();
@@ -51,17 +51,13 @@ const allShapes = {
   }
 };
 
-const transform = computed(() => props.transformer(L, props.modelValue));
-const enabledShapes = computed(() => transform.value.shapes.
-  filter(s => allShapes[s]).map(s => {
-    allShapes[s].name = s;
-    return allShapes[s];
-  }));
 // const fromModel = computed(() => props.transformer(L));
 // const toModel = computed(() => props.transformer(L, props.modelValue));
+let transform;
 
 function update(shapes) {
-  emit('update:modelValue', transform.value.toEntity(shapes));
+  const e = transform?.toEntity(shapes, props.modelValue);
+  emit('update:modelValue', e);
 }
 
 // function updateLayer(layer, data, options) {
@@ -73,7 +69,7 @@ function update(shapes) {
 //     polygon(latlngs) { layer.setLatLngs(latlngs); }
 //   })[layer.kind]?.(data, options);
 // }
-var map;
+let map;
 onMounted(async () => {
   console.log('map mounted');
   // wait so that leaflet div has a size because otherwise the tiles won't load
@@ -84,6 +80,9 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   if (map) map.remove();
+});
+watchEffect(() => {
+  transform = props.transformer(L);
 });
 
 function initMap() {
@@ -105,15 +104,14 @@ function initMap() {
   }).addTo(map);
   L.control.scale().addTo(map);
   featuresLayer.addTo(map);
-  initControls(map, featuresLayer);
-
-  watch(props.modelValue, (val) => {
+  watchEffect(() => {
     //todo: compare new values to existing values, only update when there is difference
     console.log('shapes updated');
-
+    const test = props.modelValue.asWKT;
+    console.log(test);
     featuresLayer.clearLayers();
-    if (!val) return;
-    for (const shape of transform.value.fromEntity()) {
+    //console.log(transform.value.fromEntity());
+    for (const shape of transform.fromEntity(props.modelValue)) {
       if (shape) {
         try {
           shape.addTo(featuresLayer);
@@ -123,19 +121,21 @@ function initMap() {
         }
       }
     }
-    console.log(featuresLayer.getLayers());
+    //console.log(featuresLayer.getLayers());
     const bounds = featuresLayer.getBounds();
-    if (bounds.isValid()) map.flyToBounds(bounds, { maxZoom: 7 });
-  }, { immediate: true });
+    if (bounds.isValid()) map.flyToBounds(bounds, { maxZoom: 3 });
+  });
+
+  initControls(map, featuresLayer);
 
 }
 
 function initControls(map, featuresLayer) {
   //const controls = typeof props.controls === 'string' ? props.controls.split(' ') : props.controls;
-  var selectedShape;
-  var newShape;
-  var actionLink;
-  var isModified = false;
+  let selectedShape;
+  let newShape;
+  let actionLink;
+  let isModified = false;
   const tooltip = L.DomUtil.create('div', 'leaflet-draw-tooltip', map.getContainer());
 
   function deactivateAction() {
@@ -168,20 +168,23 @@ function initControls(map, featuresLayer) {
   L.Control.DrawControl = L.Control.extend({
     options: { position: 'topleft' },
     onAdd(map) {
-      var container = L.DomUtil.create('div', 'leaflet-control-draw leaflet-bar leaflet-control');
+      const container = L.DomUtil.create('div', 'leaflet-control-draw leaflet-bar leaflet-control');
       L.DomEvent.on(container, 'mousedown', L.DomEvent.stopPropagation);
-      for (const shape of enabledShapes.value) {
+      const shapes = transform.shapes(props.modelValue);
+      for (const shapeName in allShapes) {
+        if (!shapes.has(shapeName)) continue;
+        const shape = allShapes[shapeName];
         const fname = shape.drawFn;
-        const link = L.DomUtil.create('a', 'leaflet-control-draw-' + shape.name, container);
+        const link = L.DomUtil.create('a', 'leaflet-control-draw-' + shapeName, container);
         link.href = '#';
-        link.title = 'Create a new ' + shape.name;
+        link.title = 'Create a new ' + shapeName;
         L.DomEvent.on(link, 'click', ((e) => {
           L.DomEvent.stop(e);
           if (actionLink === link) {
             map.editTools.stopDrawing();
             stopAction();
           } else {
-            map.editTools[fname](null, { kind: shape.name });
+            map.editTools[fname](null, { kind: shapeName });
             startAction(link, shape.tooltip);
           }
         }), this);
@@ -283,7 +286,7 @@ function initControls(map, featuresLayer) {
     if (e.layer.setStyle) e.layer.setStyle({ color: '#3388ff' });
     else if (e.layer._icon) e.layer._icon.style.filter = "";
     if (isModified) {
-      console.log(featuresLayer.getLayers());
+      //console.log(featuresLayer.getLayers());
       update(featuresLayer.getLayers());
       isModified = false;
     }

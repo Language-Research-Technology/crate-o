@@ -22,12 +22,16 @@ const input = ref(null);
 const isValid = computed(() => input.value?.input?.validity?.valid ?? true);
 
 watch(() => props.modelValue, (val) => {
+  console.log('watch modelValue', val);
   value.value = val;
 }, { immediate: true });
 
 function onChange(newValue) {
   if (isValid.value) {
     emit('update:modelValue', newValue);
+    console.log(newValue);
+    console.log(props.modelValue);
+    value.value = props.modelValue;
   }
 }
 </script>

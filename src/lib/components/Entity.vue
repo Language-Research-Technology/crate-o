@@ -12,13 +12,13 @@ const emit = defineEmits(['update:modelValue']);
 const state = inject($state);
 
 
-onUpdated(() => {
-  console.log('entity updated');
-});
-onMounted(() => {
-  console.log('mounted');
-  //console.log(definitions.value);
-});
+// onUpdated(() => {
+//   console.log('entity updated');
+// });
+// onMounted(() => {
+//   console.log('mounted');
+//   //console.log(definitions.value);
+// });
 
 const data = reactive({
   file: null
@@ -35,7 +35,7 @@ const layouts = computed(() => {
   let layouts = layoutsByType[types.find(t => layoutsByType[t])] || state.profile?.inputGroups || defaultLayout;
 
   const othersProps = new Set(Object.keys(definitions));
-  console.log(layouts);
+  //console.log(layouts);
   for (const l of layouts) {
     const defs = l.definitions = [];
     for (const id of (l.inputs ?? [])) {
@@ -51,7 +51,7 @@ const layouts = computed(() => {
   const inputs = Array.from(othersProps);
   const others = {
     name: 'Others',
-    description: '',
+    help: 'Other properties not in the above categories',
     inputs,
     definitions: inputs.map(id => definitions[id]),
     disabled: !inputs.length

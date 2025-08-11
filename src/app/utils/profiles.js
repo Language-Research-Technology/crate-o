@@ -2,6 +2,7 @@ const profileUrls = [
     'https://language-research-technology.github.io/ro-crate-modes/modes/default.json',
     'https://language-research-technology.github.io/ro-crate-modes/modes/language-data-commons-collection.json',
     'https://language-research-technology.github.io/ro-crate-modes/modes/comprehensive-ldac.json',
+    'https://language-research-technology.github.io/ro-crate-modes/modes/object-ldac.json',
     'https://language-research-technology.github.io/ro-crate-modes/modes/schema.json',
     'https://language-research-technology.github.io/ro-crate-modes/modes/software.json',
     'https://language-research-technology.github.io/ro-crate-modes/modes/base.json',
