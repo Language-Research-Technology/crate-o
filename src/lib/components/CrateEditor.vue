@@ -320,13 +320,6 @@ function truncate(text) {
 </template>
 
 <style>
-.el-input.is-error .el-input__wrapper {
-  box-shadow: 0 0 0 1px var(--el-color-danger) inset;
-}
-
-.el-input.is-error .el-input__wrapper {
-  box-shadow: 0 0 0 1px var(--el-color-danger) inset;
-}
 
 .el-form-item.is-changed .el-input__wrapper,
 el-form-item.is-changed .el-checkbox.is_bordered {

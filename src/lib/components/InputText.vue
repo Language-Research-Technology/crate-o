@@ -44,4 +44,8 @@ function onChange(newValue) {
   <!--input :value="modelValue" @input="$emit('update:modelValue', $event.target.value)"/-->
 </template>
 
-<style></style>
+<style>
+.el-input.is-error .el-input__wrapper {
+  box-shadow: 0 0 0 1px var(--el-color-danger) inset;
+}
+</style>

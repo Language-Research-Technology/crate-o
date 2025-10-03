@@ -1,0 +1,21 @@
+version: '3.8'
+
+#networks:
+#  test:
+#    driver: bridge
+name: playwright
+services:
+  playwright-server:
+    container_name: playwright-server
+    image:  mcr.microsoft.com/playwright:v1.55.1
+    working_dir: /home/pwuser
+    user: pwuser
+    command:
+      - /bin/sh
+      - -c
+      - npx -y playwright run-server --port 3000 --host 0.0.0.0
+    ports:
+      - 3000:3000
+#    networks:
+#      - test
+    init: true

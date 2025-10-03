@@ -122,6 +122,9 @@ export default {};
 </template>
 
 <style>
+.el-input.is-error .el-input__wrapper {
+  box-shadow: 0 0 0 1px var(--el-color-danger) inset;
+}
 .input-date-time .el-input-group__append {
   padding: 0;
 }
