@@ -170,7 +170,7 @@ const commands = {
       data.validationResultDialog = !!Object.keys(data.validationResult).length;
       ElNotification({ title: 'Data successfully saved in ro-crate-metadata.json', type: 'success', duration: 3000 });
 
-      // save preview using ro-crate-html-lite
+      // save preview
       const crate = new ROCrate(rawCrate, { array: true, link: true });
       await crate.resolveContext();
 
@@ -526,7 +526,7 @@ watch(() => data.selectedProfile, (newValue) => {
   <el-dialog v-model="data.showSettingsDialog" title="Settings" width="600" align-center>
     <div class="dialog-content">
       <div class="p-4">
-        <div class="mb-4">
+        <div class="mb-4"> 
           <p class="font-semibold mb-3">RO-Crate HTML Preview Generator</p>
           <label class="flex items-center cursor-pointer mb-3">
             <input type="radio" v-model="data.settings.previewGenerator" value="lite" name="previewGenerator" class="mr-2" />
