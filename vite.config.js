@@ -41,11 +41,13 @@ const build = {
   }
 }
 const ejsRenderer = await createRenderer();
+const nunjucksRenderer = await createNunjucksRenderer();
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   plugins: [
     ejsRenderer,
+    nunjucksRenderer,
     visualizer(),
     vue(),
     //createHtmlPlugin({minify: true, entry: 'src/app/main.js'}),
@@ -101,4 +103,37 @@ async function createRenderer() {
       }
     }
   }; 
+}
+
+async function createNunjucksRenderer() {
+  const virtualModuleId = 'virtual:nunjucks-template';
+  const resolvedVirtualModuleId = '\0' + virtualModuleId;
+  const tp = fileURLToPath(import.meta.resolve('ro-crate-html-lite/template.html'));
+  const templateSrc = await readFile(tp, "utf-8");
+  
+  return {
+    name: 'nunjucksRenderer',
+    resolveId(id) {
+      if (id === virtualModuleId) return resolvedVirtualModuleId;
+    },
+    load(id) {
+      if (id === resolvedVirtualModuleId) {
+        // Return a module that exports a render function using nunjucks in the browser
+        return `import nunjucks from 'nunjucks';
+
+const template = ${JSON.stringify(templateSrc)};
+
+export default function renderTemplateLite(data, layout) {
+  const env = new nunjucks.Environment();
+  
+  env.addFilter("setProp", function (obj, key) {
+    obj[key] = true;
+    return obj;
+  });
+  
+  return env.renderString(template, { data, layout });
+}`;
+      }
+    }
+  };
 }
