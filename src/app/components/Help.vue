@@ -16,6 +16,8 @@ import { ElRow, ElCol } from 'element-plus';
       This will create an <i>ro-crate-metadata.json</i> file or append data into an existing
       <i>ro-crate-metadata.json</i>.
     </p>
+    <p><strong>⚙️ Settings</strong> - Change some local settings</p>
+    <ul class="pl-4"><li>Choose between different preview generators for the RO-Crate HTML preview.</li></ul>
     <p><strong>❌ Close</strong> - Close the current session without saving.</p>
     <p><strong>❓ Help</strong> - Display general help from anywhere in Crate-O.</p>
     <p><strong>🛈 About</strong> - Display general information about Crate-O.</p>

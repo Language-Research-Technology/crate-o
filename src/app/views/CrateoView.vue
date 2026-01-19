@@ -13,7 +13,10 @@ import {
 import { handleRoute } from '../../lib/DefaultRouteHandler.js';
 import { CrateEditor, cacheLabel } from '../../lib';
 import { Preview } from 'ro-crate-html';
+import { roCrateToJSON } from 'ro-crate-html-lite/lib/preview.js';
+
 import renderTemplate from 'virtual:ejs';
+import renderTemplateLite from 'virtual:nunjucks-template';
 
 const navigate = handleRoute((entityId, propertyId) => {
   if (data.metadataHandle) {
@@ -44,7 +47,11 @@ const data = shallowReactive({
   showDialog: false,
   dialogTitle: '',
   dialogContent: null,
-  validationResultDialog: false
+  validationResultDialog: false,
+  showSettingsDialog: false,
+  settings: {
+    previewGenerator: 'full' // 'lite' or 'full'
+  }
 });
 window.data = data;
 const profile = computed(() => data.profiles[data.selectedProfile]);
@@ -163,15 +170,26 @@ const commands = {
       data.validationResultDialog = !!Object.keys(data.validationResult).length;
       ElNotification({ title: 'Data successfully saved in ro-crate-metadata.json', type: 'success', duration: 3000 });
 
-      // save preview
+      // save preview using ro-crate-html-lite
       const crate = new ROCrate(rawCrate, { array: true, link: true });
       await crate.resolveContext();
-      const preview = new Preview(crate);
-      content = renderTemplate(preview.templateParams());
+
+      if(data.settings.previewGenerator === 'full') {
+        // using ro-crate-html
+        const preview = new Preview(crate);
+        content = renderTemplate(preview.templateParams());
+      } else {
+          // using ro-crate-html-lite
+        const templateData = await roCrateToJSON(crate);
+        content = renderTemplateLite(templateData);
+      }
       const previewHandle = await data.dirHandle.getFileHandle('ro-crate-preview.html', { create: true });
       writable = await previewHandle.createWritable();
       await writable.write(content);
       await writable.close();
+      
+      ElNotification({ title: 'Saved preview in ro-crate-preview.html', type: 'success', duration: 3000 });
+
     }
   },
 
@@ -206,6 +224,9 @@ const commands = {
     data.dialogTitle = 'About';
     data.dialogContent = About;
     data.showDialog = true;
+  },
+  settings() {
+    data.showSettingsDialog = true;
   }
 };
 
@@ -293,6 +314,22 @@ const goTo = function ({ id, prop }) {
   }
 }
 
+function saveSettings() {
+  localStorage.setItem('crateOSettings', JSON.stringify(data.settings));
+  ElNotification({ title: 'Settings saved', type: 'success', duration: 2000 });
+}
+
+function loadSettings() {
+  const saved = localStorage.getItem('crateOSettings');
+  if (saved) {
+    try {
+      data.settings = Object.assign(data.settings, JSON.parse(saved));
+    } catch (e) {
+      console.error('Failed to load settings', e);
+    }
+  }
+}
+
 var prevObjectUrl;
 async function getFile(id) {
   try {
@@ -357,6 +394,11 @@ const activeNames = ref(['1']);
 
 import { onMounted, watch } from 'vue';
 
+// Load settings on mount
+onMounted(() => {
+  loadSettings();
+});
+
 // Watch for changes in selectedProfile and update localStorage
 watch(() => data.selectedProfile, (newValue) => {
   localStorage.setItem('selectedProfileName', profile.value?.metadata?.name);
@@ -380,6 +422,9 @@ watch(() => data.selectedProfile, (newValue) => {
       </el-menu-item>
       <el-menu-item index="save" :disabled="!data.dirHandle">
         💾 Save
+      </el-menu-item>
+      <el-menu-item index="settings" :disabled="!data.dirHandle">
+        ⚙️ Settings
       </el-menu-item>
       <el-menu-item index="close" :disabled="!data.dirHandle">
         ❌ Close
@@ -475,6 +520,35 @@ watch(() => data.selectedProfile, (newValue) => {
     <template #footer>
       <span class="dialog-footer">
         <el-button type="primary" @click="data.showDialog = false">Close</el-button>
+      </span>
+    </template>
+  </el-dialog>
+  <el-dialog v-model="data.showSettingsDialog" title="Settings" width="600" align-center>
+    <div class="dialog-content">
+      <div class="p-4">
+        <div class="mb-4">
+          <p class="font-semibold mb-3">RO-Crate HTML Preview Generator</p>
+          <label class="flex items-center cursor-pointer mb-3">
+            <input type="radio" v-model="data.settings.previewGenerator" value="lite" name="previewGenerator" class="mr-2" />
+            <div>
+              <span class="font-semibold">Lite Preview (ro-crate-html-lite) - beta version</span>
+              <p class="text-sm text-slate-500">Built without any dependence on online resources</p>
+            </div>
+          </label>
+          <label class="flex items-center cursor-pointer">
+            <input type="radio" v-model="data.settings.previewGenerator" value="full" name="previewGenerator" class="mr-2" />
+            <div>
+              <span class="font-semibold">Full Preview (ro-crate-html)</span>
+              <p class="text-sm text-slate-500">More comprehensive, includes additional features</p>
+            </div>
+          </label>
+        </div>
+      </div>
+    </div>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="data.showSettingsDialog = false">Cancel</el-button>
+        <el-button type="primary" @click="saveSettings(); data.showSettingsDialog = false;">Save Settings</el-button>
       </span>
     </template>
   </el-dialog>
