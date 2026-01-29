@@ -205,7 +205,7 @@ export class EditorState {
       definitions[id] = {id, name, key: name, isReverse: true};
     }
     if (entity['@id'] === this.crate.rootId) {
-      definitions['http://schema.org/about'] = null;
+      delete definitions['http://schema.org/about'];
     }
     //console.log(isReactive(definitions));
     //sort here
