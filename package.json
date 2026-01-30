@@ -1,6 +1,6 @@
 {
   "name": "crate-o",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "A VueJS UI component to create and edit Research Object Crate (RO-Crate) metadata",
   "keywords": [
     "RO-Crate",
