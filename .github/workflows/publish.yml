@@ -10,14 +10,11 @@ permissions: write-all
 jobs:
   publish:
     runs-on: ubuntu-latest
-    #container: cypress/base:latest
-    env:
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 24
           registry-url: 'https://registry.npmjs.org'
       - uses: ButlerLogic/action-autotag@1.1.2
         env:
