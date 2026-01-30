@@ -104,13 +104,17 @@ function initEntity(entityId) {
   }
 }
 
-function showEntity(e) {
-  if (data.entity !== e) {
+/**
+ * 
+ * @param id {string} entity id
+ */
+function showEntity(id) {
+  if (data.entity['@id'] !== id) {
     let pages; // the number of pages to go back to
-    const i = data.history.findIndex(e2 => e['@id'] === e2['@id']);
+    const i = data.history.findIndex(e => id === e['@id']);
     if (i > -1) pages = data.history.length - i - 1;
-    initEntity(e['@id']);
-    emit('update:entityId', e['@id'], pages);
+    initEntity(id);
+    emit('update:entityId', id, pages);
   }
 }
 
@@ -200,7 +204,7 @@ function onSelectNewEntity(type) {
     const newEntity = state.crate.getEntity(item['@id'])
     state.ensureContext(type);
     state.entities.value.add(newEntity);
-    showEntity(item);
+    showEntity(item['@id']);
     data.newEntityType = null;
     emit('update:crate', props.crate);
   }
@@ -256,7 +260,7 @@ function truncate(text) {
           <el-breadcrumb class="mb-3" separator=">">
             <template v-for="e, i in data.history">
               <el-breadcrumb-item>
-                <el-link :icon="i ? null : HomeFilled" href="/" @click.prevent="showEntity(e)"
+                <el-link :icon="i ? null : HomeFilled" href="/" @click.prevent="showEntity(e['@id'])"
                   :title="e.name?.[0] || e['@id']">
                   <span v-html="truncate(e.name?.[0] || (i ? e['@id'] : 'Root Dataset'))"></span>
                 </el-link>

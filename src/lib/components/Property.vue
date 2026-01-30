@@ -3,7 +3,7 @@ import { reactive, computed, toRaw, nextTick, inject } from "vue";
 import { ElTooltip, ElIcon, ElFormItem, ElButton } from 'element-plus';
 
 import { QuestionFilled, Delete, InfoFilled, WarningFilled, Right, Back } from '@element-plus/icons-vue';
-import ControlAdd from "./ControlAdd.vue";
+import PropertyAddValue from "./PropertyAddValue.vue";
 import { $state } from './keys';
 import { countReverse } from './utils.js'
 import FilteredPaged from "./FilteredPaged.vue";
@@ -36,14 +36,27 @@ const values = computed(() => {
   return Array.isArray(value) ? value.slice(0) : (value == null ? [] : [value]);
 });
 
+const nestedTypes = {
+  geometry: 1,
+  geocoordinates: 1,
+  geoshape: 1
+};
+
 function add(type, value, fromLookup) {
   //console.log(props.definition);
   //console.log('addValue', type, value);
   //console.log(vals.length);
-  var vals = values.value;
-  var val = value;
-  var isInline = state.isInline(type);
-  if (isInline) {
+  const vals = values.value;
+  const val = value;
+  //var isInline = state.isInline(type);
+  if (typeof val === 'object' && val['@type']) {
+    // create a new entity
+    const prefix = nestedTypes[type.name] ? '_:' : '#';
+    const cleanName = prefix + (name || type.name).replace(/\W/g, "_");
+    val['@id'] = state.crate.hasEntity(cleanName) ? state.crate.uniqueId(`${cleanName}-`) : cleanName;
+    state.ensureContext(entity['@type']);
+  }
+  if (type.isInline) {
     const options = props.definition.values;
     const propsOpt = { ...props.definition.props, ...(options && { options }) };
     const c = props.components[vals.length] = state.getInlineComponent(type, propsOpt);
@@ -54,9 +67,8 @@ function add(type, value, fromLookup) {
   if (typeof value === 'object' && value['@id']) {
     // when an entity is added as values of a property
     const entity = state.crate.getEntity(value['@id']);
-    state.ensureContext(entity['@type']);
     state.entities.value.add(entity);
-    if (!fromLookup && !isInline) state.showEntity(entity);
+    if (!fromLookup && !type.isInline && val['@id']) state.showEntity(val['@id']);
   }
 }
 
@@ -140,10 +152,10 @@ function removeValue(i, value) {
           </el-tooltip>
         </div>
       </FilteredPaged>
-
-      <ControlAdd v-if="!isReverse" :modelValue="values" :definition="definition"
-        class="flex flex-col md:flex-row gap-1 flex-nowrap mb-3" @add="add">
-      </ControlAdd>
+      <PropertyAddValue v-if="!isReverse && values.length < definition.max" :definition="definition"
+        :local-search="state.localSearch" :remote-search="state.remoteSearch" @add="add"
+        class="flex flex-col md:flex-row gap-1 flex-nowrap mb-3">
+      </PropertyAddValue>
       <div v-if="definition.help" class="flex items-center text-xs text-indigo-400 mb-3" role="alert">
         <el-icon>
           <InfoFilled />

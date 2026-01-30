@@ -18,15 +18,10 @@ test.describe('CrateEditor', { tag: '@component' }, () => {
 
     await editor.getByRole('tab', { name: 'related' }).click();
     await editor.getByLabel('publisher').getByRole('button', { name: 'Organization' }).click();
-    //await page.getByRole('combobox', { name: 'publisher' }).click();
     await editor.getByRole('combobox', { name: 'publisher' }).fill('Ldaca');
-    //const r = await editor.evaluate(() => { return componentRef.value; });
     await editor.getByRole('button', { name: 'Create new Organization:' }).click();
     await expect(editor.getByRole('textbox', { name: 'name' })).toHaveValue('Ldaca');
-    //await page.getByText('Related People, Orgs & Works').click();
-    // cy.get('.el-form-item').find('button').contains('Organization').click();
-    // cy.get('button').contains('Create new Organization').click();
-    // cy.get('.el-form-item').find('.el-input:first').type('{selectall}').type('ORG_ID{enter}').invoke('blur');
+    await expect(editor.getByRole('heading', { name: 'Current Entity', level: 2 }).getByText('Ldaca')).toBeDefined();
   });
 
   // it('Can click to all entities and switch tabs', () => {

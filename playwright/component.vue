@@ -6,7 +6,10 @@ import { ref } from 'vue';
 
 const props = defineProps({
   component: Object,
-  componentProps: Object
+  componentProps: {
+    type: Object,
+    default: {}
+  }
 });
 //const model = defineModel();
 const model = ref();

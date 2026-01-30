@@ -28,7 +28,7 @@ function showEntity() {
   const id = props.modelValue['@id'];
   if (props.modelValue['@type']) {
     //$router.push({query: {id: encodeURIComponent(id)}});
-    state.showEntity(props.modelValue);
+    state.showEntity(id);
   } else {
     dialogVisible.value = true;
   }

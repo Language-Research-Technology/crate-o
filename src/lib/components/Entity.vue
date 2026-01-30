@@ -31,7 +31,7 @@ const layouts = computed(() => {
   const types = entity['@type'] || [];
   const layoutsByType = state.profile?.layouts || {};
   // handle the case of multiple types, pick the first one that specifies a layout
-  /** @type {{ name: string, help: string, disabled: boolean, inputs: Array, definitions: Array }[]} */
+  /** @type {({ name: string, help: string, disabled: boolean, inputs: Array, definitions: Array }[])} */
   let layouts = layoutsByType[types.find(t => layoutsByType[t])] || state.profile?.inputGroups || defaultLayout;
 
   const othersProps = new Set(Object.keys(definitions));
