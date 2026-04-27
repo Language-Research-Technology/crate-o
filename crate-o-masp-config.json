@@ -1,0 +1,43 @@
+{
+  "apiVersion": "masp.crate-o/v1",
+  "kind": "CrateOConfig",
+  "metadata": {
+    "name": "crate-o-masp-config",
+    "version": "1.0",
+    "description": "MASP profile configuration for Crate-O"
+  },
+  "profiles": {
+    "ro-crate": {
+      "name": "RO-Crate",
+      "path": "../ro-crate-masp/profiles/ro-crate/profile-crate",
+      "enabled": true,
+      "description": "Base RO-Crate profile with minimal requirements"
+    },
+    "ro-crate-masp": {
+      "name": "RO-Crate MASP",
+      "path": "../ro-crate-masp/profiles/ro-crate-masp/profile-crate",
+      "enabled": true,
+      "description": "MASP schema and profile crate format itself"
+    },
+    "ldac": {
+      "name": "Language Data Commons (LDAC)",
+      "path": "../ro-crate-masp/profiles/ldac/profile-crate",
+      "enabled": true,
+      "description": "Language Data Commons comprehensive collection profile"
+    },
+    "workflow": {
+      "name": "Workflow",
+      "path": "../ro-crate-masp/profiles/workflow/profile-crate",
+      "enabled": true,
+      "description": "Research workflow execution profile"
+    },
+    "software": {
+      "name": "Software",
+      "path": "../ro-crate-masp/profiles/software/profile-crate",
+      "enabled": true,
+      "description": "Software and environments profile"
+    }
+  },
+  "defaultProfile": "ro-crate",
+  "cacheProfiles": true
+}
