@@ -68,6 +68,13 @@ const jsonldKeywords = {
   // }
 };
 
+function firstString(value, fallback = '') {
+  if (Array.isArray(value)) {
+    return value.find(v => typeof v === 'string') || fallback;
+  }
+  return typeof value === 'string' ? value : fallback;
+}
+
 function isUri(value) {
   try {
     var u = new URL(value);
@@ -108,17 +115,53 @@ export class EditorState {
     this.profile = profile;
     this.meta = reactive({});
     this.defByType = {};
+    this.lookupPromises = {};
     // set select options for @type lookup
-    jsonldKeywords['@type'].props.options = profile.enabledClasses;
+    jsonldKeywords['@type'].props.options = this.getEnabledClasses();
     // async load lookup modules
-    for (const type in profile.lookup) {
-      const l = profile.lookup[type];
+    const lookups = this.getLookups();
+    for (const type in lookups) {
+      const l = lookups[type];
       const mod = l.module || "datapack";
       this.lookupPromises[type] = import(/* @vite-ignore */mod).catch((e) => { }).
         then(m => new (m?.default || lookupModules[mod])({ type, ...l })).
         catch(e => { });
     }
     return profile;
+  }
+
+  getEnabledClasses() {
+    if (!this.profile) return [];
+    return this.profile.getEnabledClasses ? this.profile.getEnabledClasses() : (this.profile.enabledClasses || Object.keys(this.profile.classes || {}));
+  }
+
+  getLookups() {
+    if (!this.profile) return {};
+    return this.profile.getLookups ? this.profile.getLookups() : (this.profile.lookup || this.profile.lookups || {});
+  }
+
+  getClassDefinition(type) {
+    if (!this.profile) return null;
+    return this.profile.getClassDefinition ? this.profile.getClassDefinition(type) : this.profile.classes?.[type];
+  }
+
+  getInputGroups() {
+    if (!this.profile) return [];
+    return this.profile.getInputGroups ? this.profile.getInputGroups() : (this.profile.inputGroups || []);
+  }
+
+  getLayouts() {
+    return this.profile?.layouts || {};
+  }
+
+  getRootDatasetTypes() {
+    if (!this.profile) return [];
+    return this.profile.getRootDatasetTypes ? this.profile.getRootDatasetTypes() : (this.profile.rootDataset?.type || []);
+  }
+
+  getConformsToUris() {
+    if (!this.profile) return [];
+    return this.profile.getConformsToUris ? this.profile.getConformsToUris() : (this.profile.conformsToUri || []);
   }
 
   showEntity(e) {
@@ -153,11 +196,14 @@ export class EditorState {
       definitions['@id'].help = 'Persistent, managed unique ID in URL format (if available), for example a DOI for a collection or an ORCID, personal home page URL or email address for a person';
       definitions['@type'].required = true;
       definitions['@type'].help = 'The type of the entity.';
-      const classes = types.map(t => profile.classes[t]).filter(e => e);
+      const classes = types.map(t => this.getClassDefinition(t)).filter(e => e);
       for (const c of classes) {
         for (const input of (c.inputs || [])) {
           if (!definitions[input.id] || c.definition === 'override') {
             const { required, multiple, ...def } = input;
+            def.name = firstString(def.name, def.id || input.id || '');
+            def.help = firstString(def.help, '');
+            def.type = [].concat(def.type || []).map(t => firstString(t)).filter(Boolean);
             def.min = required ? 1 : 0;
             def.max = multiple ? Infinity : 1;
             def.required = required;
@@ -188,10 +234,13 @@ export class EditorState {
         // if the name is different, use the name from the data
         if (def.name !== name) definitions[id] = { ...def, key: name };
         properties.delete(id);
-      } else if (def.name in entity) {
+      } else if (typeof def.name === 'string' && def.name in entity) {
         // The property name defined in profile exists in the data, but the resolved id is different.
-        // Use the id instead of the name to access the property
-        definitions[id] = { ...def, key: id };
+        // Keep using the concrete key present in the entity data.
+        definitions[id] = { ...def, key: def.name };
+        // Remove from properties so the name doesn't also add a bare typeless definition below
+        const resolvedName = crate?.resolveTerm(def.name) || def.name;
+        properties.delete(resolvedName);
       }
     }
     // Find existing properties in the entity data that are not yet included
@@ -314,7 +363,7 @@ export class EditorState {
   ensureContext(types) {
     if (types && Array.isArray(types)) {
       for (const type of types) {
-        const c = this.profile.classes[type];
+        const c = this.getClassDefinition(type);
         if (c) {
           this.ensureContextHasTerm({id: c.id, name: type});
           for (const prop of c.inputs) {

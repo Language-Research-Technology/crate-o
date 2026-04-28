@@ -21,12 +21,19 @@ const emit = defineEmits({
 });
 //const emit = defineEmits(['show']);
 //const id = computed(() => props.modelValue['@id']);
-const label = computed(() => props.modelValue['name']?.['0'] || props.modelValue['@id']);
+const resolvedEntity = computed(() => {
+  const id = props.modelValue?.['@id'];
+  return id ? state.crate?.getEntity(id) : null;
+});
+const displayEntity = computed(() => resolvedEntity.value || props.modelValue || {});
+const label = computed(() => displayEntity.value['name']?.[0] || displayEntity.value['@id']);
 const dialogVisible = ref(false);
 
 function showEntity() {
   const id = props.modelValue['@id'];
-  if (props.modelValue['@type']) {
+  if (resolvedEntity.value) {
+    state.showEntity(resolvedEntity.value);
+  } else if (props.modelValue['@type']) {
     //$router.push({query: {id: encodeURIComponent(id)}});
     state.showEntity(props.modelValue);
   } else {
@@ -47,7 +54,7 @@ function openUrl() {
     </el-icon>
     <span class="flex mr-2">
       <!-- <el-tag class="mr-1 font-bold" size="small" plain type="info" v-for="t of modelValue['@type']">{{ t }}</el-tag> -->
-      <template v-for="t of modelValue['@type']">
+      <template v-for="t of (displayEntity['@type'] || [])">
         <span class="type-tag" v-if="t">{{ t }}</span>
       </template>
     </span>

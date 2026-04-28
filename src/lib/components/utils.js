@@ -6,6 +6,9 @@ export function cacheLabel(def) {
   var label = def.label;
   if (!label) {
     label = def.name;
+    if (Array.isArray(label)) {
+      label = label.find(v => typeof v === 'string') || '';
+    }
     if (!label) {
       label = def.id;
       try {
@@ -15,10 +18,13 @@ export function cacheLabel(def) {
         }
       } catch (error) {
       }
-    } else {
+    } else if (typeof label === 'string') {
       let namespace;
       let m = label.match(/(.+):(.+)/);
       if (m) [, namespace, label] = m;
+    }
+    if (typeof label !== 'string') {
+      label = String(label || '');
     }
     label = label.charAt(0).toUpperCase() + label.slice(1);
     label = label.replace(/([a-z])([A-Z])/g, '$1 $2');

@@ -27,22 +27,42 @@ const data = reactive({
 const layouts = computed(() => {
   const entity = props.modelValue;
   const definitions = state.getDefinitions(entity);
+
+  function findDefinitionForInput(inputId) {
+    if (definitions[inputId]) return definitions[inputId];
+
+    const resolved = state.crate?.resolveTerm?.(inputId);
+    if (resolved && definitions[resolved]) return definitions[resolved];
+
+    const localName = typeof inputId === 'string' ? inputId.split(/[\/#]/).pop() : '';
+    if (!localName) return null;
+
+    return Object.values(definitions).find((d) => {
+      return d?.name === localName || d?.id === inputId;
+    }) || null;
+  }
+
   /** @type {string[]} */
   const types = entity['@type'] || [];
-  const layoutsByType = state.profile?.layouts || {};
+  const layoutsByType = state.getLayouts();
   // handle the case of multiple types, pick the first one that specifies a layout
   /** @type {{ name: string, help: string, disabled: boolean, inputs: Array, definitions: Array }[]} */
-  let layouts = layoutsByType[types.find(t => layoutsByType[t])] || state.profile?.inputGroups || defaultLayout;
+  let layouts = layoutsByType[types.find(t => layoutsByType[t])] || state.getInputGroups() || defaultLayout;
 
   const othersProps = new Set(Object.keys(definitions));
   //console.log(layouts);
   for (const l of layouts) {
     const defs = l.definitions = [];
+    const seenDefIds = new Set();
     for (const id of (l.inputs ?? [])) {
-      const d = definitions[id];
+      const d = findDefinitionForInput(id);
       if (d) {
+        if (seenDefIds.has(d.id)) {
+          continue;
+        }
+        seenDefIds.add(d.id);
         defs.push(d);
-        othersProps.delete(id);
+        othersProps.delete(d.id);
       }
     }
     l.disabled = !defs.length;
@@ -119,7 +139,7 @@ function getComponents(def) {
 }
 
 function checkRootTypes() {
-  const specialTypesExpected = state.profile?.rootDataset?.type
+  const specialTypesExpected = state.getRootDatasetTypes();
   const extraTypesNeeded = [];
 
   if (specialTypesExpected) {
@@ -139,7 +159,7 @@ function addRootTypes(rTypes) {
 }
 
 function checkConformsTo() {
-  const specialConformsToExpected = state.profile?.conformsToUri || [];
+  const specialConformsToExpected = state.getConformsToUris();
   const extraConformsToNeeded = [];
 
   if (specialConformsToExpected) {

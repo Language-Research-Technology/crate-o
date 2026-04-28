@@ -43,6 +43,19 @@ function add(type, value, fromLookup) {
   var vals = values.value;
   var val = value;
   var isInline = state.isInline(type);
+  let linkedEntity = null;
+  if (typeof value === 'object' && value['@id']) {
+    linkedEntity = state.crate.getEntity(value['@id']);
+    if (!linkedEntity) {
+      // entity came from a lookup and doesn't exist in the crate yet
+      state.crate.addEntity(value, { replace: true, recurse: true });
+      linkedEntity = state.crate.getEntity(value['@id']) || value;
+    }
+    if (!isInline) {
+      // Keep the property value as the crate entity object so it is linked in the UI.
+      val = linkedEntity;
+    }
+  }
   if (isInline) {
     const options = props.definition.values;
     const propsOpt = { ...props.definition.props, ...(options && { options }) };
@@ -51,12 +64,11 @@ function add(type, value, fromLookup) {
   }
   vals.push(val);
   emit('update:modelValue', vals);
-  if (typeof value === 'object' && value['@id']) {
+  if (linkedEntity) {
     // when an entity is added as values of a property
-    const entity = state.crate.getEntity(value['@id']);
-    state.ensureContext(entity['@type']);
-    state.entities.value.add(entity);
-    if (!fromLookup && !isInline) state.showEntity(entity);
+    state.ensureContext(linkedEntity['@type']);
+    state.entities.value.add(linkedEntity);
+    if (!fromLookup && !isInline) state.showEntity(linkedEntity);
   }
 }
 

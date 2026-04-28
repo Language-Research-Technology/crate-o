@@ -13,17 +13,19 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'add']);
 
 const state = inject($state);
+const firstString = (value, fallback = '') => Array.isArray(value) ? (value.find(v => typeof v === 'string') || fallback) : (typeof value === 'string' ? value : fallback);
 const types = computed(() => {
   if (props.definition?.type) {
     let types = [];
-    for (let classType of props.definition.type || []) {
-      if (state.profile.classes[classType]) {
-        // console.log(state.profile.classes[classType]?.['hasSubclass'])
-        types = types.concat(state.profile.classes[classType]?.['hasSubclass'] || []);
+    const baseTypes = (props.definition.type || []).map(t => firstString(t)).filter(Boolean);
+    for (let classType of baseTypes) {
+      const classDefinition = state.getClassDefinition(classType);
+      if (classDefinition) {
+        types = types.concat((classDefinition.hasSubclass || []).map(t => firstString(t)).filter(Boolean));
       }
     }
     if (types.length) types = Array.from(new Set(types)).sort();
-    return props.definition.type.concat(types);
+    return baseTypes.concat(types);
   }
   return ['Text', 'Number', 'Entity'];
 });
