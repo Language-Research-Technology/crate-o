@@ -68,6 +68,16 @@ const jsonldKeywords = {
   // }
 };
 
+const profileDebugEnabled = (() => {
+  if (typeof window === 'undefined') return false;
+  return window.localStorage?.getItem('crateOProfileDebug') !== '0';
+})();
+
+function profileDebug(...args) {
+  if (!profileDebugEnabled) return;
+  console.log('[crate-o:profile]', ...args);
+}
+
 function firstString(value, fallback = '') {
   if (Array.isArray(value)) {
     return value.find(v => typeof v === 'string') || fallback;
@@ -116,6 +126,13 @@ export class EditorState {
     this.meta = reactive({});
     this.defByType = {};
     this.lookupPromises = {};
+    const metadata = this.profile?.getProfileMetadata?.() || this.profile?.metadata || {};
+    const groupNames = this.getPropertyGroups().map((g) => g?.name).filter(Boolean);
+    profileDebug('EditorState.setProfile', {
+      name: metadata.name,
+      groupCount: groupNames.length,
+      groups: groupNames
+    });
     // set select options for @type lookup
     jsonldKeywords['@type'].props.options = this.getEnabledClasses();
     // async load lookup modules
@@ -145,9 +162,9 @@ export class EditorState {
     return this.profile.getClassDefinition ? this.profile.getClassDefinition(type) : this.profile.classes?.[type];
   }
 
-  getInputGroups() {
+  getPropertyGroups() {
     if (!this.profile) return [];
-    return this.profile.getInputGroups ? this.profile.getInputGroups() : (this.profile.inputGroups || []);
+    return this.profile.getPropertyGroups ? this.profile.getPropertyGroups() : (this.profile.propertyGroups || []);
   }
 
   getLayouts() {

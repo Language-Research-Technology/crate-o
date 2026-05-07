@@ -60,7 +60,8 @@
     "leaflet.path.drag": "^0.0.6",
     "marked": "^15.0.7",
     "mime": "^4.0.1",
-    "ro-crate": "^3.5.1"
+    "ro-crate": "^3.5.1",
+    "ro-crate-maps": "file:../ro-crate-masp"
   },
   "peerDependencies": {
     "element-plus": "^2.10.4",

@@ -18,7 +18,7 @@ const build = {
   _all: {
     rollupOptions: {},
     commonjsOptions: {
-      include: [/ro-crate-excel/, /node_modules/],
+      include: [/ro-crate-excel/, /ro-crate-masp/, /node_modules/],
       transformMixedEsModules: true
     },
   },
@@ -61,9 +61,20 @@ export default defineConfig(({ mode }) => ({
     },
   },
   optimizeDeps: {
-    include: ['ro-crate-excel', 'leaflet', 'ro-crate-html']
+    include: [
+      'ro-crate-excel',
+      'leaflet',
+      'ro-crate-html',
+      'ro-crate-maps/lib/masp-validator.js'
+    ]
+  },
+  server: {
+    fs: {
+      allow: [fileURLToPath(new URL('..', import.meta.url))]
+    }
   },
   resolve: {
+    preserveSymlinks: true,
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }

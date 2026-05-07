@@ -183,7 +183,7 @@ defineExpose({
 
 // const value = computed(() => data.newEntityType);
 const newEntityTypes = computed(() => {
-  const classes = state.profile.enabledClasses || Object.keys(state.profile.classes);
+  const classes = state.getEnabledClasses();
   return classes.map(k => ({ value: k, label: k }));
 });
 

@@ -4,12 +4,21 @@ import { ElTabPane, ElTabs, ElTooltip, ElPopover, ElIcon, ElRow, ElForm, ElFormI
 import { InfoFilled, Plus } from '@element-plus/icons-vue';
 import { $state } from './keys';
 import Property from './Property.vue';
-import defaultLayout from './default_layout.json';
 import MediaPreview from "./MediaPreview.vue";
 
 const props = defineProps(['modelValue', 'propertyId', 'getFile']);
 const emit = defineEmits(['update:modelValue']);
 const state = inject($state);
+
+const profileDebugEnabled = (() => {
+  if (typeof window === 'undefined') return false;
+  return window.localStorage?.getItem('crateOProfileDebug') !== '0';
+})();
+
+function profileDebug(...args) {
+  if (!profileDebugEnabled) return;
+  console.log('[crate-o:profile]', ...args);
+}
 
 
 // onUpdated(() => {
@@ -34,11 +43,18 @@ const layouts = computed(() => {
     const resolved = state.crate?.resolveTerm?.(inputId);
     if (resolved && definitions[resolved]) return definitions[resolved];
 
-    const localName = typeof inputId === 'string' ? inputId.split(/[\/#]/).pop() : '';
+    const normalizeTail = (value) => {
+      if (typeof value !== 'string') return '';
+      return value.split(/[\/#:]/).pop() || '';
+    };
+
+    const localName = normalizeTail(inputId);
     if (!localName) return null;
 
     return Object.values(definitions).find((d) => {
-      return d?.name === localName || d?.id === inputId;
+      const nameTail = normalizeTail(d?.name);
+      const idTail = normalizeTail(d?.id);
+      return d?.name === localName || nameTail === localName || d?.id === inputId || idTail === localName;
     }) || null;
   }
 
@@ -47,13 +63,30 @@ const layouts = computed(() => {
   const layoutsByType = state.getLayouts();
   // handle the case of multiple types, pick the first one that specifies a layout
   /** @type {{ name: string, help: string, disabled: boolean, inputs: Array, definitions: Array }[]} */
-  let layouts = layoutsByType[types.find(t => layoutsByType[t])] || state.getInputGroups() || defaultLayout;
+  let layouts = layoutsByType[types.find(t => layoutsByType[t])] || state.getPropertyGroups() || [];
 
   const othersProps = new Set(Object.keys(definitions));
   //console.log(layouts);
   for (const l of layouts) {
     const defs = l.definitions = [];
     const seenDefIds = new Set();
+    const normalizeTail = (value) => {
+      if (typeof value !== 'string') return '';
+      return value.split(/[\/#:]/).pop() || '';
+    };
+
+    const removeEquivalentOthers = (def, inputId) => {
+      const target = normalizeTail(inputId) || normalizeTail(def?.name) || normalizeTail(def?.id);
+      if (!target) return;
+      for (const [defId, candidate] of Object.entries(definitions)) {
+        const candidateName = normalizeTail(candidate?.name);
+        const candidateId = normalizeTail(candidate?.id || defId);
+        if (candidateName === target || candidateId === target) {
+          othersProps.delete(defId);
+        }
+      }
+    };
+
     for (const id of (l.inputs ?? [])) {
       const d = findDefinitionForInput(id);
       if (d) {
@@ -63,6 +96,7 @@ const layouts = computed(() => {
         seenDefIds.add(d.id);
         defs.push(d);
         othersProps.delete(d.id);
+        removeEquivalentOthers(d, id);
       }
     }
     l.disabled = !defs.length;
@@ -90,6 +124,19 @@ const activeGroup = computed({
     cache.__activeLayout = val;
   }
 });
+
+watch(layouts, (nextLayouts) => {
+  profileDebug('Entity.layouts', {
+    entityId: props.modelValue?.['@id'],
+    entityTypes: props.modelValue?.['@type'] || [],
+    groups: (nextLayouts || []).map((l) => ({
+      name: l?.name,
+      disabled: !!l?.disabled,
+      definitionCount: Array.isArray(l?.definitions) ? l.definitions.length : 0,
+      inputCount: Array.isArray(l?.inputs) ? l.inputs.length : 0
+    }))
+  });
+}, { immediate: true });
 
 watch(() => props.modelValue, async (entity) => {
   data.file = null;

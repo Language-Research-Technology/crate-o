@@ -36,6 +36,12 @@
       "path": "../ro-crate-masp/profiles/software/profile-crate",
       "enabled": true,
       "description": "Software and environments profile"
+    },
+    "schema-org": {
+      "name": "Schema.org",
+      "path": "../ro-crate-masp/profiles/schema-org/profile-crate",
+      "enabled": true,
+      "description": "Minimal RO-Crate profile combined with Schema.org schema terms"
     }
   },
   "defaultProfile": "ro-crate",

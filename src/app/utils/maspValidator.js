@@ -149,8 +149,8 @@ export class MaspProfileValidator {
    * Get input groups (UI organization hint)
    * @returns {Array} Array of input group definitions
    */
-  getInputGroups() {
-    return this.profile.inputGroups || [];
+  getPropertyGroups() {
+    return this.profile.propertyGroups || [];
   }
 
   /**

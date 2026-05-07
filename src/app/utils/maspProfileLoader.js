@@ -58,7 +58,7 @@ export async function loadMaspProfile(profilePath) {
       },
 
       // UI configuration from crate-o-mode
-      inputGroups: modeConfig.inputGroups || [],
+      propertyGroups: modeConfig.propertyGroups || [],
       contextPrefixes: modeConfig.contextPrefixes || {},
       
       // Lookups for autocomplete fields
@@ -105,8 +105,8 @@ export async function loadMaspProfiles(config) {
  * @param {Object} profile - Loaded MASP profile
  * @returns {Array} Array of input group objects
  */
-export function getInputGroups(profile) {
-  return profile.inputGroups || [];
+export function getPropertyGroups(profile) {
+  return profile.propertyGroups || [];
 }
 
 /**

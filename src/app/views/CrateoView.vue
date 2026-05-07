@@ -27,7 +27,19 @@ const navigate = handleRoute((entityId, propertyId) => {
 //const $router = useRouter();
 
 const emit = defineEmits(['load:spreadsheet']);
-const defaultProfile = 0;
+const defaultProfileName = 'RO-Crate + Schema.org Profile';
+
+const profileDebugEnabled = (() => {
+  if (typeof window === 'undefined') return false;
+  return window.localStorage?.getItem('crateOProfileDebug') !== '0';
+})();
+
+const hiddenProfileNames = new Set(['RO-Crate Machine Actionable Profile']);
+
+function profileDebug(...args) {
+  if (!profileDebugEnabled) return;
+  console.log('[crate-o:profile]', ...args);
+}
 
 function profileMeta(profile) {
   return profile?.getProfileMetadata ? profile.getProfileMetadata() : (profile?.metadata || {});
@@ -42,8 +54,11 @@ const data = shallowReactive({
   entityId: '',
   propertyId: '',
   selectedProfile: null,
+  selectedProfileSource: 'none',
+  profilePickerInteracted: false,
   profiles: [],
   spreadSheetBuffer: null,
+  autoDetectedProfileKey: null,
   loading: false,
   modeError: [],
   validationResult: {},
@@ -57,10 +72,16 @@ const data = shallowReactive({
   }
 });
 window.data = data;
-const profile = computed(() => data.profiles[data.selectedProfile]);
-const profileOptions = computed(() => data.profiles.flatMap((p, value) => {
+const profile = computed(() => data.profiles.find((p) => {
+  const name = profileMeta(p).name;
+  return name === data.selectedProfile && !hiddenProfileNames.has(name);
+}));
+const profileOptions = computed(() => data.profiles.flatMap((p) => {
   const metadata = profileMeta(p);
-  return p ? [{ value, label: metadata.name, description: metadata.description }] : [];
+  if (hiddenProfileNames.has(metadata.name)) {
+    return [];
+  }
+  return p ? [{ value: metadata.name, label: metadata.name, description: metadata.description }] : [];
 }));
 
 const metadataDescriptorRuleIds = computed(() => {
@@ -88,7 +109,6 @@ const validationDetailItems = computed(() => {
     }
     return msg;
   };
-
   const extractPropertyName = (message) => {
     const match = /^Property "([^"]+)" validation (?:failed|succeeded) for entity /.exec(message || '');
     return match?.[1] || null;
@@ -418,7 +438,11 @@ function resetData() {
   data.entityId = '';
   //data.selectedProfile = defaultProfile;
   //data.profiles = shallowReactive(profiles);
+  data.selectedProfile = null;
+  data.selectedProfileSource = 'none';
+  data.profilePickerInteracted = false;
   data.spreadSheetBuffer = null;
+  data.autoDetectedProfileKey = null;
   data.validationResultDialog = false;
   data.validationResult = {};
   data.loading = false;
@@ -596,16 +620,39 @@ async function getFile(id) {
 }
 
 function detectProfile(roc) {
-  const selectedProfileName = localStorage.getItem('selectedProfileName');
-  const savedProfileIndex = data.profiles.findIndex(p => profileMeta(p).name === selectedProfileName);
-  console.log('--detectProfile--');
-  console.log(selectedProfileName);
-  console.log(savedProfileIndex);
   const conformsToCrate = roc.rootDataset['conformsTo'] || [];
-  const profileIndex = data.profiles.findIndex(p =>
+  const matchedProfile = data.profiles.find(p =>
     conformsToCrate.some(ct => (p?.getConformsToUris?.() || []).includes(ct['@id'])));
-  data.selectedProfile = profileIndex >= 0 ? profileIndex : (savedProfileIndex >= 0 ? savedProfileIndex : defaultProfile);
-  console.log(data.selectedProfile);
+
+  let matchedByConformsTo = false;
+  if (matchedProfile) {
+    data.selectedProfile = profileMeta(matchedProfile).name;
+    data.selectedProfileSource = 'auto-conformsTo';
+    matchedByConformsTo = true;
+  }
+
+  profileDebug('detectProfile', {
+    conformsToCrate: conformsToCrate.map((ct) => ct?.['@id']).filter(Boolean),
+    matchedByConformsToName: matchedProfile ? profileMeta(matchedProfile).name : null,
+    autoSelected: !!matchedProfile,
+    finalSelectedProfileName: data.selectedProfile,
+    availableProfiles: data.profiles.map((p) => ({
+      name: profileMeta(p).name,
+      conformsTo: p?.getConformsToUris?.() || []
+    }))
+  });
+
+  return matchedByConformsTo;
+}
+
+function getCrateProfileKey(roc) {
+  const rootId = roc?.rootDataset?.['@id'] || '';
+  const conformsTo = (roc?.rootDataset?.['conformsTo'] || [])
+    .map((ct) => ct?.['@id'])
+    .filter(Boolean)
+    .sort()
+    .join('|');
+  return `${rootId}::${conformsTo}`;
 }
 
 /**
@@ -614,7 +661,20 @@ function detectProfile(roc) {
  * @param {function} refresh 
  */
 function ready(roc, refresh) {
-  detectProfile(roc);
+  const crateProfileKey = getCrateProfileKey(roc);
+  const matchedByConformsTo = detectProfile(roc);
+  if (!matchedByConformsTo && data.selectedProfileSource !== 'user') {
+    data.selectedProfile = defaultProfileName;
+    data.selectedProfileSource = 'auto-default';
+  }
+  data.autoDetectedProfileKey = crateProfileKey;
+  profileDebug('readyProfileResolution', {
+    crateProfileKey,
+    matchedByConformsTo,
+    selectedProfileName: data.selectedProfile,
+    resolvedProfileName: profileMeta(profile.value).name,
+    selectedProfileSource: data.selectedProfileSource
+  });
 
   data.loading = false;
   console.log('ready');
@@ -628,15 +688,62 @@ const activeNames = ref(['1']);
 
 import { onMounted, watch } from 'vue';
 
+function handleProfileVisibilityChange(visible) {
+  if (visible) {
+    data.profilePickerInteracted = true;
+  }
+}
+
+function handleProfileChange() {
+  if (data.profilePickerInteracted && data.selectedProfile !== null && data.selectedProfile !== undefined) {
+    data.selectedProfileSource = 'user';
+    data.profilePickerInteracted = false;
+  }
+}
+
 // Load settings on mount
 onMounted(() => {
   loadSettings();
+  maspProfilesPromise.then((profiles) => {
+    data.profiles = shallowReactive(profiles);
+    profileDebug('profilesPreloadedOnMount', (profiles || []).map((p, index) => ({
+      index,
+      name: profileMeta(p).name,
+      groupCount: (p?.getPropertyGroups?.() || []).length
+    })));
+  }).catch((error) => {
+    console.error('Failed to preload MASP profiles', error);
+  });
 });
 
 // Watch for changes in selectedProfile and update localStorage
 watch(() => data.selectedProfile, () => {
-  localStorage.setItem('selectedProfileName', profileMeta(profile.value).name || '');
-  console.log(localStorage.getItem('selectedProfileName'));
+  localStorage.setItem('selectedProfileName', data.selectedProfile || '');
+  const groups = (profile.value?.getPropertyGroups?.() || []).map((g) => g?.name).filter(Boolean);
+  profileDebug('selectedProfileChanged', {
+    selectedProfileName: data.selectedProfile,
+    resolvedProfileName: profileMeta(profile.value).name,
+    selectedProfileSource: data.selectedProfileSource,
+    selectedProfileGroups: groups,
+    selectedProfileConformsTo: profile.value?.getConformsToUris?.() || []
+  });
+});
+
+watch(() => data.profiles, (profiles) => {
+  if (hiddenProfileNames.has(data.selectedProfile)) {
+    data.selectedProfile = null;
+    data.selectedProfileSource = 'none';
+  }
+  profileDebug('profilesHydratedInView', (profiles || []).map((p, index) => {
+    const meta = profileMeta(p);
+    const groups = (p?.getPropertyGroups?.() || []).map((g) => g?.name).filter(Boolean);
+    return {
+      index,
+      name: meta.name,
+      groupCount: groups.length,
+      groups
+    };
+  }));
 });
 
 </script>
@@ -673,7 +780,7 @@ watch(() => data.selectedProfile, () => {
     </el-menu>
     <el-row class="text-large py-3">
       <el-col :sm="24" :md="18" class="pl-3">
-        <el-select-v2 v-model="data.selectedProfile" class="w-[30em]" :disabled="!data.dirHandle" scrollbar-always-on
+        <el-select-v2 v-model="data.selectedProfile" @change="handleProfileChange" @visible-change="handleProfileVisibilityChange" class="w-[30em]" :disabled="!data.dirHandle" scrollbar-always-on
           placeholder="Open a directory first to select a mode" :options="profileOptions" :height="290"
           :item-height="58">
           <template #prefix>
@@ -754,7 +861,7 @@ watch(() => data.selectedProfile, () => {
           </svg>
         </el-button>
       </span> -->
-    <CrateEditor :crate="data.crate" :mode="profile" :entity-id="data.entityId" :property-id="data.propertyId"
+    <CrateEditor :key="`profile-${data.selectedProfile}`" :crate="data.crate" :mode="profile" :entity-id="data.entityId" :property-id="data.propertyId"
       :load-file="getFile" @update:entity-id="updateEntityId" @ready="ready">
     </CrateEditor>
     <SpreadSheet v-model:crate="data.crate" :buffer="data.spreadSheetBuffer" />
