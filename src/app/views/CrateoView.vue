@@ -1,10 +1,9 @@
 <script setup>
-import { shallowReactive, ref, computed } from 'vue';
-import { profilesPromise } from '../utils/profiles.js';
+import { shallowReactive, ref, computed, nextTick } from 'vue';
+import { maspProfilesPromise } from '../utils/maspProfiles.js';
 import About from "../components/About.vue";
 import Help from "../components/Help.vue";
 import SpreadSheet from "../components/SpreadSheet.vue";
-import { Validator } from "../utils/profileValidator.js";
 import { ROCrate } from "ro-crate";
 import {
   ElRow, ElCol, ElMenu, ElMenuItem, ElDivider, ElSelectV2, ElOption,
@@ -29,6 +28,10 @@ const navigate = handleRoute((entityId, propertyId) => {
 
 const emit = defineEmits(['load:spreadsheet']);
 const defaultProfile = 0;
+
+function profileMeta(profile) {
+  return profile?.getProfileMetadata ? profile.getProfileMetadata() : (profile?.metadata || {});
+}
 
 const data = shallowReactive({
   /** @type {?FileSystemDirectoryHandle} */
@@ -55,43 +58,208 @@ const data = shallowReactive({
 });
 window.data = data;
 const profile = computed(() => data.profiles[data.selectedProfile]);
-const profileOptions = computed(() => data.profiles.flatMap((p, value) =>
-  p ? [{ value, label: p.metadata.name, description: p.metadata.description }] : []));
+const profileOptions = computed(() => data.profiles.flatMap((p, value) => {
+  const metadata = profileMeta(p);
+  return p ? [{ value, label: metadata.name, description: metadata.description }] : [];
+}));
+
+const metadataDescriptorRuleIds = computed(() => {
+  const flags = data.validationResult?.ruleFlags || {};
+  return new Set(
+    Object.entries(flags)
+      .filter(([, meta]) => meta?.metadataDescriptorRule)
+      .map(([ruleId]) => ruleId)
+  );
+});
+
+const validationDetailItems = computed(() => {
+  const rules = data.validationResult?.rules || {};
+  const items = [];
+
+  const withPropertyErrorFallbackReason = (level, message) => {
+    const msg = message || '';
+    if (level !== 'property-errors') {
+      return msg;
+    }
+    const isLegacyPropertyError = /^Property "[^"]+" validation failed for entity /.test(msg);
+    const hasReasonSuffix = /\([^)]*\)\s*$/.test(msg);
+    if (isLegacyPropertyError && !hasReasonSuffix) {
+      return `${msg} (legacy validator message: no reason provided)`;
+    }
+    return msg;
+  };
+
+  const extractPropertyName = (message) => {
+    const match = /^Property "([^"]+)" validation (?:failed|succeeded) for entity /.exec(message || '');
+    return match?.[1] || null;
+  };
+
+  for (const [ruleId, entities] of Object.entries(rules)) {
+    for (const [entityId, levels] of Object.entries(entities || {})) {
+      for (const [level, messages] of Object.entries(levels || {})) {
+        for (const message of messages || []) {
+          items.push({
+            ruleId,
+            entityId,
+            level,
+            message: withPropertyErrorFallbackReason(level, message?.message || ''),
+          });
+        }
+      }
+    }
+  }
+
+  const propertyReasonByKey = new Map(
+    items
+      .filter((item) => item.level === 'info')
+      .map((item) => {
+        const match = /^Property "([^"]+)":\s*(.+)$/.exec(item.message || '');
+        if (!match) {
+          return null;
+        }
+        const [, propName, reason] = match;
+        return [`${item.ruleId}::${item.entityId}::${propName}`, reason];
+      })
+      .filter(Boolean)
+  );
+
+  const enrichedItems = items.map((item) => {
+    if (item.level !== 'property-errors') {
+      return item;
+    }
+
+    const propName = extractPropertyName(item.message);
+    if (!propName) {
+      return item;
+    }
+
+    const hasReasonSuffix = /\([^)]*\)\s*$/.test(item.message || '');
+    if (hasReasonSuffix) {
+      return item;
+    }
+
+    const reason = propertyReasonByKey.get(`${item.ruleId}::${item.entityId}::${propName}`);
+    if (reason) {
+      return {
+        ...item,
+        message: `${item.message} (${reason})`,
+      };
+    }
+
+    return item;
+  });
+
+  const failureLevels = new Set(['error', 'property-errors', 'warning', 'info']);
+
+  // Suppress non-significant candidate matches where a fixed-value identity check failed
+  // (e.g. candidate entity considered for RO-Crate Metadata Descriptor but @id mismatch).
+  const suppressedRuleEntityPairs = new Set(
+    enrichedItems
+      .filter((item) =>
+        item.level === 'info' &&
+        typeof item.message === 'string' &&
+        item.message.includes('does not match expected fixed value')
+      )
+      .map((item) => `${item.ruleId}::${item.entityId}`)
+  );
+
+  // If a property succeeds somewhere for a rule, hide unmatched candidate failures
+  // for that same property/rule pair.
+  const succeededPropertyKeys = new Set(
+    enrichedItems
+      .filter((item) => item.level === 'property-success')
+      .map((item) => {
+        const prop = extractPropertyName(item.message);
+        return prop ? `${item.ruleId}::${item.entityId}::${prop}` : null;
+      })
+      .filter(Boolean)
+  );
+
+  const filtered = enrichedItems.filter((item) => {
+    if (!failureLevels.has(item.level)) {
+      return false;
+    }
+
+    if (metadataDescriptorRuleIds.value.has(item.ruleId)) {
+      return false;
+    }
+
+    // Fallback for older validator bundles that don't return ruleFlags yet.
+    // Suppress RO-Crate metadata descriptor candidate-match noise.
+    const isMetadataDescriptorRule =
+      typeof item.ruleId === 'string' && item.ruleId.includes('RO-Crate_Metadata_Descriptor');
+    const isMetadataDescriptorPropertyNoise =
+      item.level === 'property-errors' &&
+      (item.message.startsWith('Property "about" validation failed') ||
+        item.message.startsWith('Property "@id" validation failed'));
+    if (isMetadataDescriptorRule && isMetadataDescriptorPropertyNoise) {
+      return false;
+    }
+
+    if (suppressedRuleEntityPairs.has(`${item.ruleId}::${item.entityId}`)) {
+      return false;
+    }
+
+    if (item.level === 'property-errors') {
+      const prop = extractPropertyName(item.message);
+      if (prop && succeededPropertyKeys.has(`${item.ruleId}::${item.entityId}::${prop}`)) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+
+  const severityOrder = {
+    error: 0,
+    'property-errors': 1,
+    warning: 2,
+    info: 3,
+  };
+
+  return filtered.sort((left, right) => {
+    const leftOrder = severityOrder[left.level] ?? 99;
+    const rightOrder = severityOrder[right.level] ?? 99;
+
+    if (leftOrder !== rightOrder) {
+      return leftOrder - rightOrder;
+    }
+
+    if (left.entityId !== right.entityId) {
+      return left.entityId.localeCompare(right.entityId);
+    }
+
+    return left.ruleId.localeCompare(right.ruleId);
+  });
+});
+
+const validationErrorSummary = computed(() => {
+  const summary = {};
+  for (const item of validationDetailItems.value) {
+    if (!summary[item.message]) {
+      summary[item.message] = { count: 0, entities: new Set() };
+    }
+    summary[item.message].count++;
+    summary[item.message].entities.add(item.entityId);
+  }
+  return Object.entries(summary)
+    .map(([message, data]) => ({ 
+      message, 
+      count: data.count,
+      entities: Array.from(data.entities).sort()
+    }))
+    .sort((a, b) => b.count - a.count);
+});
 
 //const editor = ref();
 const editor = { crate: {}, refresh: () => { } };
 
 const commands = {
-  async loadProfile() {
-    console.log('loading profile');
-    try {
-      const [profileHandle] = await window.showOpenFilePicker();
-      let file = await profileHandle.getFile();
-      const content = await file.text();
-      const validator = new Validator();
-      validator.errors = [];
-      validator.loadAndCheck(content);
-      data.modeError = null;
-      //data.profileErrorDialog = false;
-      if (validator.errors.length > 0) {
-        data.modeError = validator.errors;
-        data.showDialog = true;
-        data.dialogContent = null;
-        data.dialogTitle = 'Error when loading Mode';
-      } else {
-        //const profile = validator.profile;
-        //TODO: put it profiles removing it when fixing it
-        const newProfile = validator.profile;
-        data.profiles.unshift(newProfile);
-        data.selectedProfile = 0;
-        //profile = newProfile;
-      }
-    } catch (error) {
-      if (error.name !== 'AbortError') {
-        console.error(error);
-        window.alert(error);
-      }
-    }
+  loadProfile() {
+    data.showDialog = true;
+    data.dialogContent = null;
+    data.dialogTitle = 'Local MASP profiles only';
+    data.modeError = [{ message: 'This build loads MASP profile-crates from the local ro-crate-masp workspace only.' }];
   },
 
   async open() {
@@ -115,7 +283,7 @@ const commands = {
         const content = await file.text();
         crate = JSON.parse(content);
       }
-      const profiles = (await profilesPromise).map(p => p.value);
+      const profiles = await maspProfilesPromise;
       data.profiles = shallowReactive(profiles)
       //console.log(crate);
       data.crate = crate;
@@ -143,6 +311,9 @@ const commands = {
   async save() {
     console.log('save start');
     if (data.dirHandle) {
+      if (!(await ensureDirectoryAccess())) {
+        return;
+      }
       // create new crate metadata
       data.metadataHandle = await data.dirHandle.getFileHandle('ro-crate-metadata.json', { create: true });
     } else {
@@ -158,6 +329,14 @@ const commands = {
       }
     }
     if (data.metadataHandle) {
+      if (!profile.value?.validateCrate) {
+        ElNotification({
+          title: 'No Profile Validator',
+          message: 'Select a profile after opening the directory, then save again to run validation.',
+          type: 'warning',
+          duration: 5000,
+        });
+      }
       const rawCrate = editor.crate.toJSON();
       let writable = await data.metadataHandle.createWritable();
       let content = JSON.stringify(rawCrate, null, 2);
@@ -165,9 +344,9 @@ const commands = {
       await writable.close();
       //data.crate = crate;
       //data.entityId = '';
-      data.validationResult = validate(rawCrate, profile.value);
+      data.validationResult = await validate(rawCrate, profile.value);
       console.log(data.validationResult);
-      data.validationResultDialog = !!Object.keys(data.validationResult).length;
+      data.validationResultDialog = hasValidationMessages(data.validationResult);
       ElNotification({ title: 'Data successfully saved in ro-crate-metadata.json', type: 'success', duration: 3000 });
 
       // save preview
@@ -284,33 +463,77 @@ async function collectFiles({ dirHandle, root }) {
   return files;
 }
 
-const validate = function (json, profile) {
-  const crate = new ROCrate(json, { array: true, link: true });
-  let validationResult = {};
-  for (let entity of crate.entities()) {
-    if (entity["@id"] !== 'ro-crate-metadata.json') {
-      for (let entityType of entity['@type']) {
-        const classDefinition = profile.classes[entityType];
-        if (classDefinition) {
-          for (let input of classDefinition.inputs) {
-            if (input.required && !(entity[input.name]?.[0])) {
-              //TODO: check that the input value is valid
-              if (!validationResult[entity['@id']]) {
-                validationResult[entity['@id']] = { 'name': entity['name'], props: {} };
-              }
-              validationResult[entity["@id"]].props[input.id] = { name: cacheLabel(input), type: 'required' };
-            }
-          }
+async function ensureDirectoryAccess() {
+  if (!data.dirHandle) {
+    return false;
+  }
+
+  try {
+    const current = await data.dirHandle.queryPermission({ mode: 'readwrite' });
+    if (current === 'granted') {
+      return true;
+    }
+
+    if (current === 'prompt') {
+      const requested = await data.dirHandle.requestPermission({ mode: 'readwrite' });
+      if (requested === 'granted') {
+        return true;
+      }
+    }
+  } catch (error) {
+    console.error('Failed to verify directory permission', error);
+  }
+
+  ElNotification({
+    title: 'Directory Access Required',
+    message: 'Please click Open Directory and re-select your folder for this browser session/port.',
+    type: 'warning',
+    duration: 5000,
+  });
+
+  data.metadataHandle = null;
+  return false;
+}
+
+function hasValidationMessages(result) {
+  if (result?.error?.length) {
+    return true;
+  }
+
+  const rules = result?.rules || {};
+  for (const entities of Object.values(rules)) {
+    for (const levels of Object.values(entities || {})) {
+      for (const messages of Object.values(levels || {})) {
+        if (Array.isArray(messages) && messages.length > 0) {
+          return true;
         }
       }
     }
   }
-  return validationResult;
+
+  return false;
+}
+
+const validate = async function (json, profile) {
+  if (!profile?.validateCrate) {
+    return { error: [] };
+  }
+  const crate = new ROCrate(json, { array: true, link: true });
+  await crate.resolveContext();
+  return profile.validateCrate(crate);
 }
 
 const goTo = function ({ id, prop }) {
   if (data.entityId !== id || prop) {
     navigate(id, prop);
+    // Close the validation alert and scroll the editor into view after navigation
+    nextTick(() => {
+      data.validationResultDialog = false;
+      const editorElement = document.querySelector('.editor-wrapper, [role="tablist"]');
+      if (editorElement) {
+        editorElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
   }
 }
 
@@ -333,6 +556,9 @@ function loadSettings() {
 var prevObjectUrl;
 async function getFile(id) {
   try {
+    if (!(await ensureDirectoryAccess())) {
+      return null;
+    }
     const paths = id.split('/');
     const fileName = paths.pop();
     let dirHandle = data.dirHandle;
@@ -358,18 +584,26 @@ async function getFile(id) {
     }
   } catch (e) {
     console.error(e);
+    if (e?.name === 'NotAllowedError') {
+      ElNotification({
+        title: 'Directory Access Required',
+        message: 'Permission was lost for this directory. Use Open Directory to re-authorize access.',
+        type: 'warning',
+        duration: 5000,
+      });
+    }
   }
 }
 
 function detectProfile(roc) {
   const selectedProfileName = localStorage.getItem('selectedProfileName');
-  const savedProfileIndex = data.profiles.findIndex(p => p.metadata?.name === selectedProfileName);
+  const savedProfileIndex = data.profiles.findIndex(p => profileMeta(p).name === selectedProfileName);
   console.log('--detectProfile--');
   console.log(selectedProfileName);
   console.log(savedProfileIndex);
   const conformsToCrate = roc.rootDataset['conformsTo'] || [];
   const profileIndex = data.profiles.findIndex(p =>
-    conformsToCrate.some(ct => (p?.conformsToUri || []).includes(ct['@id'])));
+    conformsToCrate.some(ct => (p?.getConformsToUris?.() || []).includes(ct['@id'])));
   data.selectedProfile = profileIndex >= 0 ? profileIndex : (savedProfileIndex >= 0 ? savedProfileIndex : defaultProfile);
   console.log(data.selectedProfile);
 }
@@ -400,8 +634,8 @@ onMounted(() => {
 });
 
 // Watch for changes in selectedProfile and update localStorage
-watch(() => data.selectedProfile, (newValue) => {
-  localStorage.setItem('selectedProfileName', profile.value?.metadata?.name);
+watch(() => data.selectedProfile, () => {
+  localStorage.setItem('selectedProfileName', profileMeta(profile.value).name || '');
   console.log(localStorage.getItem('selectedProfileName'));
 });
 
@@ -443,7 +677,7 @@ watch(() => data.selectedProfile, (newValue) => {
           placeholder="Open a directory first to select a mode" :options="profileOptions" :height="290"
           :item-height="58">
           <template #prefix>
-            <span class="font-bold">Mode:</span>
+            <span class="font-bold">Profile:</span>
           </template>
           <template #footer>
             <el-button size="small" @click="commands.loadProfile()">Load and add a new mode from your computer
@@ -468,14 +702,42 @@ watch(() => data.selectedProfile, (newValue) => {
       @close="data.validationResultDialog = false">
       <el-collapse class="ml-5 mr-10 min-w-96" role="alert">
         <el-collapse-item title="Saved with warnings" name="validation-warnings">
-          <div class="p-2" v-for="(obj, key) in data.validationResult">
+          <div class="p-2" v-for="result in data.validationResult.error" :key="`${result.rule}-${result.entity}`">
             <p>Entity:
-              <el-button size="small" type="default" @click="goTo({ id: key })"> {{ obj?.name?.[0] || key }}</el-button>
+              <el-button size="small" type="default" @click="goTo({ id: result.entity })">{{ result.entity }}</el-button>
             </p>
-            Property(s) :
-            <p v-for="(prop, keyProp) in obj.props" class="ml-5 py-1">
-              <el-button size="small" @click="goTo({ id: key, prop: keyProp })">{{ prop.name }}</el-button>
-              <span class="text-red-700">&nbsp;is {{ prop.type }}</span>
+            <p class="ml-5 py-1 text-red-700">{{ result.message }}</p>
+          </div>
+        </el-collapse-item>
+        <el-collapse-item v-if="validationErrorSummary.length" :title="`Error Summary (${validationDetailItems.length} total)`"
+          name="error-summary">
+          <div class="p-3 border-b border-slate-200" v-for="(summary, idx) in validationErrorSummary" :key="idx">
+            <p class="font-semibold text-slate-900 mb-2">{{ summary.count }}× {{ summary.message }}</p>
+            <div class="flex flex-wrap gap-1">
+              <el-button 
+                v-for="entityId in summary.entities" 
+                :key="entityId"
+                size="small" 
+                type="primary" 
+                link
+                @click="goTo({ id: entityId })">
+                {{ entityId }}
+              </el-button>
+            </div>
+          </div>
+        </el-collapse-item>
+        <el-collapse-item v-if="validationDetailItems.length" :title="`Validation details (${validationDetailItems.length})`"
+          name="validation-details">
+          <div class="p-2 border-b border-slate-200" v-for="detail in validationDetailItems"
+            :key="`${detail.ruleId}-${detail.entityId}-${detail.level}-${detail.message}`">
+            <p>
+              Entity:
+              <el-button size="small" type="default" @click="goTo({ id: detail.entityId })">{{ detail.entityId }}</el-button>
+            </p>
+            <p class="ml-5 py-1 text-slate-700">
+              <span class="font-semibold uppercase text-xs mr-2">{{ detail.level }}</span>
+              <span class="font-mono text-xs mr-2">{{ detail.ruleId }}</span>
+              <span>{{ detail.message }}</span>
             </p>
           </div>
         </el-collapse-item>
@@ -508,7 +770,6 @@ watch(() => data.selectedProfile, (newValue) => {
     <div class="dialog-content">
       <component v-if="data.dialogContent" :is="data.dialogContent" />
       <template v-else-if="data.modeError">
-        {{ data.selectedProfile?.metadata }}
         <el-divider />
         <div class="p-2" v-for="error of data.modeError">
           <p>{{ error.instancePath }}</p>
