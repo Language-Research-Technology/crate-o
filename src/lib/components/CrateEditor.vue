@@ -92,6 +92,13 @@ function initEntity(entityId) {
     if (data.entity?.['@id'] !== id) {
       const entity = state.crate.getEntity(id);
       if (entity) {
+        const rootId = data.rootDataset?.['@id'];
+        if (data.history.length === 0 && rootId && id !== rootId) {
+          const rootEntity = state.crate.getEntity(rootId);
+          if (rootEntity) {
+            data.history.push(rootEntity);
+          }
+        }
         const i = data.history.findIndex(e => e['@id'] === id);
         if (i > -1) data.history.splice(i + 1);
         else data.history.push(entity);
@@ -206,11 +213,81 @@ function onSelectNewEntity(type) {
   }
 }
 
+/**
+ * Profile ID to contextual entity mapping for MASP profiles
+ * Maps profile conformsTo IDs to their contextual profile entity definitions
+ */
+const profileContextualEntities = {
+  'https://language-research-technology.github.io/ro-crate-masp/profiles/ro-crate-masp/profile-crate/#profile': {
+    '@id': 'https://language-research-technology.github.io/ro-crate-masp/profiles/ro-crate-masp/profile-crate/#profile',
+    '@type': ['CreativeWork', 'Profile'],
+    'name': 'RO-Crate MASP Profile',
+    'url': 'https://language-research-technology.github.io/ro-crate-masp/profiles/ro-crate-masp/profile-crate/'
+  },
+  'https://w3id.org/ldac/profile#profile': {
+    '@id': 'https://w3id.org/ldac/profile#profile',
+    '@type': ['CreativeWork', 'Profile'],
+    'name': 'Language Data Commons Profile',
+    'url': 'https://w3id.org/ldac/profile/'
+  },
+  'https://language-research-technology.github.io/ro-crate-masp/profiles/ro-crate/profile-crate/#profile': {
+    '@id': 'https://language-research-technology.github.io/ro-crate-masp/profiles/ro-crate/profile-crate/#profile',
+    '@type': ['CreativeWork', 'Profile'],
+    'name': 'RO-Crate Profile',
+    'url': 'https://language-research-technology.github.io/ro-crate-masp/profiles/ro-crate/profile-crate/'
+  },
+  'https://language-research-technology.github.io/ro-crate-masp/profiles/schema-org/profile-crate/#profile': {
+    '@id': 'https://language-research-technology.github.io/ro-crate-masp/profiles/schema-org/profile-crate/#profile',
+    '@type': ['CreativeWork', 'Profile'],
+    'name': 'Schema.org Profile',
+    'url': 'https://language-research-technology.github.io/ro-crate-masp/profiles/schema-org/profile-crate/'
+  },
+  'https://language-research-technology.github.io/ro-crate-masp/profiles/software/profile-crate/#profile': {
+    '@id': 'https://language-research-technology.github.io/ro-crate-masp/profiles/software/profile-crate/#profile',
+    '@type': ['CreativeWork', 'Profile'],
+    'name': 'Software Profile',
+    'url': 'https://language-research-technology.github.io/ro-crate-masp/profiles/software/profile-crate/'
+  },
+  'https://w3id.org/ro/workflow-crate/#profile': {
+    '@id': 'https://w3id.org/ro/workflow-crate/#profile',
+    '@type': ['CreativeWork', 'Profile'],
+    'name': 'Workflow Profile',
+    'url': 'https://w3id.org/ro/workflow-crate/'
+  }
+};
+
+function ensureProfileContextualEntities(crate, conformsToValues) {
+  if (!Array.isArray(conformsToValues)) return;
+  
+  for (const conformsTo of conformsToValues) {
+    if (!conformsTo || !conformsTo['@id']) continue;
+    
+    const profileId = conformsTo['@id'];
+    const contextualEntity = profileContextualEntities[profileId];
+    
+    if (contextualEntity) {
+      // Check if entity already exists in the crate
+      const exists = crate['@graph']?.some(e => e['@id'] === profileId);
+      if (!exists) {
+        // Add the contextual entity to the graph
+        crate['@graph'].push({ ...contextualEntity });
+        console.log('Added contextual profile entity:', profileId);
+      }
+    }
+  }
+}
+
 function updateEntity(entity, prop, value) {
   if (data.entity === entity) {
     if (data.entity[prop] !== value) {
       data.entity[prop] = value;
       console.log('updateEntity', prop, value, data.entity[prop]);
+      
+      // When conformsTo is updated, ensure profile contextual entities are added
+      if (prop === 'conformsTo' && state.crate) {
+        ensureProfileContextualEntities(state.crate.toJSON(), value);
+      }
+      
       emit('update:crate', props.crate); // ,state.crate, diff
       if ([].concat(value).some(v => v['@id'])) data.refreshUnlinked++;
     }

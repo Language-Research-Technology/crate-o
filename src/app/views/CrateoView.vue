@@ -56,6 +56,8 @@ const data = shallowReactive({
   selectedProfile: null,
   selectedProfileSource: 'none',
   profilePickerInteracted: false,
+  profileLoading: false,
+  profileLoadingName: '',
   profiles: [],
   spreadSheetBuffer: null,
   autoDetectedProfileKey: null,
@@ -66,6 +68,7 @@ const data = shallowReactive({
   dialogTitle: '',
   dialogContent: null,
   validationResultDialog: false,
+  validationSuccessBanner: '',
   showSettingsDialog: false,
   settings: {
     previewGenerator: 'full' // 'lite' or 'full'
@@ -366,8 +369,17 @@ const commands = {
       //data.entityId = '';
       data.validationResult = await validate(rawCrate, profile.value);
       console.log(data.validationResult);
-      data.validationResultDialog = hasValidationMessages(data.validationResult);
-      ElNotification({ title: 'Data successfully saved in ro-crate-metadata.json', type: 'success', duration: 3000 });
+      const hasValidationWarnings = hasValidationMessages(
+        data.validationResult,
+        validationDetailItems.value.length
+      );
+      data.validationResultDialog = hasValidationWarnings;
+      const selectedProfileName = profileMeta(profile.value).name || data.selectedProfile;
+      const saveNotificationTitle = selectedProfileName
+        ? `Saved - Validated with "${selectedProfileName}"`
+        : 'Saved - Validated';
+      data.validationSuccessBanner = hasValidationWarnings ? '' : saveNotificationTitle;
+      ElNotification({ title: saveNotificationTitle, type: 'success', duration: 3000 });
 
       // save preview
       const crate = new ROCrate(rawCrate, { array: true, link: true });
@@ -444,6 +456,7 @@ function resetData() {
   data.spreadSheetBuffer = null;
   data.autoDetectedProfileKey = null;
   data.validationResultDialog = false;
+  data.validationSuccessBanner = '';
   data.validationResult = {};
   data.loading = false;
 }
@@ -519,23 +532,12 @@ async function ensureDirectoryAccess() {
   return false;
 }
 
-function hasValidationMessages(result) {
-  if (result?.error?.length) {
+function hasValidationMessages(result, visibleDetailCount = 0) {
+  if (visibleDetailCount > 0) {
     return true;
   }
 
-  const rules = result?.rules || {};
-  for (const entities of Object.values(rules)) {
-    for (const levels of Object.values(entities || {})) {
-      for (const messages of Object.values(levels || {})) {
-        if (Array.isArray(messages) && messages.length > 0) {
-          return true;
-        }
-      }
-    }
-  }
-
-  return false;
+  return Array.isArray(result?.error) && result.error.length > 0;
 }
 
 const validate = async function (json, profile) {
@@ -619,10 +621,33 @@ async function getFile(id) {
   }
 }
 
-function detectProfile(roc) {
+async function detectProfile(roc) {
+  if (data.selectedProfileSource === 'user' && data.selectedProfile) {
+    profileDebug('detectProfileSkippedForUserSelection', {
+      selectedProfileName: data.selectedProfile
+    });
+    return false;
+  }
+
   const conformsToCrate = roc.rootDataset['conformsTo'] || [];
-  const matchedProfile = data.profiles.find(p =>
-    conformsToCrate.some(ct => (p?.getConformsToUris?.() || []).includes(ct['@id'])));
+
+  let matchedProfile = null;
+  for (const p of data.profiles) {
+    let conformsToProfile = p?.getConformsToUris?.() || [];
+    if (conformsToProfile.length === 0 && p?.ensureLoaded) {
+      try {
+        await p.ensureLoaded();
+      } catch (error) {
+        profileDebug('ensureLoadedFailed', { name: profileMeta(p).name, message: error?.message });
+      }
+      conformsToProfile = p?.getConformsToUris?.() || [];
+    }
+
+    if (conformsToCrate.some(ct => conformsToProfile.includes(ct['@id']))) {
+      matchedProfile = p;
+      break;
+    }
+  }
 
   let matchedByConformsTo = false;
   if (matchedProfile) {
@@ -660,10 +685,11 @@ function getCrateProfileKey(roc) {
  * @param {ROCrate} roc 
  * @param {function} refresh 
  */
-function ready(roc, refresh) {
+async function ready(roc, refresh) {
   const crateProfileKey = getCrateProfileKey(roc);
-  const matchedByConformsTo = detectProfile(roc);
-  if (!matchedByConformsTo && data.selectedProfileSource !== 'user') {
+  const shouldAutoDetect = data.selectedProfileSource !== 'user';
+  const matchedByConformsTo = shouldAutoDetect ? await detectProfile(roc) : false;
+  if (!matchedByConformsTo && shouldAutoDetect) {
     data.selectedProfile = defaultProfileName;
     data.selectedProfileSource = 'auto-default';
   }
@@ -719,6 +745,20 @@ onMounted(() => {
 // Watch for changes in selectedProfile and update localStorage
 watch(() => data.selectedProfile, () => {
   localStorage.setItem('selectedProfileName', data.selectedProfile || '');
+  if (profile.value?.ensureLoaded) {
+    data.profileLoading = true;
+    data.profileLoadingName = data.selectedProfile || '';
+    profile.value.ensureLoaded()
+      .then(() => {
+        data.profileLoading = false;
+        data.profileLoadingName = '';
+      })
+      .catch((error) => {
+        data.profileLoading = false;
+        data.profileLoadingName = '';
+        console.error('Failed to load selected profile', error);
+      });
+  }
   const groups = (profile.value?.getPropertyGroups?.() || []).map((g) => g?.name).filter(Boolean);
   profileDebug('selectedProfileChanged', {
     selectedProfileName: data.selectedProfile,
@@ -802,6 +842,9 @@ watch(() => data.profiles, (profiles) => {
         <span class="font-bold text-slate-500">Selected Directory: </span>
         <span class="truncate" :title="data.dirHandle.name">{{ data.dirHandle.name }}</span>
       </el-col>
+      <el-col v-if="data.profileLoading" :sm="24" :md="24" class="pl-3 pt-1">
+        <span class="text-sm text-slate-500">Loading profile{{ data.profileLoadingName ? ` \"${data.profileLoadingName}\"` : '' }}...</span>
+      </el-col>
     </el-row>
   </div>
   <template v-if="data.crate">
@@ -850,6 +893,14 @@ watch(() => data.profiles, (profiles) => {
         </el-collapse-item>
       </el-collapse>
     </el-alert>
+    <el-alert
+      class="validation-warnings"
+      v-else-if="data.validationSuccessBanner"
+      type="success"
+      :title="data.validationSuccessBanner"
+      show-icon
+      @close="data.validationSuccessBanner = ''"
+    />
     <!-- <strong class="block sm:inline font-bold">Saved with warnings</strong> -->
     <!-- <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
         <el-button type="text" @click="data.validationResultDialog = false">

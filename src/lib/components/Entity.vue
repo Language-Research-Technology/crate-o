@@ -1,6 +1,6 @@
 <script setup>
 import { computed, inject, onMounted, onUpdated, reactive, watch } from "vue";
-import { ElTabPane, ElTabs, ElTooltip, ElPopover, ElIcon, ElRow, ElForm, ElFormItem, ElButton } from 'element-plus';
+import { ElTabPane, ElTabs, ElTooltip, ElPopover, ElIcon, ElRow, ElForm, ElFormItem, ElButton, ElDialog } from 'element-plus';
 import { InfoFilled, Plus } from '@element-plus/icons-vue';
 import { $state } from './keys';
 import Property from './Property.vue';
@@ -30,7 +30,10 @@ function profileDebug(...args) {
 // });
 
 const data = reactive({
-  file: null
+  file: null,
+  showConformsToDialog: false,
+  pendingConformsTo: [],
+  conformsToRefresh: 0
 });
 
 const layouts = computed(() => {
@@ -231,6 +234,35 @@ function addConformTos(rTypes) {
   emit('update:modelValue', entity, 'conformsTo', newVal);
 }
 
+function promptAddConformTos(rTypes) {
+  const entity = props.modelValue;
+  const existing = Array.isArray(entity.conformsTo) ? entity.conformsTo : [];
+  if (existing.length > 0) {
+    data.pendingConformsTo = rTypes;
+    data.showConformsToDialog = true;
+    return;
+  }
+  addConformTos(rTypes);
+}
+
+function replaceConformTos() {
+  const entity = props.modelValue;
+  emit('update:modelValue', entity, 'conformsTo', data.pendingConformsTo);
+  closeConformsToDialog();
+  data.conformsToRefresh++;
+}
+
+function addMissingConformTos() {
+  addConformTos(data.pendingConformsTo);
+  closeConformsToDialog();
+  data.conformsToRefresh++;
+}
+
+function closeConformsToDialog() {
+  data.showConformsToDialog = false;
+  data.pendingConformsTo = [];
+}
+
 </script>
 
 <template>
@@ -252,7 +284,7 @@ function addConformTos(rTypes) {
         </el-tooltip>
       </template>
       <el-form id="#entityForm" label-width="auto" novalidate v-if="activeGroup === layout.name">
-        <div v-if="state.crate.rootDataset['@id'] === props.modelValue['@id']">
+        <div v-if="state.crate.rootDataset['@id'] === props.modelValue['@id']" :key="data.conformsToRefresh">
           <el-row v-if="checkRootTypes().length > 0"
             class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4">
             This dataset does not have all the types required in the selected Mode:
@@ -262,8 +294,8 @@ function addConformTos(rTypes) {
           </el-row>
           <el-row v-if="checkConformsTo().length > 0"
             class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4">
-            This dataset does not have all the conformsTos required in the selected Mode:&nbsp;
-            <el-button size="small" type="primary" :icon="Plus" @click="addConformTos(checkConformsTo())">
+            This RO-Crate does not indicate conformance with the selected profile - click here to add it:&nbsp;
+            <el-button size="small" type="primary" :icon="Plus" @click="promptAddConformTos(checkConformsTo())">
               Add the missing conformsTo(s):&nbsp;<span v-for="c of checkConformsTo()">{{ c?.['@id'] }}</span>
             </el-button>
           </el-row>
@@ -281,4 +313,24 @@ function addConformTos(rTypes) {
     </el-tab-pane>
 
   </el-tabs>
+
+  <el-dialog
+    v-model="data.showConformsToDialog"
+    title="Update conformsTo"
+    width="700px"
+    @close="closeConformsToDialog"
+  >
+    <p class="mb-3">This RO-Crate already has one or more conformsTo values. What would you like to do?</p>
+    <p class="mb-2 font-semibold">Missing values to add:</p>
+    <ul class="list-disc pl-6 mb-4">
+      <li v-for="c of data.pendingConformsTo" :key="c?.['@id']">{{ c?.['@id'] }}</li>
+    </ul>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="closeConformsToDialog">Cancel</el-button>
+        <el-button type="warning" @click="replaceConformTos">Remove existing and add missing</el-button>
+        <el-button type="primary" @click="addMissingConformTos">Add missing only</el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
